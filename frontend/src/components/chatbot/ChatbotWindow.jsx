@@ -8,7 +8,7 @@ import { MAX_QUESTION_LENGTH, resolveAnswer, validateQuestion } from "../lib/fin
 /* Configuration                                                              */
 /* -------------------------------------------------------------------------- */
 
-const THINKING_DELAY_MS = 1600;
+const THINKING_DELAY_MS = 180;
 const QUESTION_INPUT_ID = "cored-chat-question";
 
 
@@ -30,26 +30,26 @@ function createMessage(id, role, content, action) {
 /* -------------------------------------------------------------------------- */
 
 const chatbotStyles = {
-  window: "flex h-full min-h-0 w-full flex-col overflow-hidden bg-white text-slate-900",
+  window: "flex h-full min-h-0 w-full flex-col overflow-hidden bg-[var(--cd-surface)] text-[var(--cd-ink)]",
 
   header:
-    "flex min-h-[76px] shrink-0 items-center justify-between gap-3 border-b border-slate-100 bg-white px-4 py-3 sm:px-6",
+    "flex min-h-[76px] shrink-0 items-center justify-between gap-3 border-b border-[var(--cd-rule)] bg-[var(--cd-surface)] px-4 py-3 sm:px-6",
 
   brandGroup: "flex min-w-0 items-center gap-3",
 
   brandLogo:
-    "size-11 shrink-0 overflow-hidden rounded-xl border border-blue-100 bg-blue-50",
+    "size-11 shrink-0 overflow-hidden rounded-xl border border-[var(--cd-rule)] bg-[var(--cd-band)]",
 
-  brandName: "text-sm font-bold leading-tight text-slate-950 sm:text-base",
+  brandName: "text-sm font-bold leading-tight text-[var(--cd-ink)] sm:text-base",
 
-  brandSubtitle: "mt-1 text-xs text-blue-600",
+  brandSubtitle: "mt-1 text-xs text-[var(--cd-accent-ink)]",
 
   headerActions: "flex shrink-0 items-center gap-2",
 
   headerButton:
-    "grid size-10 place-items-center rounded-full border border-slate-200 bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+    "grid size-10 place-items-center rounded-full border border-[var(--cd-rule)] bg-[var(--cd-paper)] text-[var(--cd-muted)] transition-colors hover:bg-[var(--cd-band)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)]",
 
-  mainPanel: "flex min-h-0 min-w-0 flex-1 flex-col bg-white",
+  mainPanel: "flex min-h-0 min-w-0 flex-1 flex-col bg-[var(--cd-surface)]",
 
   conversation:
     "flex min-h-0 flex-1 flex-col gap-7 overflow-x-hidden overflow-y-auto overscroll-contain px-4 py-6 sm:px-6 sm:py-7 lg:px-8",
@@ -60,39 +60,39 @@ const chatbotStyles = {
 
   messageContent: "flex min-w-0 max-w-[92%] flex-col gap-1.5 sm:max-w-[85%]",
 
-  sender: "px-1 text-[11px] font-medium text-slate-500",
+  sender: "px-1 text-[11px] font-medium text-[var(--cd-muted)]",
 
   messageBubble:
     "m-0 rounded-[20px] border px-4 py-3 text-sm leading-relaxed [overflow-wrap:anywhere] whitespace-pre-wrap sm:text-[15px]",
 
-  assistantBubble: "rounded-tl-md border-[#dce7e1] bg-[#edf4f0] text-[#17211d]",
+  assistantBubble: "rounded-tl-md border-[var(--cd-rule)] bg-[var(--cd-band)] text-[var(--cd-ink)]",
 
-  userBubble: "rounded-tr-md border-[#5271d3] bg-[#5271d3] text-white",
+  userBubble: "rounded-tr-md border-[var(--cd-dark-rule)] bg-[var(--cd-dark)] text-[var(--cd-white)]",
 
   contactLink:
-    "inline-flex w-fit items-center rounded-full border border-[#5271d3] bg-white px-4 py-2 text-sm font-semibold text-[#5271d3] transition-colors hover:bg-[#5271d3] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+    "inline-flex w-fit items-center rounded-full border border-[var(--cd-dark-rule)] bg-[var(--cd-surface)] px-4 py-2 text-sm font-semibold text-[var(--cd-accent-ink)] transition-colors hover:bg-[var(--cd-dark)] hover:text-[var(--cd-white)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)]",
 
   suggestions: "flex flex-col items-start gap-2 pl-11",
 
-  suggestionsTitle: "text-xs font-semibold text-slate-500",
+  suggestionsTitle: "text-xs font-semibold text-[var(--cd-muted)]",
 
   suggestionButton:
-    "max-w-full shrink-0 whitespace-nowrap rounded-full border border-[#dce7e1] bg-[#edf4f0] px-3 py-2 text-left text-xs text-slate-700 transition-colors hover:border-[#c6d8ce] hover:bg-[#e2eee7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+    "max-w-full shrink-0 whitespace-nowrap rounded-full border border-[var(--cd-rule)] bg-[var(--cd-band)] px-3 py-2 text-left text-xs text-[var(--cd-ink)] transition-colors hover:border-[var(--cd-accent-ink)] hover:bg-[var(--cd-paper)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)]",
 
   limitNotice: "px-5 pb-1 text-xs text-amber-700",
 
   composer:
-    "flex shrink-0 items-center gap-3 border-t border-slate-100 bg-white px-4 py-3 sm:px-5 sm:py-4",
+    "flex shrink-0 items-center gap-3 border-t border-[var(--cd-rule)] bg-[var(--cd-surface)] px-4 py-3 sm:px-5 sm:py-4",
 
   questionInput:
-    "min-w-0 flex-1 rounded-full border border-[#dce7e1] bg-[#eef4f1] px-5 py-4 text-sm text-[#24332d] outline-none transition-colors placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 sm:text-[15px]",
+    "min-w-0 flex-1 rounded-full border border-[var(--cd-rule)] bg-[var(--cd-paper)] px-5 py-4 text-sm text-[var(--cd-ink)] outline-none transition-colors placeholder:text-[var(--cd-muted)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)] sm:text-[15px]",
 
   sendButton:
-    "grid size-12 shrink-0 place-items-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:opacity-50",
+    "grid size-12 shrink-0 place-items-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)] disabled:cursor-not-allowed disabled:opacity-50",
 
-  sendButtonIdle: "bg-[#edf4f0] text-[#98a5b5]",
+  sendButtonIdle: "bg-[var(--cd-band)] text-[var(--cd-muted)]",
 
-  sendButtonReady: "bg-[#5271d3] text-white",
+  sendButtonReady: "bg-[var(--cd-dark)] text-[var(--cd-white)]",
 };
 
 /* -------------------------------------------------------------------------- */
@@ -155,7 +155,7 @@ function AssistantAvatar() {
 }
 
 function ThinkingIndicator() {
-  const dot = "size-2 animate-bounce rounded-full bg-blue-500 motion-reduce:animate-none";
+  const dot = "size-2 animate-bounce rounded-full bg-[var(--cd-band)]0 motion-reduce:animate-none";
 
   return (
     <div
@@ -165,14 +165,14 @@ function ThinkingIndicator() {
     >
       <AssistantAvatar />
 
-      <div className="flex items-center gap-2.5 rounded-xl border border-[#dce7e1] bg-[#edf4f0] px-4 py-3">
+      <div className="flex items-center gap-2.5 rounded-xl border border-[var(--cd-rule)] bg-[var(--cd-band)] px-4 py-3">
         <span className="flex items-center gap-1.5" aria-hidden="true">
           <span className={`${dot} [animation-delay:-0.3s]`} />
           <span className={`${dot} [animation-delay:-0.15s]`} />
           <span className={dot} />
         </span>
 
-        <span className="text-sm font-medium text-slate-500">Typing</span>
+        <span className="text-sm font-medium text-[var(--cd-muted)]">Typing</span>
       </div>
     </div>
   );
@@ -256,9 +256,10 @@ function MessageItem({ message, onContactClick }) {
 }
 
 
-const CHATBOT_API_URL = import.meta.env.VITE_CHATBOT_API_URL || "http://localhost:3000";
+const CHATBOT_API_URL = import.meta.env.VITE_CHATBOT_API_URL?.replace(/\/+$/, "");
 
 async function saveUnansweredQuestionToBackend(question) {
+  if (!CHATBOT_API_URL) return;
   try {
     const response = await fetch(
       `${CHATBOT_API_URL}/api/unanswered-questions`,
@@ -458,6 +459,7 @@ export function ChatbotWindow({ onClose }) {
           </p>
         )}
 
+        <p className="chat-privacy-note">Please leave out personal or confidential information.{CHATBOT_API_URL && " Unanswered questions may be saved to improve the FAQ."}</p>
         <form className={chatbotStyles.composer} onSubmit={handleSubmit} aria-label="Send a message">
           <label htmlFor={QUESTION_INPUT_ID} className="sr-only">
             {assistantCopy.inputLabel}

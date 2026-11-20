@@ -1,0 +1,54 @@
+/* Hallmark · macrostructure: Split Studio · tone: practical editorial · anchor hue: amber
+ * CoreD · N1b always-solid navigation · Ft5 statement footer · real project screens
+ */
+:root {
+  --cd-black: oklch(0% 0 0);
+  --cd-ink: oklch(27% .014 66);
+  --cd-muted: oklch(46% .014 64);
+  --cd-paper: oklch(97.6% .008 78);
+  --cd-surface: oklch(99% .004 80);
+  --cd-band: oklch(94.5% .013 77);
+  --cd-rule: oklch(86% .015 74);
+  --cd-amber: oklch(83% .16 76);
+  --cd-amber-hover: oklch(88% .14 79);
+  --cd-accent-ink: oklch(44% .10 59);
+  --cd-dark: oklch(17% .009 64);
+  --cd-dark-rule: oklch(32% .010 69);
+  --cd-white: oklch(98% .006 77);
+  --cd-dark-muted: oklch(76% .012 77);
+  --cd-focus: oklch(62% .17 61);
+  --cd-error: oklch(42% .15 32);
+  --cd-error-bg: oklch(95% .026 34);
+  --cd-success-bg: oklch(94% .04 142);
+  --cd-overlay: oklch(13% .01 65 / .72);
+  --cd-shadow: oklch(17% .01 66 / .18);
+  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-reading: Georgia, "Times New Roman", serif;
+  --space-2xs: .25rem;
+  --space-xs: .5rem;
+  --space-sm: .75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+  --space-section: clamp(3.25rem, 7vw, 6.75rem);
+  --cd-gutter: clamp(1rem, 4vw, 3.25rem);
+  --cd-container: 86rem;
+  --cd-nav-height: 4.5rem;
+  --text-display: clamp(2.5rem, 5.8vw, 5.75rem);
+  --text-title: clamp(2.6rem, 6vw, 5.25rem);
+  --text-section: clamp(2rem, 4vw, 3.65rem);
+  --text-card: clamp(1.25rem, 2vw, 1.65rem);
+  --radius-sm: .5rem;
+  --radius-md: 1rem;
+  --radius-pill: 99rem;
+  --rule-hair: 1px;
+  --ease-out: cubic-bezier(.19, 1, .22, 1);
+  --ease-in: cubic-bezier(.55, .055, .675, .19);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --dur-micro: 140ms;
+  --dur-minor: 240ms;
+}

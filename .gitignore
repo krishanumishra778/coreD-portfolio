@@ -5,6 +5,10 @@ node_modules/
 dist/
 build/
 
+# Local previews, generated upload archives and design-session artifacts
+output/
+.hallmark/
+
 # Environment variables
 .env
 .env.*

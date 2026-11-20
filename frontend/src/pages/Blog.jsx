@@ -1,237 +1,107 @@
-import { ArrowUpRight, Sparkles } from "lucide-react";
-import { blog } from "../data/PortfolioData.js";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { RevealWords } from "../components/ui/WordReveal.jsx";
+import { articles, articleImage } from "../data/articles.js";
 
-const COREDHRISTI_URL = "https://www.coredhristi.com/";
-
-/* -------------------------------------------------------------------------- */
-/* Timeline date marker                                                       */
-/* -------------------------------------------------------------------------- */
-function ArticleDate({ dateTime, dateLabel, year }) {
+function JournalArt({ article, priority = false, decorative = false }) {
   return (
-    <div className="relative mb-4 pl-7 sm:mb-5 lg:pl-10">
-      <span
-        aria-hidden="true"
-        className="
-          absolute left-0 top-1/2 z-10
-          h-2.5 w-2.5 -translate-y-1/2
-          rounded-full border-[1.5px] border-orange-500
-          bg-[#f9f8f4]
-          shadow-[0_0_0_4px_#f9f8f4]
-        "
-      />
-
-      <time dateTime={dateTime} className="flex flex-col items-start">
-        <span className="text-[10px] font-bold tracking-[0.08em] text-black sm:text-[11px]">
-          {dateLabel}
-        </span>
-        <span className="mt-0.5 text-[10px] tracking-[0.04em] text-black/45">
-          {year}
-        </span>
-      </time>
+    <div className="journal-art" data-scroll-reveal={decorative ? undefined : ""}>
+      <img src={articleImage(article)} alt={decorative ? "" : article.imageAlt} width={1440} height={810}
+        loading={priority ? "eager" : "lazy"} fetchpriority={priority ? "high" : undefined} decoding="async" />
     </div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Article metadata                                                           */
-/* -------------------------------------------------------------------------- */
+const sectionId = (heading) => heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-$/, "");
 
-function ArticleMeta({ category, readTime }) {
-  return (
-    <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:mb-4">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600 sm:text-[11px]">
-        {category}
-      </span>
-      <span
-        aria-hidden="true"
-        className="h-1 w-1 shrink-0 rounded-full bg-black/25"
-      />
-      <span className="text-[10px] uppercase tracking-[0.12em] text-black/45">
-        {readTime}
-      </span>
-    </div>
-  );
+function ArticleMeta({ article }) {
+  const words = [article.answer, ...article.sections.flatMap(({ heading, body }) => [heading, ...body])].join(" ").split(/\s+/).length;
+  return <p className="journal-meta"><span>{article.topic}</span><span aria-hidden="true">·</span><span>{Math.max(1, Math.ceil(words / 200))} min read</span>
+    {article.author && <span>· {article.author}</span>}{article.date && <time dateTime={article.date}>{article.date}</time>}
+  </p>;
 }
-
-/* -------------------------------------------------------------------------- */
-/* Individual article                                                         */
-/* -------------------------------------------------------------------------- */
-
-function TimelineArticle({ post, isFirst }) {
-  const titleId = `${post.id}-title`;
-
-  return (
-    <li className="relative border-b border-black/10 last:border-b-0">
-      <article
-        aria-labelledby={titleId}
-        className={`group py-8 sm:py-10 lg:py-12 xl:py-14 ${isFirst ? "pt-0 sm:pt-0 lg:pt-0 xl:pt-0" : ""}`}
-      >
-        <ArticleDate
-          dateTime={post.dateTime}
-          dateLabel={post.dateLabel}
-          year={post.year}
-        />
-
-        <div className="pl-7 lg:pl-10">
-          <ArticleMeta category={post.category} readTime={post.readTime} />
-
-          <h2
-            id={titleId}
-            className="
-              break-words
-              text-[clamp(1.55rem,3.25vw,3.25rem)]
-              font-semibold
-              leading-[1.08]
-              tracking-[-0.045em]
-              text-black
-              transition-colors
-              duration-300
-              group-hover:text-orange-950
-            "
-          >
-            {post.title}
-          </h2>
-
-          <p
-            className="
-              mt-4 break-words
-              text-[13px] leading-7 text-black/60
-              sm:mt-5 sm:text-sm sm:leading-8
-              lg:text-[15px] lg:leading-[2rem]
-              xl:text-base xl:leading-[2.05rem]
-            "
-          >
-            {post.excerpt}
-          </p>
-        </div>
-      </article>
-    </li>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Blog page                                                                  */
-/* -------------------------------------------------------------------------- */
 
 export default function Blog() {
+  const [featured, ...reading] = articles;
+  const topics = [...new Set(articles.map(({ topic }) => topic))];
   return (
-    <main
-      aria-labelledby="blog-heading"
-      className="relative isolate min-h-screen w-full overflow-x-clip bg-[#f9f8f4] text-black"
-    >
-      {/* HERO */}
-      <header
-        className=" w-full max-w-7xl mx-auto pt-0 sm:pt-0 lg:pt-0
-      flex flex-col items-center justify-center text-center
-       px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-20
-       pb-16 sm:pb-20 lg:pb-24"
-      >
-        <div className="mb-6 inline-flex items-center gap-2 sm:mb-8">
-          <Sparkles
-            size={15}
-            strokeWidth={1.8}
-            className="shrink-0 text-orange-500"
-            aria-hidden="true"
-          />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/55 sm:text-xs">
-            COREDHRISTI / JOURNAL
-          </span>
-        </div>
-
-        <h1
-          id="blog-heading"
-          className="
-              w-full
-              text-[clamp(1.5rem,5.2vw,5.5rem)]
-              font-semibold
-              leading-[1.05]
-              tracking-[-0.055em]
-              text-black
-              break-words
-            "
-        >
-          IDEAS FOR AN AI-FIRST WORLD.
-        </h1>
-
-        <p className="mt-5 w-full text-sm leading-7 text-black/60 sm:text-base sm:leading-8">
-          Artificial intelligence is transforming how businesses attract
-          customers, manage relationships, and improve everyday operations.
-          Explore practical insights into AI-powered CRM, intelligent agents,
-          sales automation, workflow integrations, and custom business
-          solutions. Discover how emerging technologies can reduce repetitive
-          tasks, improve customer experiences, and help teams make better
-          data-driven decisions. Our journal explores real business challenges,
-          responsible AI adoption, secure automation, and strategies for
-          building smarter workflows. Whether you are beginning your AI journey
-          or upgrading an existing CRM system, find ideas to help your business
-          innovate, work more efficiently, and build lasting customer
-          relationships.
-        </p>
+    <div className="cd-shell journal">
+      <header className="page-intro journal-intro">
+        <h1><RevealWords>CoreD Journal</RevealWords></h1>
+        <p>Practical notes on AI agents, CRM automation and cybersecurity for teams doing the work.</p>
       </header>
-
-      {/* ARTICLE TIMELINE */}
-      <section
-        aria-label="Journal articles"
-        className="
-         w-full max-w-7xl mx-auto border-b border-black/10 pt-0 pb-8 sm:pb-10 lg:pb-12 flex flex-col items-center justify-center"
-      >
-        <ol className="relative">
-          {/* Timeline rail */}
-          <div
-            aria-hidden="true"
-            className="absolute bottom-0 left-[4px] top-0 w-px bg-black/10"
-          />
-
-          {blog.map((post, index) => (
-            <TimelineArticle key={post.id} post={post} isFirst={index === 0} />
-          ))}
-        </ol>
-      </section>
-
-      {/* FOOTER CTA */}
-      <footer
-        className="
-            mt-9 flex w-full min-w-0 flex-col gap-5
-            border-t border-black/10 pt-8
-            sm:mt-11 sm:flex-row sm:items-center sm:justify-between sm:pt-9
-            lg:pt-10
-          "
-      >
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-black/85 sm:text-base">
-            Build smarter customer experiences with AI.
-          </p>
-          <p className="mt-2 text-xs leading-6 text-black/50 sm:text-sm">
-            Explore intelligent CRM solutions, AI agents, and business
-            automation with CoreDhristi.
-          </p>
+      <div className="journal-columns">
+        <div>
+          <article className="journal-feature">
+            <Link to={`/blog/${featured.slug}`}>
+              <JournalArt article={featured} decorative priority />
+              <div className="journal-feature-copy">
+                <p className="cd-label">Featured guide</p>
+                <h2>{featured.title}</h2>
+                <p>{featured.description}</p>
+                <ArticleMeta article={featured} />
+              </div>
+            </Link>
+          </article>
+          <div className="journal-list" aria-label="More articles">
+            {reading.map((article) => <article key={article.slug} id={article.slug}>
+              <Link to={`/blog/${article.slug}`}>
+                <div><ArticleMeta article={article} /><h2>{article.title}</h2><p>{article.description}</p></div>
+                <JournalArt article={article} decorative />
+              </Link>
+            </article>)}
+          </div>
         </div>
+        <aside className="journal-sidebar">
+          <h2>Explore by topic</h2>
+          <ul>{topics.map((topic) => {
+            const matching = articles.filter((item) => item.topic === topic);
+            if (matching.length === 1) return <li key={topic}><Link to={`/blog/${matching[0].slug}`}>{topic} <ArrowUpRight size={14} /></Link></li>;
+            return <li key={topic}><details><summary>{topic}</summary><ul>
+              {matching.map(({ slug, art }) => <li key={slug}><Link to={`/blog/${slug}`}>{art === "email" ? "Email follow-ups" : "WhatsApp follow-ups"} <ArrowUpRight size={14} /></Link></li>)}
+            </ul></details></li>;
+          })}</ul>
+          <div className="journal-related-site">
+            <h2>CoreDhristi Marketplace</h2>
+            <p>Explore the related marketplace for AI agents and automations.</p>
+            <a className="cd-button cd-button--line" href="https://www.coredhristi.com/">Visit CoreDhristi <ArrowUpRight size={16} /></a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
 
-        <a
-          href={COREDHRISTI_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Explore CoreDhristi solutions"
-          className="
-              group/link inline-flex w-fit shrink-0 items-center gap-2
-              border border-orange-500 bg-orange-500 px-5 py-3.5
-              text-xs font-semibold text-white
-              transition-all duration-300
-              hover:border-orange-600 hover:bg-orange-600
-              focus-visible:outline-none focus-visible:ring-2
-              focus-visible:ring-orange-500 focus-visible:ring-offset-4
-              focus-visible:ring-offset-[#f9f8f4]
-            "
-        >
-          Explore CoreDhristi
-          <ArrowUpRight
-            size={15}
-            strokeWidth={1.8}
-            aria-hidden="true"
-            className="transition-transform duration-200 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5"
-          />
-        </a>
-      </footer>
-    </main>
+export function BlogArticle() {
+  const { slug } = useParams();
+  const article = articles.find((item) => item.slug === slug);
+  if (!article) return <header className="cd-shell page-intro"><h1>Article not found</h1><Link className="cd-text-link" to="/blog">Back to the journal</Link></header>;
+  return (
+    <article className="cd-shell journal-article">
+      <header className="article-head">
+        <Link className="cd-text-link" to="/blog"><ArrowLeft size={16} /> CoreD Journal</Link>
+        <h1><RevealWords>{article.title}</RevealWords></h1>
+        <p className="article-deck">{article.description}</p>
+        <ArticleMeta article={article} />
+      </header>
+      <JournalArt article={article} priority />
+      <div className="article-prose">
+        <div className="article-quick-answer"><p className="cd-label">Short answer</p><p>{article.answer}</p></div>
+        <nav className="article-contents" aria-label="On this page">
+          <h2>On this page</h2>
+          <ol>{article.sections.map(({ heading }) => <li key={heading}><a href={'#' + sectionId(heading)}>{heading}</a></li>)}</ol>
+        </nav>
+        {article.sections.map(({ heading, body }) => <section key={heading} id={sectionId(heading)}>
+          <h2>{heading}</h2>
+          {body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </section>)}
+        {article.sources && <section><h2>References</h2><ul>{article.sources.map(([title, url]) => <li key={url}><a href={url}>{title}</a></li>)}</ul></section>}
+      </div>
+      <div className="article-service"><Link className="cd-button cd-button--line" to={article.service[1]}>{article.service[0]} <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
+      <section className="article-more"><h2>Keep reading</h2><ul>{article.related.map((id) => {
+        const related = articles.find((item) => item.slug === id);
+        return <li key={id}><Link to={`/blog/${id}`}>{related.title} <ArrowUpRight size={17} /></Link></li>;
+      })}</ul></section>
+    </article>
   );
 }

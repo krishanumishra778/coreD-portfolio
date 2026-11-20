@@ -3,10 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CoreD | AI Agent Based CRM</title>
-    <link rel="icon" type="image/png" href="/Images/Favicon.svg">
+    <!-- Google Tag Manager: initialise the data layer before loading the container. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        analytics_storage: 'denied', ad_storage: 'denied',
+        ad_user_data: 'denied', ad_personalization: 'denied'
+      });
+      // Basic consent mode: no Google tag request until analytics is allowed.
+      window.loadCoreDTagManager = function () {
+        if (document.getElementById('cored-google-tag-manager')) return;
+        window.dataLayer.push({'gtm.start': Date.now(), event: 'gtm.js'});
+        var script = document.createElement('script');
+        script.id = 'cored-google-tag-manager';
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-PTCKWTKT';
+        document.head.appendChild(script);
+      };
+    </script>
+    <!-- page-metadata:start -->
+    <title>AI, Automation and Cybersecurity for Businesses | CoreD</title>
+    <meta name="description" content="CoreD builds AI agents and CRM automation for businesses and provides cybersecurity assessments, fixes and device protection." />
+    <!-- page-metadata:end -->
+    <link rel="icon" type="image/svg+xml" href="/Images/coreD.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
 </html>

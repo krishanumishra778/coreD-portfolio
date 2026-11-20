@@ -264,6 +264,13 @@ export function createAnswerEngine(entries) {
   const issues = validateKnowledgeBase(entries);
   const faqs = usableEntries(entries);
   const byId = new Map(faqs.map((faq) => [faq.id, faq]));
+  const byQuestion = new Map();
+  for (const faq of faqs) {
+    for (const question of faq.questions) {
+      const normalized = normalizeText(question);
+      if (!byQuestion.has(normalized)) byQuestion.set(normalized, faq);
+    }
+  }
 
   // Index every question and keyword once.
   const knownWords = new Set(SYNONYMS.keys());
@@ -354,6 +361,9 @@ export function createAnswerEngine(entries) {
     if (!checked.ok || indexed.length === 0) return null;
 
     const normalized = normalizeText(checked.value);
+    // A written FAQ question wins over a similar answer from another topic.
+    const exact = byQuestion.get(normalized);
+    if (exact) return toResult(exact);
     const queryTokens = tokenizeQuery(normalized);
     const isSingleWord = !normalized.includes(" ");
     const isTooGeneric =

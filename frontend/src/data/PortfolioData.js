@@ -136,8 +136,8 @@ export const socialLinks = [
   },
   {
     platform: "Gmail",
-    url:"mailto:coredhristi@gmail.com",
-    label: "Contact CoreD on gmail",
+    url:"mailto:info@coredhristi.com",
+    label: "Email CoreD",
   },
 
 ];
@@ -174,7 +174,7 @@ export const services = {
   },
 }
 
-export const caseStudies = [
+const projectRecords = [
 
 
 
@@ -293,33 +293,7 @@ export const caseStudies = [
       },
     ],
 
-    // Add actual CRM project metrics when you have verified results.
-    // Each result uses metric, label, and detail.
-    results: [
-      {
-        metric: "Verified value",
-        label: "Result description",
-        detail: "Context supporting this result",
-      },
-      {
-        metric: "$110k+",
-        label: "Annual Cost Saved",
-        detail: "Direct reduction in finding leads"
-      },
-      {
-        metric: "98.4%",
-        label: "On Time Delievery",
-        detail: "up to 80 % prior to implementation"
-      },
-      {
-        metric: "10x",
-        label: "Scalability Capacity",
-        detail: "Handeled peak season efficiently"
-      }
-    ],
-
-    resultsNote:
-      "The CRM brings lead management, sales opportunities, pipeline visibility, and follow-up activities into one workspace.",
+    results: [],
 
     result:
       "One workspace for reviewing leads, monitoring opportunities, and organizing follow-up activities.",
@@ -1115,203 +1089,235 @@ export const testimonials = [
 
 //terms & condition section
 
-export const termsSections = [
-  {
-    title: "Acceptance of Terms",
-    paragraphs: [
-      "By accessing or using the CoreDhristi website, you agree to follow these Terms & Conditions and applicable laws. If you do not agree with these terms, please discontinue use of the website.",
+// Case-study evidence comes from the portfolio records and the linked project screens.
+const projectEvidence = {
+  "crawl-digitally-crm": {
+    "headline": "A single workspace for sales leads",
+    "phase": [
+      "Lead intake and ownership",
+      "Pipeline and source reporting",
+      "Follow-up review"
     ],
+    "impact": [
+      [
+        "One place to review enquiries",
+        "The lead workspace brings source, owner and next action into the same view."
+      ],
+      [
+        "A visible sales pipeline",
+        "The dashboard shows where opportunities stand, with follow-up activity alongside them."
+      ]
+    ]
   },
-  {
-    title: "Website and Portfolio Information",
-    paragraphs: [
-      "This website presents information about CRM solutions, AI agents, automation systems, development services, and related projects. Portfolio examples, screenshots, demonstrations, and descriptions are provided for informational purposes. They may not represent the exact features, scope, or results of every client project.",
+  "adsmark01MarketingCRM": {
+    "headline": "From marketing enquiry to discovery call",
+    "phase": [
+      "Enquiry capture and qualification",
+      "Follow-up draft review",
+      "Discovery-call handoff"
     ],
+    "impact": [
+      [
+        "More context for each enquiry",
+        "The CRM design keeps service interest, budget, ownership and activity together for staff review."
+      ],
+      [
+        "A defined handoff",
+        "The screens show follow-up drafts, qualification progress and discovery-call status in the same workflow."
+      ]
+    ]
   },
-  {
-    title: "CRM, AI and Automation Services",
-    paragraphs: [
-      "Our services may include AI Based CRM, AI Agent CRM, Custom CRM development, workflow automation, integrations, consultation, and related technology services. The actual features, deliverables, timeline, support arrangements, and project scope will be defined in the applicable proposal or written agreement.",
+  "nextTechWavesCRM": {
+    "headline": "Student fees and follow-ups in one view",
+    "phase": [
+      "Fee ledger and balance views",
+      "Invoice and collection views",
+      "Staff review of reminder drafts"
     ],
+    "impact": [
+      [
+        "Fees visible by student",
+        "The dashboard shows balances, collections and invoices together."
+      ],
+      [
+        "Review before dispatch",
+        "The communication workspace shows how staff can review a fee reminder before sending it."
+      ]
+    ]
   },
-  {
-    title: "AI Outputs and Service Limitations",
-    paragraphs: [
-      "AI-generated content, recommendations, automated decisions, and workflow outputs may contain errors or require human review. You are responsible for reviewing outputs before relying on them for important business decisions. Unless expressly agreed in writing, we do not guarantee specific revenue, conversion, productivity, or business results.",
+  "IndiprastPetroliumCRM": {
+    "headline": "Fuel activity and loyalty in one dashboard",
+    "phase": [
+      "Fuel and fleet transaction views",
+      "Loyalty cards and points ledger",
+      "Offers and campaign views"
     ],
+    "impact": [
+      [
+        "Fuel and points records side by side",
+        "The dashboard shows refuelling activity alongside rewards and recent transactions."
+      ],
+      [
+        "An operations view for exceptions",
+        "Staff can see the transactions and offers that may need attention in the documented interface."
+      ]
+    ]
   },
-  {
-    title: "Customer Responsibilities",
-    paragraphs: [
-      "You agree to provide accurate project information, use the services lawfully, and ensure that you have the necessary rights and permissions for any data, content, or materials you provide. You must not use our website or services to violate applicable laws, infringe third-party rights, or disrupt systems.",
+  "IndiganicFoodCRM": {
+    "headline": "Customer conversations to draft orders",
+    "phase": [
+      "Sales overview design",
+      "Call and WhatsApp workspace design",
+      "Draft order review design"
     ],
+    "impact": [
+      [
+        "One review space for conversations and orders",
+        "The concept links call summaries, WhatsApp context and draft orders."
+      ],
+      [
+        "Staff control over the order",
+        "The screens show where a person can check the order and next action before proceeding."
+      ]
+    ]
   },
-  {
-    title: "Privacy and Data Protection",
-    paragraphs: [
-      "When you submit a contact or project enquiry, we may use the information you provide, including your name or company details, email address, phone number, selected service, budget, and project description, to respond to your enquiry and manage communications. Enquiry information may be processed through spreadsheet, email, and related service providers.",
-      "Our Privacy Policy explains how personal information is collected, used, stored, shared, retained, and protected, as well as applicable rights and contact procedures. Please avoid submitting passwords, payment credentials, or unnecessary sensitive information through general enquiry forms.",
+  "CreativeFieldsCRM": {
+    "headline": "A clearer way to find marketing services",
+    "phase": [
+      "Service content structure",
+      "Marketing website design",
+      "Public website presentation"
     ],
+    "impact": [
+      [
+        "A clear route to each service",
+        "The website presents SEO, PR, content and performance marketing in one service directory."
+      ],
+      [
+        "Consistent brand presentation",
+        "Visitors can review the offer and move from the overview to the relevant service."
+      ]
+    ]
   },
-  {
-    title: "Third-Party Services and Integrations",
-    paragraphs: [
-      "CRM implementations may depend on third-party platforms, APIs, cloud services, communication tools, or other integrations. These services may be subject to their own terms, privacy policies, availability requirements, and charges. Third-party changes or outages may affect integrated functionality.",
+  "orbitOpportunityCRM": {
+    "headline": "Admissions, fees and learner progress",
+    "phase": [
+      "Admissions and counsellor workflows",
+      "Fee ledger and reminder review",
+      "Learner progress and activity views"
     ],
-  },
-  {
-    title: "Pricing, Payments and Cancellations",
-    paragraphs: [
-      "Pricing, payment schedules, taxes, subscriptions, project milestones, cancellation terms, refunds, and additional charges will be specified in the relevant quotation, proposal, invoice, or written agreement. A website enquiry alone does not establish a paid subscription or guarantee acceptance of a project.",
-    ],
-  },
-  {
-    title: "Intellectual Property",
-    paragraphs: [
-      "Unless otherwise stated, website text, branding, graphics, designs, and original portfolio materials are owned by or licensed to their respective rights holders. You may not copy, reproduce, redistribute, or commercially exploit these materials without appropriate permission. Ownership and licensing of custom project deliverables will be determined by the applicable written agreement.",
-    ],
-  },
-  {
-    title: "Confidential Information",
-    paragraphs: [
-      "Please do not submit confidential business information, production credentials, or sensitive customer records through a general contact form. Confidentiality obligations for a specific project should be documented in an appropriate written agreement where required.",
-    ],
-  },
-  {
-    title: "Website Availability and Changes",
-    paragraphs: [
-      "We may update website content, service descriptions, portfolio materials, or website functionality from time to time. We aim to maintain availability but cannot guarantee uninterrupted access or the absence of every technical error.",
-    ],
-  },
-  {
-    title: "Warranties and Limitation of Liability",
-    paragraphs: [
-      "Website information is provided for general informational purposes and should not be treated as a guarantee of service performance or business outcomes. Any service warranties, remedies, and liability limitations should be set out in the relevant written agreement and apply only to the extent permitted by applicable law.",
-    ],
-  },
-  {
-    title: "Changes to These Terms",
-    paragraphs: [
-      "We may revise these Terms & Conditions when our website, services, or applicable requirements change. Updated terms will be published on this page with a revised update date. Continued use after changes take effect will be subject to applicable law and any requirements for notice or acceptance.",
-    ],
-  },
-  {
-    title: "Governing Law and Disputes",
-    paragraphs: [
-      "These terms are subject to the laws and jurisdiction specified in the final published version, to the extent permitted by applicable law. The appropriate governing location and dispute-resolution process should be confirmed before publication.",
-    ],
-  },
-  {
-    title: "Contact Us",
-    paragraphs: [
-      "If you have questions about these Terms & Conditions, project scope, or our services, please contact the CoreDhristi team through our Contact Us page.",
-    ],
-    contact: true,
-  },
-];
+    "impact": [
+      [
+        "Enquiries have a visible next action",
+        "The admissions interface shows lead stages and priority follow-ups for counsellors."
+      ],
+      [
+        "Student operations in context",
+        "The project screens bring balances, reminder review and learner progress into the same suite."
+      ]
+    ]
+  }
+};
 
+export const caseStudies = projectRecords.map((project) => {
+  const evidence = projectEvidence[project.id];
+  return {
+    ...project,
+    title: evidence.headline,
+    stack: project.stack === "MERN" ? ["MongoDB", "Express", "React", "Node.js"] : null,
+    timeline: evidence.phase,
+    results: evidence.impact.map(([title, detail]) => ({ title, detail })),
+  };
+});
+
+const securityAssessmentSample = {
+  id: "sample-security-assessment",
+  anchor: "security-sample",
+  category: "Cybersecurity · Sample",
+  client: "X Company · sample",
+  title: "Security assessment for a small business",
+  industry: "Business services",
+  summary: "A sample assessment of a demo business application and managed devices. It shows how CoreD would turn control gaps into a prioritized fix list with owners and verification checks.",
+  shortDescription: "Follow a sample assessment from scope and findings to a prioritized fix list and handover. The report uses illustrative data.",
+  isSample: true,
+  problem: {
+    tag: "The scenario",
+    listLabel: "Control gaps",
+    heading: "The team needed to know what to fix first",
+    paragraphs: ["X Company relies on one business application and a small set of managed devices. In this example, the team has shared administrator access, a gap in its patch inventory and no named owner for endpoint alerts."],
+    highlights: ["Shared admin access makes changes harder to attribute.", "One demo device is missing from the patch inventory.", "The team has no owner for reviewing endpoint alerts."],
+  },
+  solution: {
+    tag: "Assessment approach",
+    listLabel: "What the report covers",
+    heading: "Review the controls and give every fix an owner",
+    paragraphs: ["The sample starts with an approved asset list and exclusions. The report records each observation, its business impact and the person who would own the fix. Each recommendation includes a check the owner can use before marking the item closed."],
+    highlights: ["Record the business impact and assign a priority.", "Assign each action to IT, IT operations or security operations.", "Agree how to verify fixes and scope any follow-up separately."],
+  },
+  screenshots: [
+    { src: "/Images/security-assessment-sample.webp", label: "Executive summary", alt: "Executive summary from the X Company sample security assessment, showing the scope and three findings by priority.", caption: "Scope, exclusions and a summary of the findings." },
+    { src: "/Images/security-assessment-findings.webp", label: "Privileged access finding", alt: "The sample report details the shared administrator account finding and its priority, impact and closure evidence.", caption: "A high-priority finding from observation to closure evidence." },
+    { src: "/Images/security-assessment-remediation.webp", label: "Remediation and verification", alt: "The remediation action plan shows suggested owners, actions and closure checks.", caption: "Recommended actions, assigned owners and closure checks." },
+  ],
+  timeline: ["Agree on scope and authorization", "Review controls and prioritize findings", "Hand over actions and agree verification"],
+  features: [
+    { title: "Scope and exclusions", description: "List the application and managed devices in scope, with written authorization before any real review.", icon: "layers" },
+    { title: "Control review", description: "Check privileged access, patch inventory and endpoint alert ownership.", icon: "shield" },
+    { title: "Findings register", description: "Record the observed gap, business impact and priority for each finding.", icon: "chart" },
+    { title: "Remediation handover", description: "Give every proposed fix an owner and a clear check for closure.", icon: "zap" },
+  ],
+  results: [
+    { title: "One priority to address first", detail: "The sample ranks shared admin access highest because the team cannot reliably attribute privileged changes." },
+    { title: "A fix list the team can use", detail: "Each example finding has a recommended action, a named team and a closure check." },
+    { title: "Clear handover status", detail: "The report keeps findings open until the owner supplies evidence or a separately scoped review verifies the fix." },
+  ],
+};
+
+export const portfolioCaseStudies = [...caseStudies, securityAssessmentSample];
+
+export { termsSections } from "./legalPolicies.js";
 
 export const privacyPolicy = [
   {
-    title: "Introduction",
-    paragraphs: [
-      "At CoreDhristi, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and handle information when you visit our website, submit an enquiry, or interact with our services."
-    ],
+    "title": "Scope of this notice",
+    "paragraphs": [
+      "This notice covers the CoreD services and portfolio website. CoreD is a services division of CoreDhristi LLP, registered in India with LLPIN ADC-9115. The separate CoreDhristi marketplace has its own accounts and policies. Data used in a client project is covered by the agreement for that work."
+    ]
   },
   {
-    title: "Information We Collect",
-    paragraphs: [
-      "When you contact us or submit a project enquiry, we may collect information such as your name, company name, email address, phone number, selected service, budget range, and project description.",
-      "We may also collect basic technical information such as browser type, device information, IP address, and website usage data where applicable."
-    ],
+    "title": "Contact and quote requests",
+    "paragraphs": [
+      "The contact and quotation flow collects your name, work email, company, phone number with its country code, service and plan choices, project details and requested add-ons. A Custom request can include an optional budget and currency. Agent plans can include your selected agent options. We also send the displayed proposed price and your acknowledgement of our terms and privacy notice.",
+      "We use this information to review your request, get in touch and prepare a quote where appropriate. Do not put passwords, access tokens, customer records or sensitive files in either form."
+    ]
   },
   {
-    title: "How We Use Your Information",
-    paragraphs: [
-      "We use the information collected to respond to enquiries, understand project requirements, provide service information, prepare proposals, communicate with potential clients, and improve our website and services.",
-      "We may also use relevant information for administrative, security, troubleshooting, and legal compliance purposes."
-    ],
+    "title": "Who handles submissions",
+    "paragraphs": [
+      "Formspree receives and stores contact and quotation submissions in its hosted dashboard. It may send a notification to CoreD’s configured enquiry inbox, where authorized staff review and reply. The submission includes the details listed above and a request identifier for reference. The form uses Cloudflare Turnstile, Formspree’s spam filtering and a hidden honeypot field. Formspree and the email provider process the enquiry under their respective privacy terms."
+    ]
   },
   {
-    title: "Contact Forms and Project Enquiries",
-    paragraphs: [
-      "Information submitted through our contact forms may be processed using email services, spreadsheets, form handling tools, or other business communication platforms.",
-      "We use this information to review your requirements and communicate with you regarding your enquiry. Submitting an enquiry does not automatically create a client relationship or paid service agreement."
-    ],
+    "title": "The website assistant",
+    "paragraphs": [
+      "The assistant matches questions to a built-in FAQ in your browser. The chat transcript stays in the open page. If question reporting is configured, an unanswered question may be sent to the CoreD backend and saved in its database so the team can improve the FAQ. Do not include personal or confidential information in chat."
+    ]
   },
   {
-    title: "Cookies and Website Analytics",
-    paragraphs: [
-      "Our website may use cookies, local storage, or similar technologies to support website functionality, improve user experience, and understand website usage.",
-      "Where analytics or tracking tools are implemented, they may collect technical and usage information according to their respective privacy policies."
+    "title": "Cookies, storage and analytics",
+    "paragraphs": [
+      "If you allow analytics, the site loads Google Tag Manager to support Google Analytics page and enquiry measurement. Analytics remains off until you allow it. Your preference is saved in your browser for up to 180 days; you can change it using Analytics preferences in the footer. Google Analytics may use cookies when enabled. Page measurements exclude URL query strings and fragments. Enquiry measurements use service and plan identifiers, not your name, email, phone, message or budget.",
+      "The contact form loads Cloudflare Turnstile to check for automated submissions and sends its verification token to Formspree for validation. The site also requests fonts from Google Fonts. Hosting, Formspree, Google and Cloudflare can receive ordinary connection information such as an IP address when their services load.",
+      "Links to other websites are governed by those websites’ own notices. If new tracking is added, this notice should be updated to explain it."
     ],
+    "resources": [{ "label": "How Google uses information from sites that use its services", "href": "https://policies.google.com/technologies/partner-sites" }]
   },
   {
-    title: "AI, CRM and Automation Services",
-    paragraphs: [
-      "Our services may involve CRM platforms, AI agents, automation workflows, APIs, and third-party integrations. Information processed through these services depends on the specific project requirements and applicable agreements.",
-      "We aim to handle project information responsibly. Clients should avoid sharing unnecessary sensitive personal information, passwords, payment credentials, or confidential records through general enquiry forms."
+    "title": "Retention and privacy requests",
+    "paragraphs": [
+      "Contact CoreD to ask about information you sent, request a correction or deletion, or ask how long it is kept. We may need enough information to find the record and verify the request. Retention and access can depend on the project agreement and obligations that apply.",
+      "The connected Google Analytics property currently retains event-level data for 2 months and user-level data for 14 months. Its user-data retention period resets with new activity. These controls do not set the lifetime of aggregated standard reports or contact enquiries stored by Formspree and CoreD’s email provider."
     ],
-  },
-  {
-    title: "Third-Party Services",
-    paragraphs: [
-      "We may rely on third-party providers for hosting, analytics, communication, form processing, cloud infrastructure, CRM functionality, and other technical services.",
-      "These providers may process information necessary to perform their services and are subject to their own terms, privacy policies, and applicable data protection requirements."
-    ],
-  },
-  {
-    title: "Data Sharing and Disclosure",
-    paragraphs: [
-      "We do not intend to sell personal information submitted through our website. Information may be shared with relevant service providers when necessary to operate our website, respond to enquiries, deliver agreed services, or comply with legal obligations.",
-      "We may also disclose information where required by applicable law or where reasonably necessary to protect our legal rights, website, or users."
-    ],
-  },
-  {
-    title: "Data Storage and Retention",
-    paragraphs: [
-      "Personal information may be stored using the systems and service providers involved in managing website enquiries and business communications.",
-      "We retain information only for as long as reasonably necessary for the purposes described in this policy, subject to applicable legal, contractual, and operational requirements."
-    ],
-  },
-  {
-    title: "Data Security",
-    paragraphs: [
-      "We take reasonable technical and organizational measures to protect information against unauthorized access, misuse, loss, or disclosure.",
-      "However, no internet transmission or electronic storage method can be guaranteed to be completely secure."
-    ],
-  },
-  {
-    title: "Your Privacy Rights",
-    paragraphs: [
-      "Depending on applicable laws, you may have the right to request access to, correction of, or deletion of your personal information, or to object to certain processing activities.",
-      "You may contact us to make a privacy-related request. We may need to verify your identity before processing certain requests."
-    ],
-  },
-  {
-    title: "External Links",
-    paragraphs: [
-      "Our website may contain links to third-party websites, platforms, or services. We are not responsible for the privacy practices, content, or security of external websites. We recommend reviewing their respective privacy policies."
-    ],
-  },
-  {
-    title: "Children's Privacy",
-    paragraphs: [
-      "Our website and services are not specifically directed toward children. We do not knowingly collect personal information from children in violation of applicable laws. If you believe a child has submitted personal information to us, please contact us."
-    ],
-  },
-  {
-    title: "Changes to This Privacy Policy",
-    paragraphs: [
-      "We may update this Privacy Policy from time to time to reflect changes in our website, services, technology, or applicable legal requirements.",
-      "Any updates will be published on this page along with a revised update date. We encourage visitors to review this page periodically."
-    ],
-  },
-  {
-    title: "Contact Us",
-    paragraphs: [
-      "If you have questions, concerns, or requests regarding this Privacy Policy or the handling of your personal information, please contact the CoreDhristi team through our Contact Us page."
-    ],
-    contact: true,
-  },
+    "contact": true
+  }
 ];

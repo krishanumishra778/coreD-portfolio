@@ -1,212 +1,117 @@
+import { Fragment, useEffect, useLayoutEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-import { useEffect } from "react";
+/*
+ * Scroll reveal for the whole site.
+ *
+ * - <RevealWords> splits a heading into words so they can come into focus one by one.
+ * - <WordReveal /> (mounted once in App) watches the page and gives every heading,
+ *   paragraph, list item, card, figure and image a slow reveal the first time it
+ *   scrolls into view.
+ *
+ * Nothing is hidden without JavaScript or when the visitor prefers reduced motion.
+ * Elements that hold links or buttons only fade, so they never move under the pointer.
+ */
 
-const REVEAL_SELECTOR =
-  "h1, h2, h3, h4, p, li, blockquote, figure, img, button, [data-reveal]";
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-const INITIAL_CLASS = "global-reveal-init";
-const VISIBLE_CLASS = "global-reveal-visible";
-const WORD_CLASS = "global-reveal-word";
+const HEADINGS = "h1,h2,h3,h4,h5,h6";
+const TEXT = "p,dt,dd,blockquote,figcaption,li";
+const BLOCKS = "article,figure,details,img,.cd-actions";
+// Containers that animate as one piece: their children never animate on their own.
+const GROUPS = "article,figure,details,[data-reveal-group]";
+// Never touched: controls, live regions, carousels, marquees and anything the page opts out of.
+const SKIP = [
+  "form", "nav", "dialog", "[role='alert']", "[role='status']", "[aria-hidden='true']",
+  "[aria-roledescription]", "[data-reveal='off']", "#client-work", ".classic-portfolio-track",
+  ".cursor-dot", ".cursor-ring",
+].join(",");
+const INTERACTIVE = "a,button,input,select,textarea,summary,[role='button']";
 
-// Wrap individual words while preserving existing HTML and whitespace.
-function wrapWords(element) {
-  if (element.matches("img")) return;
+export function RevealWords({ children, start = 0 }) {
+  return children.trim().split(/\s+/).map((word, index) => (
+    <Fragment key={index}>
+      {index > 0 && " "}
+      <span className="reveal-word" style={{ "--word-index": start + index }}>{word}</span>
+    </Fragment>
+  ));
+}
 
-  const walker = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_TEXT,
-    {
-      acceptNode(node) {
-        if (!node.nodeValue?.trim()) {
-          return NodeFilter.FILTER_REJECT;
-        }
-
-        // Avoid wrapping words more than once.
-        if (node.parentElement?.closest(`.${WORD_CLASS}`)) {
-          return NodeFilter.FILTER_REJECT;
-        }
-
-        return NodeFilter.FILTER_ACCEPT;
-      },
-    }
-  );
-
-  const textNodes = [];
-
-  while (walker.nextNode()) {
-    textNodes.push(walker.currentNode);
-  }
-
-  let wordIndex = 0;
-
-  textNodes.forEach((textNode) => {
-    const fragment = document.createDocumentFragment();
-    const gradientParent =
-      textNode.parentElement?.closest(".bg-clip-text");
-
-    const gradientStyles = gradientParent
-      ? window.getComputedStyle(gradientParent)
-      : null;
-    const parts = textNode.nodeValue.split(/(\s+)/);
-
-    parts.forEach((part) => {
-      if (!part) return;
-
-      // Keep whitespace outside the word spans so text can wrap normally.
-      if (/^\s+$/.test(part)) {
-        fragment.appendChild(document.createTextNode(part));
-        return;
-      }
-
-      const word = document.createElement("span");
-
-      word.className = WORD_CLASS;
-      word.textContent = part;
-
-      if (
-        gradientStyles &&
-        gradientStyles.backgroundImage !== "none"
-      ) {
-        word.style.backgroundImage = gradientStyles.backgroundImage;
-        word.style.backgroundClip = "text";
-        word.style.color = "transparent";
-      }
-
-      word.style.setProperty(
-        "--word-delay",
-        `${Math.min(wordIndex, 16) * 65}ms`
-      );
-
-      fragment.appendChild(word);
-      wordIndex += 1;
-    });
-
-    textNode.replaceWith(fragment);
-  });
+function revealKind(node) {
+  if (node.matches(HEADINGS)) return "heading";
+  if (node.matches("img")) return "image";
+  if (node.matches("li") && node.querySelector(HEADINGS + ",p,img")) return "block";
+  if (node.matches(BLOCKS)) return "block";
+  return "text";
 }
 
 export default function WordReveal() {
-  useEffect(() => {
-    const root = document.querySelector("main");
+  const { pathname, search } = useLocation();
 
-    if (!root) return;
+  useIsomorphicLayoutEffect(() => {
+    const root = document.querySelector(".cd-site");
+    if (!root || !window.IntersectionObserver) return undefined;
+    const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
+    if (!motion.matches) return undefined;
 
-    const motionQuery = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    );
+    const tracked = new Set();
+    let frame = 0;
 
-    if (
-      motionQuery.matches ||
-      !("IntersectionObserver" in window)
-    ) {
-      return;
+    const observer = new IntersectionObserver((entries) => {
+      const entering = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => (a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+      entering.forEach(({ target }, index) => {
+        // Items that arrive together cascade; the delay is capped so nothing feels stuck.
+        target.style.setProperty("--rv-delay", Math.min(index, 5) * 110 + "ms");
+        target.classList.add("rv-in", "has-entered");
+        target.classList.remove("reveal-pending");
+        observer.unobserve(target);
+      });
+    }, { rootMargin: "0px 0px -9% 0px", threshold: 0 });
+
+    function prepare(node) {
+      if (tracked.has(node) || node.closest(SKIP)) return;
+      // Anything inside a group animates with the group.
+      const group = node.parentElement?.closest(GROUPS);
+      if (group && root.contains(group)) return;
+      const kind = revealKind(node);
+      // A list item or quote that wraps other text is left to its children.
+      if (kind === "text" && node.matches("li,blockquote") && node.querySelector("p,li")) return;
+      tracked.add(node);
+      if (node.querySelector(".reveal-word")) {
+        // Word-by-word headings keep their own per-word animation.
+        node.classList.add("reveal-pending");
+      } else {
+        node.classList.add("rv", "rv-" + kind);
+        // Anything that holds or sits inside a link or button only fades, so it never moves under the pointer.
+        if (node.querySelector(INTERACTIVE) || node.closest("a,button,summary")) node.classList.add("rv-calm");
+      }
+      observer.observe(node);
     }
 
-    const animatedElements = new Set();
-    let observer;
+    function scan() {
+      frame = 0;
+      root.querySelectorAll(`main :is(${HEADINGS},${TEXT},${BLOCKS}), footer :is(${HEADINGS},p)`).forEach(prepare);
+    }
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(scan);
+    }
 
-    const revealElement = (element) => {
-      if (
-        !(element instanceof HTMLElement) ||
-        element.classList.contains(INITIAL_CLASS)
-      ) {
-        return;
-      }
-
-      element.classList.add(INITIAL_CLASS);
-      animatedElements.add(element);
-
-      wrapWords(element);
-      observer.observe(element);
-    };
-
-    const observeElements = (container) => {
-      if (!(container instanceof HTMLElement)) return;
-
-      if (container.matches(REVEAL_SELECTOR)) {
-        revealElement(container);
-      }
-
-      container
-        .querySelectorAll(REVEAL_SELECTOR)
-        .forEach(revealElement);
-    };
-
-    observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add(VISIBLE_CLASS);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        threshold: 0.12,
-        rootMargin: "0px 0px -24px 0px",
-      }
-    );
-
-    // Reveal the current page.
-    observeElements(root);
-
-    // Detect content added during React Router navigation.
-    const mutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node instanceof HTMLElement) {
-            observeElements(node);
-          }
-        });
-      });
-    });
-
-    mutationObserver.observe(root, {
-      childList: true,
-      subtree: true,
-    });
-
-    // Respect accessibility preferences.
-    const handleMotionChange = (event) => {
-      if (event.matches) {
-        observer.disconnect();
-        mutationObserver.disconnect();
-
-        animatedElements.forEach((element) => {
-          element.classList.remove(
-            INITIAL_CLASS,
-            VISIBLE_CLASS
-          );
-        });
-      }
-    };
-
-    motionQuery.addEventListener("change", handleMotionChange);
-
+    scan();
+    const updates = new MutationObserver(schedule);
+    updates.observe(root, { childList: true, subtree: true });
     return () => {
+      cancelAnimationFrame(frame);
+      updates.disconnect();
       observer.disconnect();
-      mutationObserver.disconnect();
-
-      motionQuery.removeEventListener(
-        "change",
-        handleMotionChange
-      );
-
-      animatedElements.forEach((element) => {
-        element.classList.remove(
-          INITIAL_CLASS,
-          VISIBLE_CLASS
-        );
+      tracked.forEach((node) => {
+        node.classList.remove("rv", "rv-in", "rv-heading", "rv-text", "rv-block", "rv-image", "rv-calm", "reveal-pending", "has-entered");
+        node.style.removeProperty("--rv-delay");
       });
-
-      // Restore the original text nodes during cleanup.
-      root.querySelectorAll(`.${WORD_CLASS}`).forEach((word) => {
-        word.replaceWith(
-          document.createTextNode(word.textContent ?? "")
-        );
-      });
+      tracked.clear();
     };
-  }, []);
+  }, [pathname, search]);
 
   return null;
 }

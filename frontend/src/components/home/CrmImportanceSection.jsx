@@ -1,3 +1,4 @@
+import { RevealWords } from "../ui/WordReveal.jsx";
 export default function CrmImportanceSection() {
   return (
     <section
@@ -14,7 +15,7 @@ export default function CrmImportanceSection() {
             className="text-4xl lg:text-5xl font-extrabold tracking-tight text-[#14161A] leading-tight mb-4"
             id="crm-importance-title"
           >
-            One connected CRM. More room to grow.
+            <RevealWords>One connected CRM. More room to grow.</RevealWords>
           </h2>
           <p className="text-lg text-[#5C616B] leading-relaxed">
             Give your team shared context, clearer ownership and a practical

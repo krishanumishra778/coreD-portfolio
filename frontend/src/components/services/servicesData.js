@@ -1,267 +1,145 @@
-/**
- * Services-page content, kept separate from presentation so each service can
- * reuse the same accessible React components.
- */
+// Proposed setup pricing. Each written quote confirms scope and provider costs.
+const plan = (id, tier, name, basis, amount, fit, includes, boundary, choices) => ({
+  id, tier, name, basis, amount, fit, includes, boundary, choices,
+});
+
+export const formatPrice = ({ basis, amount }) => {
+  if (basis === "quote") return "By quote";
+  const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
+  return basis === "from" ? `From ${usd}` : `${usd} fixed`;
+};
+
+export const addOns = {
+  channel: "Extra WhatsApp or email channel",
+  source: "Extra lead source",
+  migration: "Data migration and reporting",
+  voice: "Booking or voice workflow",
+  language: "Arabic copy or additional languages",
+  teams: "Additional teams or integrations",
+  finance: "Finance or ERP workflow",
+  support: "Ongoing support",
+  retest: "Fix verification or retest",
+};
+
+export const basicAgents = [
+  ["website-chatbot", "Website chatbot", "Guides visitors through approved answers and collects enquiries for your team."],
+  ["whatsapp-capture", "WhatsApp lead capture", "Collects enquiry details on one approved WhatsApp number and routes them to one inbox or compatible CRM."],
+  ["email-triage", "Email enquiry routing", "Routes messages from one inbox to an agreed person or queue using rules."],
+];
+
+export const standardAgents = [
+  ["ai-chatbot", "AI chatbot", "Answers from approved business documents, captures context and hands uncertain questions to staff."],
+  ["voice-agent", "Inbound voice agent", "Handles an agreed call flow on one number, captures details and transfers or books when configured."],
+  ["crm-automation", "CRM follow-up automation", "Runs an approved email or WhatsApp follow-up in one compatible CRM with reply and opt-out stops."],
+  ["booking-agent", "Booking agent", "Checks one connected calendar, records an approved booking and routes exceptions to staff."],
+];
+
 export const SERVICES = [
   {
-    id: "crm",
-    label: "AI-based CRM",
-    number: "01 / 03",
-    code: "CORE-CRM-v2",
-    footer: "CRM Architectural Blueprint",
-    footerMeta: "100% Native Sync",
-    eyebrow: "Customer Operations & Workflows",
-    title: "A CRM that helps your team act.",
-    description:
-      "Keep customer records, sales activity and AI-assisted workflows together. Built to reduce manual record keeping while enabling intelligent handoffs.",
-    capabilities: ["Lead management", "Follow-ups", "Connected tools"],
-    comparison: {
-      eyebrow: "Quotations & Specifications",
-      title: "Choose your CRM scope.",
-      description:
-        "Start with one AI workflow, connect three agents, or define a custom system.",
-    },
-    packages: [
-      {
-        id: "basic",
-        tier: "Basic",
-        badge: "Entry Tier",
-        title: "1 AI agent",
-        price: null,
-        status: "Quoted after scope review",
-        description: "A focused CRM with one AI-assisted workflow.",
-        features: [
-          "Customer and lead records",
-          "Sales pipeline",
-          "One lead-qualification agent",
-          "Agent activity history",
-          "Agreed data source and integration scope",
-        ],
-        cta: "Request Basic quotation",
-        packageName: "Basic Package (1 Agent)",
-      },
-      {
-        id: "standard",
-        tier: "Standard",
-        badge: "Connected workflows",
-        title: "3 AI agents",
-        price: null,
-        status: "Quoted after scope review",
-        description: "Coordinate lead handling, follow-ups and appointments.",
-        features: [
-          "Customer and lead records",
-          "Sales pipeline",
-          "Lead-qualification agent",
-          "Follow-up agent",
-          "Appointment-coordination agent",
-          "Shared activity history and team handoffs",
-        ],
-        cta: "Request Standard quotation",
-        packageName: "Standard Package (3 Agents)",
-        featured: true,
-      },
-      {
-        id: "custom",
-        tier: "Custom Solution",
-        badge: "Tailored Scope",
-        title: "Built around your requirements",
-        price: null,
-        status: "Quoted after scope review",
-        description:
-          "Define the CRM, agents and integrations your business needs.",
-        features: [
-          "Requirements and workflow discovery",
-          "Custom CRM modules",
-          "Agent roles agreed during scoping",
-          "Integration and data-migration planning",
-          "Permissions, reporting and deployment scope",
-        ],
-        cta: "Discuss a custom CRM",
-        packageName: "Custom CRM Solution",
-      },
+    id: "ai-powered-crm", label: "AI-Powered CRM",
+    intro: "A CRM keeps contacts, conversations and deals together. Automation handles repeatable steps. AI can qualify a lead or draft a reply using rules and information you approve.",
+    prompt: "Tell us where leads arrive, which CRM you use and who should own the next step.",
+    addOns: ["channel", "source", "migration", "voice", "language", "teams", "finance", "support"],
+    plans: [
+      plan("workflow-pilot", "Basic", "CRM Workflow Pilot", "fixed", 750, "Test one workflow before rolling it out.",
+        ["One lead source, one pipeline and one workflow in a pilot environment", "Capture contact and source, apply an assignment rule and create a follow-up task", "Demo, test results and a walkthrough for your team"], "Production rollout, migration and live messaging are separate."),
+      plan("existing-crm", "Standard", "AI Setup for Your CRM", "from", 1500, "Add automation and AI to the CRM your team already uses.",
+        ["One compatible CRM, one lead source and one sales workflow", "Lead capture, duplicate checks, assignment and one email or WhatsApp follow-up channel", "One AI qualification or reply-drafting task, one activity report and handover"], "We confirm API access, channel setup and record volume before quoting."),
+      plan("leadforge-x", "Recommended", "CoreD LeadForge X", "from", 3250, "Build a sales workflow from lead discovery to sales handoff.",
+        ["One target segment, one approved lead source, one existing CRM and one messaging channel", "Find and qualify leads, remove duplicates, and send approved follow-ups", "Log replies, stop at opt-out or staff takeover, then book or hand qualified leads to sales", "CRM mapping, workflow tests and team handover"], "Additional channels, data and integrations are separate. Delivery availability is confirmed during scoping."),
+      plan("custom-crm", "Custom", "Custom Multi-Agent CRM", "quote", null, "Run multiple AI agents inside one CRM.",
+        ["Combine agents for lead research, qualification, follow-up, booking or reporting", "Define permissions, approvals, stop rules and handoffs for each agent", "Scope custom pipelines, migration, dashboards, teams and ERP connections"], "Price depends on the number of agents, workflows, data and systems."),
     ],
-    form: {
-      title: "Get your tailored CRM scope",
-      description:
-        "Share the workflows and systems your team needs to bring together.",
-      requirementsLabel: "Specific Requirements / Target Workflows",
-      requirementsPlaceholder:
-        "Describe the team workflows, volume, or key pain points...",
-      systemsLabel: "Existing Tools (CRM, Databases, Messaging)",
-      systemsPlaceholder: "e.g. HubSpot, Postgres, Slack, WhatsApp",
-    },
   },
   {
-    id: "agent",
-    label: "AI Agent Development",
-    number: "02 / 03",
-    code: "AGENT-TOPOLOGY-v1",
-    footer: "Multi-Agent Workflow Topology",
-    footerMeta: "Secure & Sandboxed",
-    eyebrow: "Targeted AI Automations",
-    title: "AI agents for the work you repeat.",
-    description:
-      "Build assistants that answer questions, qualify enquiries and support everyday operations. Connect them to your software stack with an agreed implementation scope.",
-    capabilities: ["Knowledge assistants", "Sales workflows", "Business integrations"],
-    comparison: {
-      eyebrow: "Agent Scopes & Comparison",
-      title: "Choose your agent scope.",
-      description:
-        "Begin with a knowledge assistant or connect a three-agent workflow.",
-    },
-    packages: [
-      {
-        id: "basic",
-        tier: "Basic",
-        badge: "1 Agent",
-        title: "1 AI agent",
-        price: "$300",
-        billing: "/ setup",
-        status: "Quoted after scope review",
-        description:
-          "A focused FAQ assistant using approved business information.",
-        listTitle: "Example agent types",
-        features: [
-          { label: "FAQ & knowledge assistant", status: "Included", included: true },
-          { label: "Lead-qualification agent", status: "Available", included: false },
-          { label: "Sales follow-up agent", status: "Available", included: false },
-          { label: "Appointment-booking agent", status: "Available", included: false },
-          { label: "Voice-calling agent", status: "Available", included: false },
-          { label: "Document-processing agent", status: "Available", included: false },
-          { label: "Reporting assistant", status: "Available", included: false },
-          { label: "Internal operations agent", status: "Available", included: false },
-        ],
-        cta: "Request Basic quotation",
-        packageName: "Basic Package (1 Agent)",
-      },
-      {
-        id: "standard",
-        tier: "Standard",
-        badge: "3-Agent Stack",
-        title: "3 AI agents",
-        price: "$700",
-        billing: "/ setup",
-        status: "Quoted after scope review",
-        description:
-          "Connect knowledge, qualification and follow-up. Follow-up uses an agreed email or WhatsApp channel.",
-        listTitle: "Example agent types",
-        features: [
-          { label: "FAQ & knowledge assistant", status: "Included", included: true },
-          { label: "Lead-qualification agent", status: "Included", included: true },
-          { label: "Sales follow-up agent", status: "Included", included: true },
-          { label: "Appointment-booking agent", status: "Available", included: false },
-          { label: "Voice-calling agent", status: "Available", included: false },
-          { label: "Document-processing agent", status: "Available", included: false },
-          { label: "Reporting assistant", status: "Available", included: false },
-          { label: "Internal operations agent", status: "Available", included: false },
-        ],
-        cta: "Request Standard quotation",
-        packageName: "Standard Package (3 Agents)",
-        featured: true,
-      },
-      {
-        id: "custom",
-        tier: "Custom Solution",
-        badge: "Custom Fleet",
-        title: "Your workflow, custom-built",
-        price: null,
-        status: "Quoted after scope review",
-        description:
-          "Discuss the agent types and integrations your use case requires. Scope and feasibility are confirmed during discovery.",
-        listTitle: "Example agent types",
-        features: [
-          { label: "FAQ & knowledge assistant", status: "Custom scope", included: true },
-          { label: "Lead-qualification agent", status: "Custom scope", included: true },
-          { label: "Sales follow-up agent", status: "Custom scope", included: true },
-          { label: "Appointment-booking agent", status: "Custom scope", included: true },
-          { label: "Voice-calling agent", status: "Custom scope", included: true },
-          { label: "Document-processing agent", status: "Custom scope", included: true },
-          { label: "Reporting assistant", status: "Custom scope", included: true },
-          { label: "Internal operations agent", status: "Custom scope", included: true },
-        ],
-        cta: "Discuss custom agents",
-        packageName: "Custom Agent Fleet",
-      },
+    id: "ai-agents", label: "AI Agents & Automation",
+    intro: "Choose a website chatbot, AI chatbot, voice agent or automation. Each plan says how many you can choose and which systems it can connect to.",
+    prompt: "Tell us what the agent should do, which channel you use and when it should hand off to staff.",
+    addOns: ["channel", "voice", "teams", "language", "support"],
+    plans: [
+      plan("faq-starter", "Basic", "One Basic Agent", "fixed", 300, "Start with one simple task on one channel.",
+        ["Choose one option from the Basic list", "One approved content source or rule set, one handoff destination and a walkthrough"], "No custom API build, voice minutes or bulk messaging. WhatsApp needs an approved number and compatible tools.", ["basic"]),
+      plan("connected-agent", "Standard", "One Standard + One Basic Agent", "from", 1200, "Combine a connected agent with a simple automation.",
+        ["Choose one option from each list: one Standard and one Basic", "One main workflow, one approved integration for the Standard agent, testing and handover", "Staff escalation and clear stop rules for actions or follow-ups"], "Provider usage, model calls, voice minutes and extra integrations are separate.", ["standard", "basic"]),
+      plan("custom-agent", "Custom", "Custom Multi-Agent Build", "quote", null, "Connect several agents across teams and systems.",
+        ["Scope AI reception, multilingual voice, sales qualification, order support or document processing", "Connect CRM, helpdesk, calendar or ERP where compatible", "Define access, human approvals, tests, monitoring and handover"], "Confirm agent count, systems, volumes and ownership in the quote."),
     ],
-    form: {
-      title: "Get your tailored agent scope",
-      description:
-        "Tell us about the tasks, integrations and information sources involved.",
-      requirementsLabel: "Desired Agent Workflows / Enquiries",
-      requirementsPlaceholder:
-        "Target tasks (e.g. answering inbound FAQs, WhatsApp lead triage)...",
-      systemsLabel: "Existing Systems & Documentation Sources",
-      systemsPlaceholder: "e.g. Notion, Zendesk, PostgreSQL, Google Drive",
-    },
   },
   {
-    id: "consultancy",
-    label: "Consultancy",
-    number: "03 / 03",
-    code: "ADVISORY-FRAMEWORK",
-    footer: "Decision & Governance Framework",
-    footerMeta: "Objective Strategy",
-    eyebrow: "Advisory & Risk Governance",
-    title: "Make the next AI decision with clarity.",
-    description:
-      "Review your AI opportunities, system risks and implementation options. Plan for measurable business value and sound data governance.",
-    capabilities: ["AI strategy", "AI security", "Implementation roadmap"],
-    comparison: {
-      eyebrow: "Expert Advisory",
-      title: "Choose the guidance you need.",
-      description:
-        "From security posture analysis to pragmatic architecture and deployment blueprints.",
-    },
-    packages: [
-      {
-        id: "security-review",
-        tier: "Security & Risk",
-        badge: "Technical Review",
-        title: "AI Cybersecurity Consultancy",
-        price: null,
-        status: "Quoted after scope review",
-        description:
-          "Review how your AI systems handle information, access and connected tools.",
-        features: [
-          "AI application and workflow review",
-          "Data handling and access-permission review",
-          "Prompt-injection and tool-use risk assessment",
-          "Prioritised recommendations",
-          "Findings and next-step report",
-        ],
-        cta: "Discuss an AI security review",
-        packageName: "AI Cybersecurity Review",
-      },
-      {
-        id: "strategic-planning",
-        tier: "Strategic Planning",
-        badge: "Roadmap & Architecture",
-        title: "AI Consultancy",
-        price: null,
-        status: "Quoted after scope review",
-        description:
-          "Identify useful AI opportunities and plan an achievable implementation.",
-        features: [
-          "Business-process discovery",
-          "Use-case prioritisation",
-          "Tool and architecture options",
-          "Feasibility and running-cost considerations",
-          "Pilot and implementation roadmap",
-        ],
-        cta: "Book an AI consultation",
-        packageName: "AI Strategic Planning",
-        featured: true,
-      },
+    id: "ai-consulting", label: "AI Consulting",
+    intro: "Decide where AI is worth using, what data and tools you need, and what a first pilot should prove.",
+    prompt: "Share your goals, tools, teams and the decision you need to make.",
+    addOns: ["teams", "support"],
+    plans: [
+      plan("discovery", "Basic", "AI Discovery", "fixed", 350, "Evaluate one business process.",
+        ["One workshop and a map of how the process works today", "Shortlist use cases, flag data or approval gaps, and recommend the next step"], "Includes written recommendations. Implementation is separate."),
+      plan("roadmap", "Standard", "AI Implementation Roadmap", "from", 1200, "Prepare an actionable pilot plan.",
+        ["Rank use cases by business value, effort and risk", "Compare build-versus-buy options, vendor costs and required integrations", "Deliver a phased plan, ownership, a cost estimate and pilot acceptance checks"], "The quote lists teams and workflows. Software and implementation are separate."),
+      plan("custom-consulting", "Custom", "AI Transformation Advisory", "quote", null, "Plan a rollout across multiple teams.",
+        ["Scope data readiness, architecture, vendor review, governance or team training", "Set decision owners, delivery phases and measures for adoption", "Add pilot oversight or ongoing advisory if needed"], "Workshops, implementation and support are agreed in writing."),
     ],
-    form: {
-      title: "Schedule an advisory session",
-      description:
-        "Provide background on your existing architecture or upcoming initiatives.",
-      requirementsLabel: "Key Questions or Vulnerabilities to Review",
-      requirementsPlaceholder:
-        "Describe your AI initiative, risk concerns, or decision to make...",
-      systemsLabel: "Current AI Infrastructure",
-      systemsPlaceholder: "e.g. model providers, APIs, data sources, tools",
-    },
+  },
+  {
+    id: "ai-cybersecurity", label: "AI Cybersecurity Consulting",
+    intro: "Review what your AI workflow can read, where data goes and which actions need human approval before it goes live.",
+    prompt: "Share the number of workflows, their integrations, data types and review goals.",
+    addOns: ["retest", "teams", "support"],
+    plans: [
+      plan("ai-readiness", "Basic", "AI Security Readiness", "from", 900, "Review one AI workflow before a pilot.",
+        ["Map data access, integrations, permissions and approval steps", "Review logs, staff takeover and the ability to pause the workflow", "Deliver a prioritized fix list with owners and verification checks"], "One workflow. Formal tests and repairs require a separate scope."),
+      plan("extended-ai-review", "Standard", "AI Governance & Risk Review", "quote", null, "Review several workflows or a broader rollout.",
+        ["Document data flows, ownership, vendor dependencies and approval gaps", "Deliver a risk register, control recommendations and a rollout checklist", "Agree evidence requirements and how the team will verify controls"], "Scope depends on workflows, data sensitivity and evidence needs."),
+      plan("custom-ai-security", "Custom", "Custom AI Security Advisory", "quote", null, "Plan controls or improvements across teams.",
+        ["Scope AI policy, vendor review, monitoring, reporting or remediation advice", "Assess defensive AI alerting and evidence workflows", "Agree what will be tested, reviewed or implemented"], "Specialist support and ongoing monitoring are scoped separately."),
+    ],
+  },
+  {
+    id: "cybersecurity", label: "Cybersecurity",
+    intro: "Choose a scoped assessment, a package with fixes and endpoint protection, or a custom security project.",
+    prompt: "Share asset types and counts, country, reporting needs and any test window. Leave out credentials or sensitive records.",
+    addOns: ["retest", "support"],
+    plans: [
+      plan("basic-cybersecurity", "Basic", "Vulnerability Assessment & Penetration Test", "quote", null, "Assess one agreed website or web app.",
+        ["Vulnerability assessment and scoped penetration testing for one approved hostname", "Prioritized findings, business impact and recommended fixes", "Handover call and written report"], "One website hostname, including one subdomain if it is the named target. Extra hosts, APIs and networks are separate."),
+      plan("standard-cybersecurity", "Standard", "Assessment, Fixes & Device Protection", "quote", null, "Combine an assessment with selected repairs and endpoint setup.",
+        ["VA/PT for one agreed web app, with up to two named hostnames", "Agreed priority patches and verification of the fixes in scope", "Install approved antivirus on up to 10 supported devices and report their status"], "Proposed scope. Licenses, downtime, change approval and extra assets are agreed before work."),
+      plan("custom-cybersecurity", "Custom", "Custom Cybersecurity", "quote", null, "Scope several systems or a specialist review.",
+        ["Scope cloud, network or API assessment and remediation", "Design or configure firewall controls and review rules", "Scope static application security testing (SAST), code review, or storage and malware assessment"], "Quote by assets, repositories, environments or data volume. No fixed terabyte allowance. Written authorization is required for testing."),
+    ],
+    standalonePlans: [
+      plan("security-assessment", "Standalone", "Security Assessment", "from", 650, "Review one agreed setup.",
+        ["Control review, written findings and a prioritized fix list"], "Formal testing and fixes are scoped separately."),
+      plan("antivirus-installation", "Standalone", "Antivirus Installation", "from", 300, "Set up protection on supported devices.",
+        ["Install an approved product on up to 10 devices, check updates and record status"], "Licenses and additional devices are separate."),
+    ],
   },
 ];
+
+export const getServicePlans = (service) => service?.standalonePlans ? [...service.plans, ...service.standalonePlans] : service?.plans ?? [];
+
+export function quoteLink(service, pkg, scope) {
+  const query = new URLSearchParams({ service: service.id, plan: pkg.id });
+  if (scope) query.set("scope", scope);
+  return "/reach-us?" + query + "#project-enquiry";
+}
+
+export const securityServices = [
+  { id: "assessment", name: "Security Assessment", detail: "Review current controls and get written findings and a prioritized fix list.", planId: "security-assessment" },
+  { id: "vulnerability", name: "Vulnerability Assessment", detail: "Receive an asset and issue inventory with severity, evidence and recommended fixes. Asset counts are agreed in writing.", planId: "basic-cybersecurity" },
+  { id: "penetration", name: "Penetration Testing", detail: "Validate agreed weaknesses on authorized assets. Get reproducible findings, business impact and a remediation report within the approved rules of engagement.", planId: "basic-cybersecurity" },
+  { id: "fixes", name: "Security Fixes & Verification", detail: "Agree patches, owners and change windows, then verify the fixes covered by your quote.", planId: "standard-cybersecurity" },
+  { id: "malware", name: "Malware & Storage Assessment", detail: "Scope storage type, volume, business constraints, and reporting before work starts.", planId: "custom-cybersecurity" },
+  { id: "endpoint", name: "Antivirus Installation", detail: "Set up approved protection on up to 10 supported devices. Licenses are separate.", planId: "antivirus-installation" },
+];
+
+export const leadForge = SERVICES[0].plans.find(({ id }) => id === "leadforge-x");
+export const leadForgeStatus = "Proposed delivery · availability confirmed during scoping";
+export const leadForgeSupport = "Optional support from $350 per month, if agreed in writing";
+export const leadForgeSteps = [
+  ["Find", "Use one approved source to find companies that match your target segment."],
+  ["Qualify", "Check the fit, catch duplicates and save the lead and its context in the CRM."],
+  ["Follow up", "Send approved messages on one agreed channel. Record the activity and stop when a reply or stop rule arrives."],
+  ["Book or hand off", "Book an agreed meeting slot or pass a qualified reply and its history to a salesperson."],
+];
+export const servicePrices = (id) => getServicePlans(SERVICES.find((service) => service.id === id))
+  .map((pkg) => `${pkg.name}: ${formatPrice(pkg)}`).join("; ");

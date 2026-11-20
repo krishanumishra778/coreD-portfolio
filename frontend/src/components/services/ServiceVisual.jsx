@@ -112,13 +112,15 @@ function ConsultancyTopology() {
 }
 
 const VISUALS = {
-  crm: CRMTopology,
-  agent: AgentTopology,
-  consultancy: ConsultancyTopology,
+  "ai-powered-crm": CRMTopology,
+  "ai-agents": AgentTopology,
+  "ai-consulting": ConsultancyTopology,
+  "ai-cybersecurity": ConsultancyTopology,
+  cybersecurity: ConsultancyTopology,
 };
 
-export default function ServiceVisual({ service }) {
-  const Diagram = VISUALS[service.id] ?? VISUALS.agent;
+export default function ServiceVisual({ service, serviceNumber }) {
+  const Diagram = VISUALS[service.id] ?? AgentTopology;
 
   return (
     <div className="relative isolate flex min-h-[340px] flex-col justify-between overflow-hidden rounded-[24px] border border-white/10 bg-gradient-to-br from-[#14161A] to-[#0E0F12] p-5 text-white shadow-[0_20px_60px_rgba(20,22,26,0.20)] sm:min-h-[390px] sm:p-7 lg:min-h-[440px] lg:w-[48%] lg:shrink-0">
@@ -128,18 +130,18 @@ export default function ServiceVisual({ service }) {
       <div className="relative z-10 flex items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[9px] font-medium tracking-wide text-white/90 sm:text-[11px]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />
-          Service {service.number}
+          Service {String(serviceNumber).padStart(2, "0")}
         </span>
-        <span className="truncate font-mono text-[8px] text-white/40 sm:text-[10px]">{service.code}</span>
+        <span className="truncate font-mono text-[8px] text-white/40 sm:text-[10px]">{service.label}</span>
       </div>
 
-      <div className="relative z-10 flex flex-1 items-center py-7 sm:py-8">
+      <div className="relative z-10 flex flex-1 items-center py-7 sm:py-8" aria-hidden="true">
         <Diagram />
       </div>
 
       <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3 text-[9px] text-white/60 sm:text-xs">
-        <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />{service.footer}</span>
-        <span className="font-mono text-[8px] text-white/40 sm:text-[10px]">{service.footerMeta}</span>
+        <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />{service.label}</span>
+        <span className="font-mono text-[8px] text-white/40 sm:text-[10px]">Illustrative workflow</span>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
+import { RevealWords } from "../components/ui/WordReveal.jsx";
 import { Link } from "react-router-dom";
-import { caseStudies } from "../../src/data/PortfolioData.js";
+import { portfolioCaseStudies } from "../data/PortfolioData.js";
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
@@ -17,28 +18,28 @@ function getScreenshots(study) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* See Our Work                                                               */
+/* See our work                                                               */
 /* -------------------------------------------------------------------------- */
 
 export default function SeeOurWork() {
-    if (!Array.isArray(caseStudies) || caseStudies.length === 0) {
+    if (!Array.isArray(portfolioCaseStudies) || portfolioCaseStudies.length === 0) {
         return (
-            <main className="min-h-screen bg-[#faf7f1] px-4 py-20 text-slate-900 sm:px-6 lg:px-8">
+            <section className="min-h-screen bg-[#faf7f1] px-4 py-20 text-slate-900 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-7xl">
                     <h1 className="text-3xl font-bold sm:text-5xl">
-                        See Our Work
+                        <RevealWords>See our work</RevealWords>
                     </h1>
 
                     <p className="mt-4 text-slate-600">
                         Our case studies will appear here.
                     </p>
                 </div>
-            </main>
+            </section>
         );
     }
 
     return (
-        <main className="min-h-screen w-full bg-[#faf7f1] px-4 py-16 text-slate-900 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <section className="min-h-screen w-full bg-[#faf7f1] px-4 py-16 text-slate-900 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
             <div className="mx-auto w-full max-w-7xl">
 
                 <header className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
@@ -47,18 +48,17 @@ export default function SeeOurWork() {
                     </p>
 
                     <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-                        See Our Work
+                        <RevealWords>See our work</RevealWords>
                     </h1>
 
                     <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
-                        Explore our projects, the challenges businesses faced,
-                        and the solutions we built to solve them.
+                        Explore CoreD’s CRM projects for sales, education and operations, plus a sample cybersecurity assessment.
                     </p>
                 </header>
 
                 {/* Case study cards */}
                 <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                    {caseStudies.map((study) => {
+                    {portfolioCaseStudies.map((study) => {
                         const screenshots = getScreenshots(study);
                         const coverImage = screenshots[0];
 
@@ -71,6 +71,7 @@ export default function SeeOurWork() {
                         return (
                             <article
                                 key={study.id || study.client}
+                                id={study.anchor}
                                 className="group flex min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/80 
                                             bg-white p-2 shadow-[0_10px_35px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.12)]"
                             >
@@ -133,16 +134,14 @@ export default function SeeOurWork() {
                                         <span aria-hidden="true">•</span>
 
                                         <span>
-                                            {screenshots.length} screenshots
+                                            {screenshots.length} {study.isSample ? "report previews" : "screenshots"}
                                         </span>
                                     </div>
 
                                     {/* Open the selected case study */}
                                     <Link
                                         to={`/case-studies/${study.id}`}
-                                        className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white 
-                                                    transition hover:bg-amber-500 hover:text-slate-950 focus-visible:outline 
-                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                                        className="cd-button cd-button--line mt-6"
                                     >
                                         See full case study
 
@@ -159,6 +158,6 @@ export default function SeeOurWork() {
                     })}
                 </div>
             </div>
-        </main>
+        </section>
     );
 }

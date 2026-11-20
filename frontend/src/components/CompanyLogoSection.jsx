@@ -1,11 +1,7 @@
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-import TohfaBazzarLogo from "/Images/tohfabazzar.png";
-import CrawlDigitallyLogo from "/Images/CrawlDigitally.png";
-import NextTechWavesLogo from "/Images/NextTechWaves.png";
-import AdsMarkerLogo from "/Images/AdsMarker.png";
 
 /* =========================
    COMPANY LOGO DATA
@@ -47,7 +43,7 @@ function CompanyLogo({ company }) {
 
   return (
     <div className="flex shrink-0 items-center gap-4 sm:gap-7">
-      <div className="flex h-12 min-w-[118px] items-center justify-center rounded-xl border border-white/10 bg-white px-3 py-2 transition duration-300 hover:-translate-y-0.5 hover:border-amber-400/50 sm:h-14 sm:min-w-[145px] sm:px-4">
+      <div className="flex h-20 w-full min-w-0 items-center justify-center rounded-xl border border-white/10 bg-white px-3 py-2 transition duration-300 hover:-translate-y-0.5 hover:border-amber-400/50 md:h-[92px] md:motion-safe:min-w-[218px] md:px-4">
         <img
           src={company.logo}
           alt={company.name}
@@ -56,15 +52,15 @@ function CompanyLogo({ company }) {
           loading="eager"
           decoding="async"
           draggable={false}
-          className={`w-auto max-w-[145px] object-contain ${
-            isLarge ? "h-8 sm:h-10" : "h-6 sm:h-8"
+          className={`w-auto max-w-full object-contain md:motion-safe:max-w-[190px] ${
+            isLarge ? "h-14 md:h-[70px]" : "h-12 md:h-14"
           }`}
         />
       </div>
 
       <span
         aria-hidden="true"
-        className="select-none text-lg font-light text-zinc-600 sm:text-xl"
+        className="hidden select-none md:motion-safe:block text-lg font-light text-zinc-600 sm:text-xl"
       >
         +
       </span>
@@ -80,7 +76,7 @@ export default function CompanyLogosSection() {
   const trackRef = useRef(null);
   const animationRef = useRef(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const track = trackRef.current;
 
     if (!track) return undefined;
@@ -88,7 +84,7 @@ export default function CompanyLogosSection() {
     const mm = gsap.matchMedia();
 
     // Animate from right to left.
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
+    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
       const tween = gsap.fromTo(
         track,
         { xPercent: 0 },
@@ -132,7 +128,8 @@ export default function CompanyLogosSection() {
 
   return (
     <section
-      aria-label="Selected companies and partners"
+      id="client-work"
+      aria-label="Selected clients"
       className="relative w-full overflow-hidden bg-white  py-5 sm:py-6"
       onMouseEnter={pauseAnimation}
       onMouseLeave={resumeAnimation}
@@ -143,45 +140,27 @@ export default function CompanyLogosSection() {
         }
       }}
     >
-      
-
-      {/* Marquee viewport */}
-  <div className="relative w-full overflow-hidden">
-  {/* Left fade */}
-  <div
-    aria-hidden="true"
-    className="pointer-events-none absolute inset-y-0 left-0 z-6
-    w-8 bg-gradient-to-r
-    sm:w-16 lg:w-24"
-  />
-
-  {/* Right fade */}
-  <div
-    aria-hidden="true"
-    className="pointer-events-none absolute inset-y-0 right-0 z-6
-    w-8 bg-gradient-to-l
-    sm:w-16 lg:w-24"
-  />
-
-  {/* Continuous infinite slider */}
-  <div
-    ref={trackRef}
-    className="flex w-max will-change-transform"
-  >
-    {[0, 1].map((groupIndex) => (
-      <div
-        key={groupIndex}
-        aria-hidden={groupIndex === 1 ? true : undefined}
-        className="flex shrink-0 items-center gap-5 px-3
-        sm:gap-8 sm:px-5 md:gap-10 md:px-7"
-      >
-        {companyLogos.map((company) => (
-          <CompanyLogo key={company.id} company={company} />
-        ))}
+      <div className="w-full overflow-clip">
+        <div ref={trackRef} className="w-full md:motion-safe:flex md:motion-safe:w-max">
+          {[0, 1].map((groupIndex) => (
+            <div
+              key={groupIndex}
+              aria-hidden={groupIndex === 1 ? true : undefined}
+              className={[
+                "items-center gap-3 px-3 md:gap-6 md:px-7 lg:gap-10",
+                "md:motion-safe:min-w-[100vw] md:motion-safe:shrink-0 md:motion-safe:justify-around",
+                groupIndex === 0
+                  ? "grid grid-cols-2 md:motion-safe:flex lg:grid-cols-4"
+                  : "hidden md:motion-safe:flex",
+              ].join(" ")}
+            >
+              {companyLogos.map((company) => (
+                <CompanyLogo key={company.id} company={company} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
     </section>
   );
 }

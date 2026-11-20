@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
@@ -9,12 +9,15 @@ const navigation = [
   { label: "Services", path: "/services", end: true },
   { label: "See Our Work", path: "/see-our-work" },
   { label: "Blog", path: "/blog" },
+  { label: "FAQ", path: "/faq" },
 ];
 
-export default function Navbar() {
+export default function ClassicNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const location = useLocation();
+  const toggle = useRef(null);
+  const header = useRef(null);
 
   // Desktop navigation link styles
   const navLinkClass = ({ isActive }) =>
@@ -59,17 +62,23 @@ export default function Navbar() {
   // Close mobile menu when Escape is pressed
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && menuOpen) {
         setMenuOpen(false);
+        toggle.current?.focus();
       }
     };
 
+    if (!menuOpen) return;
+    const closeOnOutsidePress = (event) => {
+      if (!header.current?.contains(event.target)) setMenuOpen(false);
+    };
     document.addEventListener("keydown", handleKeyDown);
-
+    document.addEventListener("pointerdown", closeOnOutsidePress);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
     };
-  }, []);
+  }, [menuOpen]);
 
   // Close the menu after navigation
   const handleNavigation = () => {
@@ -79,7 +88,7 @@ export default function Navbar() {
   return (
     <>
       {/* Fixed Navbar */}
-      <header className=" fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
+      <header ref={header} className="classic-nav-shell fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
         <nav
           aria-label="Main navigation"
           style={{ backgroundColor: NAVBAR_BG }}
@@ -95,7 +104,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            aria-label="CoreDhristi home"
+            aria-label="CoreD home"
             onClick={handleNavigation}
             className="group flex shrink-0 items-center"
           >
@@ -130,7 +139,7 @@ export default function Navbar() {
             <Link
               to="/contact"
               onClick={handleNavigation}
-              className="group hidden sm:inline-flex items-center gap-2 rounded-full border border-orange-400/40 bg-gradient-to-r from-orange-400 to-amber-300 px-4 py-2.5 sm:px-5 text-[13px] font-semibold text-black transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-[0_0_24px_rgba(249,115,22,0.18)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              className="cd-button cd-button--primary cd-button--nav-desktop"
             >
             Reach Us Out
             <ArrowUpRight
@@ -146,6 +155,7 @@ export default function Navbar() {
             {/* Mobile Menu Toggle */}
             <button
               type="button"
+              ref={toggle}
               aria-label={menuOpen ? "Close navigation" : "Open navigation"}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
@@ -162,14 +172,14 @@ export default function Navbar() {
         </nav>
 
         {/* Mobile Navigation */}
-        <div
+        <nav
           id="mobile-navigation"
           aria-label="Mobile navigation"
           aria-hidden={!menuOpen}
-          inert={!menuOpen ? "" : undefined}
+          hidden={!menuOpen}
           style={{ backgroundColor: NAVBAR_BG }}
           className={`
-            mx-auto mt-3 max-w-7xl overflow-hidden
+            mx-auto mt-3 max-h-[calc(100dvh-6rem)] max-w-7xl overflow-y-auto
             rounded-2xl border
             border-white/10 text-white
             transition-all duration-200
@@ -220,24 +230,13 @@ export default function Navbar() {
             <Link
               to="/contact"
               onClick={handleNavigation}
-              className="
-                mt-3 flex w-full items-center justify-center gap-2
-                rounded-xl bg-gradient-to-r
-                from-orange-400 to-amber-300
-                px-4 py-3.5 text-sm font-semibold text-black
-                transition-all duration-200
-                hover:brightness-105
-                active:scale-[0.99]
-                focus-visible:outline-none
-                focus-visible:ring-2 focus-visible:ring-orange-400
-                sm:hidden
-              "
+              className="cd-button cd-button--primary cd-button--block mt-3"
             >
               Reach Us Out
               <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
           </div>
-        </div>
+        </nav>
       </header>
     </>
   );

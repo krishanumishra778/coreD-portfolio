@@ -1,23 +1,7 @@
-/**
- * Additional CoreD assistant FAQ content.
- *
- * This is an add-on for the existing KnowledgeBase.js, not a replacement.
- * It contains roughly 250 natural-language question phrasings across additional
- * FAQ intents. Existing verified facts are reused; unknown product/business
- * details are answered transparently rather than guessed.
- *
- * Integration:
- * 1. Import this array in the same data file as the current knowledgeBase:
- *      import { expandedKnowledgeBase } from "./KnowledgeBaseExpanded.js";
- * 2. Rename the current `export const knowledgeBase = [` to
- *      `const existingKnowledgeBase = [`
- * 3. After the current array closes, add:
- *      export const knowledgeBase = [...existingKnowledgeBase, ...expandedKnowledgeBase];
- *
- * Keep IDs unique across both files if you add more FAQs later.
- */
+// Additional CoreD FAQ intents. Keep IDs stable for assistant links and tests.
+import { SERVICES, servicePrices, leadForgeSupport } from "../components/services/servicesData.js";
 
-export const expandedKnowledgeBase = [
+const extendedEntries = [
   {
     id: "reason-to-choose-cored-crm",
     category: "value-and-fit",
@@ -30,7 +14,7 @@ export const expandedKnowledgeBase = [
       "CoreD ka CRM kyun lena chahiye?",
     ],
     keywords: ["reason to buy", "why choose cored", "crm value"],
-    answer: "One practical reason to consider CoreD is the choice of setup: the Basic option is built around one AI agent, the Standard option around three, and a Custom CRM Solution can be tailored to your requirements. Whether it is the right fit depends on your workflow and the capabilities you need, which should be discussed with the CoreD team.",
+    answer: "Start with a single workflow, connect a compatible CRM, or request a custom build. Choose based on where work gets stuck, what you already use and what staff should keep control of.",
     action: "contact",
   },
   {
@@ -45,7 +29,7 @@ export const expandedKnowledgeBase = [
       "CoreD doosri CRM companies se alag kaise hai?",
     ],
     keywords: ["unique selling point", "differentiation", "competitive advantage"],
-    answer: "I can confirm that CoreD provides business CRM services, including custom CRM development and AI-agent-based CRM options. I don't have verified, feature-by-feature evidence to claim that CoreD is better or unique compared with another provider. The most useful comparison is to match your actual requirements against each provider's confirmed features, agent setup, pricing and terms.",
+    answer: "We can scope work around an existing CRM. Compare providers on the workflow they can deliver, the permissions they need, the cost of third-party tools and who supports the setup after handover.",
     action: "contact",
   },
   {
@@ -60,7 +44,7 @@ export const expandedKnowledgeBase = [
       "CoreD marketplace ke baare mein batao",
     ],
     keywords: ["marketplace overview", "marketplace offerings", "platform marketplace"],
-    answer: "The information currently verified for this assistant describes CoreD's CRM services, custom CRM development and AI-agent-based CRM options. I don't have confirmed details about a CoreD marketplace, its listings or how it works, so I don't want to invent an answer. Please use the Contact us option to confirm the marketplace details with the CoreD team.",
+    answer: "CoreDhristi is the related AI marketplace. This CoreD site is for enquiries about implementation, consulting and cybersecurity work. Marketplace listings have their own terms and prices.",
     action: "contact",
   },
   {
@@ -75,7 +59,7 @@ export const expandedKnowledgeBase = [
       "Aapke marketplace aur doosre marketplaces mein kya difference hai?",
     ],
     keywords: ["marketplace comparison", "other marketplaces", "marketplace competitors"],
-    answer: "I don't have verified information about CoreD's marketplace model or a reliable comparison with other marketplaces. I therefore can't fairly claim that it has different features, lower fees, more listings or better service. The CoreD team can confirm whether a marketplace is offered and provide the criteria for an accurate comparison.",
+    answer: "Compare marketplaces by the work a listing supports, its data access, how it is maintained and the terms of its license. A CoreD service quote is separate from a marketplace listing.",
     action: "contact",
   },
   {
@@ -90,7 +74,7 @@ export const expandedKnowledgeBase = [
       "Kya CoreD ka apna marketplace hai?",
     ],
     keywords: ["marketplace website", "marketplace access", "marketplace availability"],
-    answer: "Yes, CoreD has an online marketplace where companies can buy CRM solutions and subscriptions.",
+    answer: "The related CoreDhristi marketplace is available online. Use this website’s Services page for CoreD implementation and security quotes.",
     action: "contact",
   },
   {
@@ -105,7 +89,7 @@ export const expandedKnowledgeBase = [
       "Aapki CRM aur doosri CRM mein kya farq hai?",
     ],
     keywords: ["crm comparison", "competitor crm", "other crm systems"],
-    answer: "I don't have verified details about a specific competitor's CRM, so I can't make a factual side-by-side comparison. What I can confirm is that CoreD offers CRM services, including custom CRM solutions and AI-agent-based options: Basic is built around one agent and Standard around three. Compare providers using confirmed features, workflows, integrations, pricing and support terms.",
+    answer: "CoreD can add a workflow to a supported CRM or scope a custom build. Compare the actual work covered, integrations, message controls and support terms before choosing a provider.",
     action: "contact",
   },
   {
@@ -120,7 +104,7 @@ export const expandedKnowledgeBase = [
       "Kya CoreD ki CRM competitors se better hai?",
     ],
     keywords: ["crm competitor comparison", "better than competitors", "choose a crm"],
-    answer: "I can't claim CoreD is better than competitors without verified, comparable evidence. A sensible evaluation is to compare each option against your workflow, required CRM functions, agent setup, integrations, pricing, data handling and support commitments. CoreD's confirmed options include Basic with one AI agent, Standard with three, and a custom solution tailored to requirements.",
+    answer: "Compare providers using the same scope: inputs, permissions, handoff, launch tests, one-time cost and ongoing fees. Ask which work your staff will still need to do.",
     action: "contact",
   },
   {
@@ -135,7 +119,7 @@ export const expandedKnowledgeBase = [
       "Aapki CRM mein kaun-kaun se features milte hain?",
     ],
     keywords: ["crm feature list", "included functionality", "plan features"],
-    answer: "The verified information available to me confirms CoreD's CRM services, custom CRM development and AI-agent-based options. It does not confirm a complete feature list for each plan, so I shouldn't present unverified modules or functions as included. Please share your required workflow with CoreD to confirm which features can be provided and under which option.",
+    answer: "AI Setup for Your CRM includes one compatible CRM, capture, assignment, follow-up rules and one basic report. LeadForge X covers one source, segment, CRM and channel. The Services page lists what each plan covers.",
     action: "contact",
   },
   {
@@ -150,7 +134,7 @@ export const expandedKnowledgeBase = [
       "Kya small business ke liye CoreD CRM sahi rahegi?",
     ],
     keywords: ["small business crm", "startup crm", "business size"],
-    answer: "CoreD provides CRM services to businesses, but I don't have verified minimum company-size requirements or a specific small-business package description. A small business can discuss its workflow, team needs and intended agent setup with CoreD to find out whether Basic, Standard or a custom solution is appropriate.",
+    answer: "A small team can start with one approved lead source and one workflow in the CRM Workflow Pilot. Share your current setup so we can check whether that is enough.",
     action: "contact",
   },
   {
@@ -165,7 +149,7 @@ export const expandedKnowledgeBase = [
       "Business grow hone par CRM ko adapt kiya ja sakta hai?",
     ],
     keywords: ["scaling crm", "growing business", "business expansion"],
-    answer: "CoreD offers custom CRM solutions tailored to a client's requirements, but I don't have verified details about scaling limits or upgrade procedures. If your business is growing, explain the expected changes in users, workflow and AI-agent needs to CoreD so the suitable design and any limits can be confirmed before a decision is made.",
+    answer: "Custom CRM can cover more teams, systems, languages and workflows. Share how many people and records you expect to add; we’ll agree what the setup needs to handle.",
     action: "contact",
   },
   {
@@ -180,7 +164,7 @@ export const expandedKnowledgeBase = [
       "Meri industry ke liye CoreD CRM ban sakti hai?",
     ],
     keywords: ["industry crm", "industry suitability", "sector requirements"],
-    answer: "CoreD provides CRM services to businesses and offers custom CRM solutions, but I don't have a verified list of supported industries. A CRM may need to be designed around a particular industry's workflow, so please describe your use case to the CoreD team and ask them to confirm suitability.",
+    answer: "Tell us what your team does, what data it handles and which system it uses. We check access, permissions and any industry constraints before quoting.",
     action: "contact",
   },
   {
@@ -195,7 +179,7 @@ export const expandedKnowledgeBase = [
       "Leads ko CRM mein organise kiya ja sakta hai?",
     ],
     keywords: ["lead organisation", "lead workflow", "manage enquiries"],
-    answer: "A CRM is commonly used to organise lead and customer information and track follow-ups. CoreD provides CRM services and custom CRM solutions, but the exact lead-management fields and workflows that will be included must be confirmed with the team for your project.",
+    answer: "Lead capture, assignment and follow-up rules are in AI Setup for Your CRM. LeadForge X adds qualification, duplicate checks and an agreed sales handoff.",
     action: "contact",
   },
   {
@@ -210,7 +194,7 @@ export const expandedKnowledgeBase = [
       "Sales pipeline ko CRM mein track kiya ja sakta hai?",
     ],
     keywords: ["sales pipeline", "opportunity tracking", "deal stages"],
-    answer: "A CRM can be used to organise sales opportunities and their stages. CoreD provides CRM services, including custom CRM development, but I don't have a verified standard list of pipeline stages or features included in each plan. Share your sales process with the CoreD team to confirm how it can be represented.",
+    answer: "Show us your current lead stages and who owns each one. We can scope capture, assignment and a report around a compatible CRM. Extra dashboards and stages can be discussed.",
     action: "contact",
   },
   {
@@ -225,7 +209,7 @@ export const expandedKnowledgeBase = [
       "Customer follow-ups ko CRM se manage kar sakte hain?",
     ],
     keywords: ["follow-up tracking", "customer reminders", "follow-up workflow"],
-    answer: "A CRM can help a team keep follow-up information organised, but I can't promise that missed follow-ups will be eliminated or confirm specific reminder features for CoreD's plans. The follow-up steps, notifications and any AI-agent role should be confirmed with CoreD based on your workflow.",
+    answer: "We can scope WhatsApp or email follow-ups and log replies to a CRM. The workflow should stop after a reply, booking, opt-out or staff takeover.",
     action: "contact",
   },
   {
@@ -240,7 +224,7 @@ export const expandedKnowledgeBase = [
       "Customer data ko CRM mein organise kiya ja sakta hai?",
     ],
     keywords: ["customer records", "customer data organisation", "central customer information"],
-    answer: "A CRM is generally used to organise customer and lead information. CoreD provides CRM services, but the specific record fields, history views, permissions and data-handling practices for a proposed solution are not confirmed in my current information. Please have those requirements checked with the CoreD team.",
+    answer: "We agree which fields and activity history to read or write in the CRM, and who can use them. Tell us which records need to be kept together.",
     action: "contact",
   },
   {
@@ -255,7 +239,7 @@ export const expandedKnowledgeBase = [
       "Business workflow ko CRM mein centralise kar sakte hain?",
     ],
     keywords: ["workflow centralisation", "business process", "organise operations"],
-    answer: "CoreD offers CRM services and custom CRM solutions intended to be shaped around a client's requirements. I can't confirm that every process can be supported without reviewing it. Describe the steps, people involved and information that needs to be tracked so the team can assess the workflow.",
+    answer: "Choose one point where work is duplicated. The pilot can test one workflow and one source before you decide whether to connect more teams or systems.",
     action: "contact",
   },
   {
@@ -270,7 +254,7 @@ export const expandedKnowledgeBase = [
       "Kya CRM ko mere business ke hisaab se customise kiya ja sakta hai?",
     ],
     keywords: ["customised crm", "tailored crm", "business-specific workflow"],
-    answer: "Yes. CoreD offers Custom CRM Solutions that are tailored to a client's needs. The final features, integrations, agent roles, scope and delivery arrangements depend on your requirements and need to be confirmed by the CoreD team.",
+    answer: "Yes. Custom CRM can cover screens, migration, reporting, ERP links, languages and several teams. Scope and cost are agreed after we review access and data volume.",
     action: "contact",
   },
   {
@@ -285,7 +269,7 @@ export const expandedKnowledgeBase = [
       "Kya mere company ke liye alag CRM develop ki ja sakti hai?",
     ],
     keywords: ["crm developed for company", "bespoke crm", "company-specific crm"],
-    answer: "CoreD offers custom CRM development, so a solution can be discussed around your company's requirements rather than assuming that a standard setup will fit. The exact scope and feasibility must be reviewed with the team before they can be confirmed.",
+    answer: "Yes. We can scope a custom CRM if the systems you already have do not cover the workflow. Share a short example of the process and the records it needs.",
     action: "contact",
   },
   {
@@ -300,7 +284,7 @@ export const expandedKnowledgeBase = [
       "Custom CRM aur standard plan mein kya difference hai?",
     ],
     keywords: ["custom vs standard", "custom solution comparison", "standard plan choice"],
-    answer: "The Basic option is structured around one AI agent and the Standard option around three. A Custom CRM Solution is tailored to a client's requirements, including the required CRM functionality and agent setup. I can't confirm other differences, prices or limits without details from CoreD.",
+    answer: "The listed plans each have a bounded scope. Choose Custom CRM for more than one workflow or team, data moves, custom screens, extra languages or ERP links.",
     action: "contact",
   },
   {
@@ -315,7 +299,7 @@ export const expandedKnowledgeBase = [
       "Custom CRM banwane se pehle kya batana hoga?",
     ],
     keywords: ["requirements gathering", "project requirements", "custom crm planning"],
-    answer: "Start by describing your current workflow, the problems you want to address, the information that must be tracked, who will use the CRM and whether AI agents are being considered. You can also mention any existing tools and must-have requirements. The CoreD team will need to confirm scope and feasibility; this assistant can't finalise a project specification.",
+    answer: "Describe the current CRM, lead sources, teams and workflows. The quote should state systems, records, integrations, launch checks and support. Leave out credentials and real customer records.",
     action: "contact",
   },
   {
@@ -330,7 +314,7 @@ export const expandedKnowledgeBase = [
       "Aapke CRM ka AI agent kaun se kaam karta hai?",
     ],
     keywords: ["agent responsibilities", "agent tasks", "ai agent workflow"],
-    answer: "CoreD offers AI-agent-based CRM solutions, but the specific tasks performed by an agent are not verified in my current information. Agent responsibilities should be defined around your workflow and confirmed with the CoreD team before being treated as an included capability.",
+    answer: "A website chatbot can answer from one approved source and hand off to staff. A One Standard + One Basic Agent can handle one workflow with one integration. Actions such as voice or bookings need their own scope.",
     action: "contact",
   },
   {
@@ -345,7 +329,7 @@ export const expandedKnowledgeBase = [
       "Kya AI agents ki sankhya customise ho sakti hai?",
     ],
     keywords: ["number of agents", "agent count customisation", "custom agent setup"],
-    answer: "The Basic option is built around one AI agent and Standard around three. CoreD's Custom CRM Solution can be tailored to a client's requirements, including the number or purpose of agents. The exact setup should be confirmed with the team.",
+    answer: "Agent roles follow the task, access and handoff. If several agents or integrations are needed, choose Custom Agent or Custom CRM and describe who should approve each step.",
     action: "contact",
   },
   {
@@ -360,7 +344,7 @@ export const expandedKnowledgeBase = [
       "Kya AI agents employees ko replace kar dete hain?",
     ],
     keywords: ["ai agent and human team", "replace employees", "human oversight"],
-    answer: "I don't have verified details about the intended autonomy or oversight model for CoreD's agents. In general, responsibility should be decided for the particular workflow, including which actions may be taken automatically and which require human review. Please confirm the proposed arrangement with CoreD rather than assuming that employees are replaced.",
+    answer: "Use an agent for a defined step and keep someone responsible for the decision. Staff can approve messages, handle exceptions and stop or take over the workflow.",
     action: "contact",
   },
   {
@@ -375,7 +359,7 @@ export const expandedKnowledgeBase = [
       "Kya AI agent ke action par human approval rakha ja sakta hai?",
     ],
     keywords: ["human approval", "agent review", "approval workflow"],
-    answer: "I don't have verified information about which approval controls are included in CoreD's AI-agent solutions. If a review or approval step is important, include it in your requirements and ask CoreD to confirm whether and how it can be implemented.",
+    answer: "Yes. In LeadForge X your team approves the source, fit rules and messages. Staff can take over and stop follow-ups. Other approval steps are agreed for each workflow.",
     action: "contact",
   },
   {
@@ -390,7 +374,7 @@ export const expandedKnowledgeBase = [
       "Normal CRM mein AI agent add karne se kya badalta hai?",
     ],
     keywords: ["regular vs agent crm", "ai-enabled crm", "traditional crm difference"],
-    answer: "A traditional CRM is mainly used to store and organise information for people to review and act on. An AI-agent-based CRM adds agents configured for defined parts of a workflow. CoreD offers agent-based CRM options, but the exact work each agent performs must be confirmed for the proposed solution.",
+    answer: "A CRM keeps records and a pipeline. Automation runs rules; an agent handles a defined task using approved information. A multi-agent setup splits the work into roles with agreed permissions.",
     action: "contact",
   },
   {
@@ -405,7 +389,7 @@ export const expandedKnowledgeBase = [
       "Basic aur Custom CRM mein kya farq hai?",
     ],
     keywords: ["basic vs custom", "basic plan customisation", "one agent custom crm"],
-    answer: "Basic is structured around one AI agent. A Custom CRM Solution is tailored to the client's requirements, so its scope and agent setup can be discussed around a particular workflow. I can't confirm whether a specific Basic feature can be modified without checking with CoreD.",
+    answer: "Basic starts with one focused CRM pilot or one Basic agent. Custom work can combine several agents, systems and teams in one scope.",
     action: "contact",
   },
   {
@@ -420,7 +404,7 @@ export const expandedKnowledgeBase = [
       "Standard aur Custom CRM mein kya difference hai?",
     ],
     keywords: ["standard vs custom", "three agents custom setup", "custom alternative"],
-    answer: "Standard is structured around three AI agents. A Custom CRM Solution is tailored to your requirements, including the number or purpose of agents and the CRM functionality needed. The team needs to review your workflow before advising which option fits.",
+    answer: "Standard CRM connects one CRM workflow and channel. Standard Agents includes one Standard option plus one Basic option. Choose Custom when you need more integrations or several coordinated agents.",
     action: "contact",
   },
   {
@@ -435,7 +419,7 @@ export const expandedKnowledgeBase = [
       "Teen se zyada AI agents chahiye to kya karna hoga?",
     ],
     keywords: ["more than three agents", "larger agent setup", "agent count above standard"],
-    answer: "Standard is structured around three AI agents. If you need a different number or purpose of agents, CoreD's Custom CRM Solution is the option to discuss. The team must confirm feasibility and the exact scope for your requirements.",
+    answer: "Choose Custom Multi-Agent CRM or Custom Multi-Agent Build for a larger agent team. We scope each role, its permissions, approvals, integrations and handoff.",
     action: "contact",
   },
   {
@@ -450,7 +434,7 @@ export const expandedKnowledgeBase = [
       "Basic aur Standard ke agents ke roles kya hain?",
     ],
     keywords: ["agent names", "agent roles", "separate responsibilities"],
-    answer: "I can confirm the agent count—one for Basic and three for Standard—but I don't have verified names or role assignments for those agents. Ask CoreD to confirm the exact responsibilities and whether they can be tailored to your workflow.",
+    answer: "LeadForge X separates finding, qualifying, following up and booking or handing off. For custom work, we agree who owns each action and where a person must review it.",
     action: "contact",
   },
   {
@@ -465,7 +449,7 @@ export const expandedKnowledgeBase = [
       "Kya CoreD CRM ko doosre software se connect kiya ja sakta hai?",
     ],
     keywords: ["app integrations", "third-party tools", "connect existing software"],
-    answer: "I don't have a verified integration list for CoreD's CRM plans. Compatibility depends on the specific tools and the proposed solution. Share the names of the systems you use with CoreD and ask which connections can be supported and whether they affect scope or cost.",
+    answer: "We can assess HubSpot, Zoho, Odoo or another supported CRM. We check the subscription, API access, fields and volume before saying what can be connected.",
     action: "contact",
   },
   {
@@ -480,7 +464,7 @@ export const expandedKnowledgeBase = [
       "Purane CRM ka data naye CRM mein transfer ho sakta hai?",
     ],
     keywords: ["data migration", "import existing records", "old crm transfer"],
-    answer: "I don't have verified information about data-import formats or migration services included in CoreD's plans. Before proceeding, provide the source system, approximate data structure and any special requirements to CoreD, and ask them to confirm feasibility, responsibility and any additional scope.",
+    answer: "Data migration is a separate add-on or custom scope. Share the source, record count and what must carry over. We’ll agree checks for duplicates and missing fields.",
     action: "contact",
   },
   {
@@ -495,7 +479,7 @@ export const expandedKnowledgeBase = [
       "CoreD CRM mein customer data kaise secure rakha jata hai?",
     ],
     keywords: ["data protection", "privacy practices", "security measures", "certifications"],
-    answer: "I don't have verified details about CoreD's security controls, privacy practices, certifications or regulatory compliance. Because these details matter, please ask CoreD for the applicable policies and evidence for your proposed solution before storing sensitive or regulated information in it.",
+    answer: "AI Security Readiness reviews one workflow’s data access, permissions, logs and staff handoff. For a specific project, ask which controls and handling terms apply. The site Privacy Policy covers website enquiries.",
     action: "contact",
   },
   {
@@ -510,7 +494,7 @@ export const expandedKnowledgeBase = [
       "CRM ko kahan host ya deploy kiya jayega?",
     ],
     keywords: ["hosting", "deployment options", "cloud hosting", "infrastructure"],
-    answer: "I don't have verified information about hosting providers, deployment models or infrastructure options for CoreD's CRM solutions. Tell the team about your hosting requirements and ask which arrangements are supported, who manages them and what costs or responsibilities apply.",
+    answer: "The written quote identifies where the work will run, who owns each account and which hosting or provider charges are separate.",
     action: "contact",
   },
   {
@@ -525,7 +509,7 @@ export const expandedKnowledgeBase = [
       "CRM launch ke baad maintenance aur support milega?",
     ],
     keywords: ["maintenance", "post-launch support", "updates", "technical support"],
-    answer: "I don't have verified information about maintenance packages, update policies, support hours or issue-resolution commitments. These should be agreed with CoreD before a project starts, including what is covered, how requests are handled and whether ongoing support has a separate cost.",
+    answer: "Support is optional unless the quote includes it. Agree the hours, coverage and reply window in writing. Setup and provider fees are separate.",
     action: "contact",
   },
   {
@@ -540,7 +524,7 @@ export const expandedKnowledgeBase = [
       "Kya CRM use karne ke liye team ko training di jayegi?",
     ],
     keywords: ["training", "onboarding", "user guidance", "team enablement"],
-    answer: "I don't have verified details about training or onboarding included with CoreD's CRM solutions. If your team will need training, include it in the requirements and ask CoreD to confirm the format, scope and any associated charges.",
+    answer: "LeadForge X includes a handover, and One Standard + One Basic Agent includes a short guide. We can scope more staff training or rollout support separately.",
     action: "contact",
   },
   {
@@ -555,7 +539,7 @@ export const expandedKnowledgeBase = [
       "CRM banne mein kitna time lagega?",
     ],
     keywords: ["implementation timeline", "delivery time", "launch date"],
-    answer: "I don't have a verified implementation timeline or delivery guarantee. The schedule will need to be discussed with CoreD after the requirements and scope are reviewed. Avoid relying on a specific duration until the team confirms it for your project.",
+    answer: "We confirm a schedule after reviewing systems, access, scope and the people who will approve the work. Ask for dates and acceptance checks in the written quote.",
     action: "contact",
   },
   {
@@ -570,7 +554,7 @@ export const expandedKnowledgeBase = [
       "Kya CRM ka demo ya free trial mil sakta hai?",
     ],
     keywords: ["free trial", "demo request", "try before buying"],
-    answer: "I don't have verified information about free trials, demo availability or trial conditions. Please contact CoreD to ask whether a demonstration or test environment can be provided for your use case.",
+    answer: "The CRM Workflow Pilot includes a demo and a review together. Ask the team about LeadForge X delivery availability during scoping. There is no public self-serve trial listed here.",
     action: "contact",
   },
   {
@@ -585,7 +569,7 @@ export const expandedKnowledgeBase = [
       "Payment, instalment aur refund ke kya rules hain?",
     ],
     keywords: ["payment methods", "refund terms", "billing terms", "instalments"],
-    answer: "I don't have verified payment methods, billing schedules, recurring charges or refund terms for CoreD. Please request the current commercial terms in writing before making a payment or approving a project.",
+    answer: "CoreD's project payment schedule is 50% advance, 30% at the agreed halfway milestone and 20% on completion. Minor in-scope errors reported within 28 days of handover are corrected without a CoreD correction fee; approved third-party costs remain separate. Confirm acceptance checks, payment methods and cancellation or refund handling in the written quote. The policy is currently a review copy and statutory rights are not excluded.",
     action: "contact",
   },
   {
@@ -600,7 +584,7 @@ export const expandedKnowledgeBase = [
       "CRM ke alawa website par kaun si services listed hain?",
     ],
     keywords: ["website service list", "gpt services", "cyber security", "cloud devops"],
-    answer: "The website's Services section lists AI Agent Based CRM, GPT Services, Cyber Security and Cloud Solution & DevOps. I don't have verified scope details for every service, so please check the relevant service page or contact CoreD for an exact description of deliverables and availability.",
+    answer: "CoreD offers AI-Powered CRM, AI Agents, AI Consulting, AI Cybersecurity Consulting and Cybersecurity. Compare plans or choose Custom in any tab.",
     action: "contact",
   },
   {
@@ -615,7 +599,7 @@ export const expandedKnowledgeBase = [
       "CoreD ke CRM projects ke examples kahan dekh sakta hoon?",
     ],
     keywords: ["portfolio examples", "crm case studies", "past projects"],
-    answer: "The website's Case Studies section includes examples for Adsmark01, Crawl Digitally and NextTechWaves. They describe different CRM use cases, including AI-assisted marketing enquiries, lead and sales-pipeline organisation, and education-related student-fee and campus communication workflows. The published case studies do not establish performance figures unless those are explicitly shown on the page.",
+    answer: "See our work includes CRM and digital projects for sales, education, operations and marketing. The case studies use project screens and documented outcomes, without unverified performance figures.",
     action: "contact",
   },
   {
@@ -630,7 +614,7 @@ export const expandedKnowledgeBase = [
       "CoreD ke saath project start kaise kar sakte hain?",
     ],
     keywords: ["start project", "project enquiry", "get started"],
-    answer: "Use the Contact us option on this website to discuss your requirements with CoreD. It helps to explain your current workflow, what needs to be organised or improved, who will use the CRM, and whether you are considering one agent, three agents or a custom setup. The team must confirm the next steps and project scope.",
+    answer: "Choose a plan on Services and request a quote, or send a general enquiry if you are unsure. Describe the systems and outcome you need. We check fit and permissions before writing a quote.",
     action: "contact",
   },
   {
@@ -645,7 +629,7 @@ export const expandedKnowledgeBase = [
       "Plan choose karne se pehle CoreD team se kaise baat karun?",
     ],
     keywords: ["confirm plan details", "speak to cored team", "verify feature"],
-    answer: "Use the Contact us option on the website to discuss the details directly with CoreD. Before selecting a plan, ask the team to confirm the features, agent responsibilities, integrations, pricing, support and other terms that matter to your business.",
+    answer: "Contact CoreD if you’re not sure which plan fits. Ask us to confirm what’s included, what is separate, when work can start and who supports it afterwards.",
     action: "contact",
   },
   {
@@ -660,7 +644,7 @@ export const expandedKnowledgeBase = [
       "CoreD ki CRM product ka exact naam kya hai?",
     ],
     keywords: ["crm product name", "named product", "crm service"],
-    answer: "The verified information available to this assistant describes CoreD's CRM services and its Basic, Standard and Custom CRM options. I don't have a separately verified product name or confirmation that every client receives the same product configuration. Please confirm the intended product name and scope with CoreD.",
+    answer: "CoreD LeadForge X is the proposed sales CRM setup. It finds and qualifies leads, logs approved follow-ups and books or hands qualified replies to sales. Delivery availability is confirmed during scoping.",
     action: "contact",
   },
   {
@@ -675,7 +659,7 @@ export const expandedKnowledgeBase = [
       "Kya CoreD custom CRM develop karta hai?",
     ],
     keywords: ["crm development", "who builds crm", "custom development"],
-    answer: "CoreD offers custom CRM development and AI-agent-based CRM solutions. I don't have verified information about the staffing, ownership arrangements or exact implementation approach for a particular project. Those details should be confirmed directly with CoreD.",
+    answer: "CoreD can scope a CRM build or connect a compatible existing CRM. Account ownership, access, code reuse and handover are set out in the agreement.",
     action: "contact",
   },
   {
@@ -690,7 +674,7 @@ export const expandedKnowledgeBase = [
       "CRM mein users aur permissions kaise manage honge?",
     ],
     keywords: ["user limits", "roles and permissions", "access control"],
-    answer: "I don't have verified information about user limits, role settings or access permissions in CoreD's plans. If these are important, specify how many people will use the CRM and what each person should be allowed to view or change, then ask CoreD to confirm the supported controls.",
+    answer: "Tell us how many people need access and what each may read, change or approve. We agree the permissions and any CRM seat costs before the build.",
     action: "contact",
   },
   {
@@ -705,7 +689,7 @@ export const expandedKnowledgeBase = [
       "Kya CoreD CRM mobile par use ki ja sakti hai?",
     ],
     keywords: ["mobile app", "mobile access", "responsive crm"],
-    answer: "I don't have verified information about a dedicated mobile app, mobile-browser support or device compatibility for CoreD's CRM solutions. Please tell CoreD which devices your team uses and ask them to confirm the supported access options.",
+    answer: "Tell us which devices your staff use. We can check browser or app support for the proposed system before agreeing the scope.",
     action: "contact",
   },
   {
@@ -720,7 +704,7 @@ export const expandedKnowledgeBase = [
       "Kya CRM se reports aur analytics mil sakte hain?",
     ],
     keywords: ["reports", "analytics dashboard", "crm reporting"],
-    answer: "I don't have a verified report or analytics feature list for CoreD's CRM options. Explain which information and measures you need to review, and ask the CoreD team whether the required reports can be included in your solution.",
+    answer: "AI Setup for Your CRM covers one basic report. Dashboards and custom reporting need an agreed metric, data source and owner.",
     action: "contact",
   },
   {
@@ -735,7 +719,7 @@ export const expandedKnowledgeBase = [
       "CRM se kaun se repetitive tasks automate kiye ja sakte hain?",
     ],
     keywords: ["workflow automation", "automated tasks", "automation scope"],
-    answer: "CoreD offers AI-agent-based CRM solutions, but I don't have verified details about specific automations included in each option. Automation should be defined task by task, with the team confirming what can be supported, what needs human review and what is included in the agreed scope.",
+    answer: "Scope capture, assignment, approved follow-ups and staff handoff one workflow at a time. Extra channels, sources or systems are quoted separately.",
     action: "contact",
   },
   {
@@ -750,7 +734,94 @@ export const expandedKnowledgeBase = [
       "CRM chhodne par apna data export kar sakte hain?",
     ],
     keywords: ["data export", "data portability", "leaving crm"],
-    answer: "I don't have verified information about data export formats, transfer procedures or exit terms for CoreD's CRM solutions. Ask CoreD to document how your data can be accessed, exported, retained or deleted and whether any conditions or charges apply.",
+    answer: "Ask for export formats, access and deletion steps in the project agreement. If you need a migration or a large export, include it in the scope.",
     action: "contact",
   },
+];
+
+export const pricingAnswer = "Proposed USD pricing: " +
+  servicePrices("ai-powered-crm") +
+  ". See Services for every offer. The written quote confirms scope, third-party charges and optional support.";
+
+const publicEntries = [
+  {
+    id: "existing-crm-automation",
+    question: "Can you add automation to the CRM we already use?",
+    alternatives: ["Can I keep my CRM?", "Can you connect automation to HubSpot or Zoho?"],
+    keywords: ["keep existing crm", "automate current crm", "existing crm setup"],
+    answer: "Yes, if your CRM plan and API support the workflow. We check access, fields and data volume before quoting. AI Setup for Your CRM covers one compatible CRM, lead capture, assignment, follow-up rules and one basic report.",
+  },
+  {
+    id: "quote-process",
+    question: "What happens after I request a quote?",
+    alternatives: ["How do quotes work?", "What happens after I send a quote request?"],
+    keywords: ["quote process", "quote request receipt", "quotation approval"],
+    answer: "Choose a service and plan, tell us what you need and add any extras. The site confirms receipt only when the receiving service acknowledges the request. We check fit, systems and permissions, then send a written quote with the work, price, dates, fees and acceptance steps. A request is not an agreement.",
+  },
+  {
+    id: "five-service-prices",
+    question: "What do the proposed plans cost?",
+    alternatives: ["Show all proposed prices", "What are your starting prices by service?"],
+    keywords: ["proposed usd pricing", "compare service prices"],
+    answer: SERVICES.map(({ id, label }) => label + ": " + servicePrices(id) + ".").join(" ") +
+      " Prices are proposed USD amounts for the listed scope. Provider charges and ongoing support are separate.",
+  },
+  {
+    id: "leadforge-overview",
+    question: "What does CoreD LeadForge X do?",
+    alternatives: ["How does LeadForge X work?", "LeadForge X delivery status"],
+    keywords: ["leadforge x flagship", "leadforge delivery", "leadforge sales crm"],
+    answer: "LeadForge X is a proposed setup for one segment, source, existing CRM and messaging channel. It finds and qualifies leads, sends approved follow-ups, records activity in the CRM, then books or hands qualified replies to sales. Your team approves the rules and can take over. We confirm delivery availability during scoping.",
+  },
+  {
+    id: "security-services",
+    question: "Which cybersecurity services does CoreD offer?",
+    alternatives: ["What security work do you do?", "Do you offer antivirus installation?"],
+    keywords: ["security assessment", "vulnerability assessment", "penetration testing", "malware assessment", "antivirus installation"],
+    answer: "We scope security assessments, vulnerability assessments, penetration testing, fixes, malware assessment and antivirus installation. You receive agreed findings, a fix list or installation checks. Formal testing requires written authorization from the asset owner. Software licenses are separate from installation.",
+  },
+  {
+    id: "ai-security-scope",
+    question: "What is covered by an AI security review?",
+    alternatives: ["What does AI Security Readiness include?", "Can you build defensive AI tools?"],
+    keywords: ["ai security readiness", "ai cybersecurity consulting", "defensive ai tools"],
+    answer: "AI Security Readiness covers one workflow’s data access, permissions, logs and staff handoff. You get a prioritised fix list. Multiple workflows, formal testing and defensive tools for alerts or reports need a separate scope.",
+  },
+  {
+    id: "messaging-automation",
+    question: "Can you automate WhatsApp and email follow-ups?",
+    alternatives: ["Can you do WhatsApp automation?", "How do you stop follow-ups?"],
+    keywords: ["whatsapp opt-in", "email sender setup", "messaging automation", "stop follow-ups"],
+    answer: "We can scope an approved WhatsApp number with opted-in contacts and approved templates where required, or configure an approved email sender. We prevent duplicates, log activity to the CRM and stop follow-ups after a reply, booking, opt-out or staff takeover. Extra channels and provider charges are separate.",
+  },
+  {
+    id: "setup-support-and-fees",
+    question: "Is support included in the setup price?",
+    alternatives: ["Are licenses and messages included?", "What costs are separate from setup?"],
+    keywords: ["one-time setup", "support pricing", "third-party fees", "software licenses"],
+    answer: "Setup is one-time. " + leadForgeSupport + ". The quote states its coverage and reply window. CRM seats, messages, lead data, models, hosting, voice, antivirus licenses and applicable taxes are separate unless included in writing.",
+  },
+  {
+    id: "discounts-and-final-price",
+    question: "Do you offer discounts?",
+    alternatives: ["Can I get a discount on a plan?", "Do you have a discount policy?"],
+    keywords: ["discount policy", "discount on quotes"],
+    answer: "No discounts are listed on the site. Ask CoreD to confirm the final price and any commercial terms in the written quote.",
+  },
+  {
+    id: "custom-plans",
+    question: "Can I get a custom plan for any service?",
+    alternatives: ["Is there a Custom option in each tab?", "How do I ask for a custom scope?"],
+    keywords: ["custom plan options", "custom cybersecurity", "custom ai consulting"],
+    answer: "Yes. Each of the five service tabs has a Custom option. Tell us which systems, users and approvals are involved. We agree the deliverables, boundaries and price before starting.",
+  },
+];
+
+export const websiteFaq = publicEntries.map(({ id, question, answer }) => ({ id, question, answer }));
+export const expandedKnowledgeBase = [
+  ...extendedEntries,
+  ...publicEntries.map(({ id, question, alternatives, keywords, answer }) => ({
+    id, category: "services-and-quotes", questions: [question, ...alternatives],
+    keywords, answer, action: "contact",
+  })),
 ];

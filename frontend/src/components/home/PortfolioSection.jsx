@@ -1,7 +1,8 @@
-import { useLayoutEffect, useRef } from "react";
+import { RevealWords } from "../ui/WordReveal.jsx";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
-import { ArrowRight, ArrowUpRight, BadgeCheckIcon, Layers, Images } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Layers, Images } from "lucide-react";
 import { caseStudies } from "../../data/PortfolioData.js";
 
 function SectionHeading({
@@ -24,7 +25,7 @@ function SectionHeading({
       )}
 
       <h2 className="text-3xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
-        {title}
+        <RevealWords>{title}</RevealWords>
       </h2>
 
       {description && (
@@ -42,7 +43,7 @@ export default function PortfolioSection() {
   const marqueeRef = useRef(null);
   const tweenRef = useRef(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const track = marqueeRef.current;
 
     if (!track || caseStudies.length < 2) {
@@ -77,19 +78,19 @@ export default function PortfolioSection() {
       <div className="bg-[#F3EDE2] mx-auto max-w-7xl">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
-            align="center"
+            align="left"
             eyebrow="Case studies"
-            title={<> Better system <br/>
-                       Clearer outcome
-                  </>}
-            description="Explore how thoughtful workflows and automation can help teams work with greater clarity."
+            title="Selected work"
           />
+          <Link to="/see-our-work" className="cd-button cd-button--line">See our work <ArrowUpRight size={17} aria-hidden="true" /></Link>
         </div>
 
         <div
-          className="mt-12 overflow-hidden"
+          className="classic-portfolio-track mt-12 overflow-x-auto motion-reduce:overflow-x-auto"
           onMouseEnter={() => tweenRef.current?.pause()}
           onMouseLeave={() => tweenRef.current?.resume()}
+          onFocus={() => tweenRef.current?.pause()}
+          onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) tweenRef.current?.resume(); }}
         >
           <div
             ref={marqueeRef}
@@ -99,7 +100,7 @@ export default function PortfolioSection() {
               <div
                 key={isDuplicate ? "duplicate-cards" : "original-cards"}
                 aria-hidden={isDuplicate ? true : undefined}
-                className="flex shrink-0 gap-8 pr-8"
+                className={`flex shrink-0 gap-8 pr-8 ${isDuplicate ? "motion-reduce:hidden" : ""}`}
               >
                 {caseStudies.map((item) => (
                   <Link
@@ -126,7 +127,7 @@ export default function PortfolioSection() {
                           {item.client}
                         </h3>
 
-                        <BadgeCheckIcon className="h-5 w-5 fill-green-500 text-white" />
+
                       </div>
 
                       <p className="mt-1.5 line-clamp-2 min-h-[40px] text-sm leading-5 text-slate-500">

@@ -1,78 +1,31 @@
-/**
- * Business content for the CoreD website assistant.
- *
- * This file holds content only. It contains no UI and no matching logic, so
- * adding or changing an answer never requires touching the components.
- *
- * FAQ entry schema
- * ----------------
- *   id         Unique, stable, kebab-case. Suggested questions and tests refer to it.
- *   category   Free-form group name, for maintenance only.
- *   questions  Natural ways a visitor might ask. English and Hinglish are fine.
- *   keywords   Short topic phrases, matched like extra, lower-weight questions.
- *              Avoid single generic words such as "crm" or "cored".
- *   answer     Plain text. It is rendered as text, never as HTML. Use "\n" for line breaks.
- *   action     Optional. "contact" shows a button that jumps to the Contact section.
- *
- * Accuracy rule
- * -------------
- * Only the following are confirmed business facts:
- *   - CoreD provides CRM services to businesses.
- *   - CoreD offers custom CRM and AI-agent-based CRM solutions.
- *   - Basic is structured around one AI agent.
- *   - Standard is structured around three AI agents.
- *   - Custom CRM solutions are tailored to a client's needs.
- * Do not add prices, feature lists, agent responsibilities, integrations, channels,
- * security claims, timelines, metrics, emails or URLs until they are verified.
- */
+// CoreD assistant copy and stable FAQ intents.
+import { expandedKnowledgeBase, pricingAnswer } from "./KnowledgeBaseExpanded.js";
+import { aiAgentKnowledgeBase } from "./AIAgentKnowledgeBase.js";
+import { cyberSecurityKnowledgeBase } from "./CyberSecurityKnowledgeBase.js";
+import { basicQuestionsKnowledgeBase } from "./BasicQuestionsKnowledgeBase.js";
 
-/**
- * The only contact route that is currently verified: the "Contact us" link in the
- * site footer (footer.contact.href in PortfolioData.js). Keep the two in sync.
- */
-
-
-
-import { expandedKnowledgeBase } from "./knowledgebaseExpanded";
-
-
-export const contactChannel = {
-  label: "Contact CoreD",
-  href: "#contact",
-};
-
+export const contactChannel = { label: "Contact CoreD", href: "#contact" };
 export const assistantCopy = {
   name: "CoreD Assistant",
-  tagline: "CRM & AI-agent solutions",
+  tagline: "AI, automation and cybersecurity",
   chatLabel: "CoreD assistant chat",
-  inputLabel: "Ask a question about CoreD's CRM services",
-  inputPlaceholder: "Ask about CoreD's CRM services...",
-  welcome:
-    "Hi, I'm the CoreD assistant. Ask me about our CRM services, the Basic, Standard and Custom CRM options, or how AI agents fit into a CRM.",
+  inputLabel: "Ask a question about CoreD services",
+  inputPlaceholder: "Ask about CoreD services…",
+  welcome: "Hi. Ask me about our AI, CRM and cybersecurity services, or how to request a quote.",
   fallback: {
-    content:
-      "I don't have verified information on that yet. I can help with what CoreD does, the Basic, Standard and Custom CRM options, how AI agents fit into a CRM, and how to discuss your requirements. For anything else, please use the Contact us option so the CoreD team can answer directly.",
-
-    alternatives: [
-      "I'm not fully sure about that, and I don't want to give you incorrect information. You can ask me about CoreD's CRM solutions, AI agents, or available plans. For other queries, please contact the CoreD team.",
-
-      "That's a good question! I don't have a verified answer for it right now. I can explain CoreD's CRM services, the Basic and Standard plans, or Custom CRM solutions. For further details, please reach out through Contact us.",
-
-      "I don't have enough confirmed information to answer that accurately. The CoreD team can help clarify your specific requirements. You can also ask me about our CRM options, AI-agent-based solutions, and custom CRM development."
-    ],
-
+    content: "I don’t have an answer to that. Contact CoreD if you’d like the team to check.",
+    alternatives: [],
     action: "contact",
   },
-  // faqId points at an entry below. If an id is ever removed, the label is
-  // matched like a typed question instead, so a stale id cannot break the chat.
   suggestions: [
     { faqId: "what-is-cored", label: "What does CoreD do?" },
-    { faqId: "plans-overview", label: "What plans do you offer?" },
-    { faqId: "basic-vs-standard", label: "Basic vs Standard?" },
-    { faqId: "custom-crm", label: "Can you build a custom CRM?" },
-    { faqId: "pricing", label: "How do I get pricing?" },
+    { faqId: "pricing", label: "What do plans cost?" },
+    { faqId: "existing-crm-automation", label: "Can I keep my CRM?" },
+    { faqId: "security-services", label: "What security work do you do?" },
+    { faqId: "quote-process", label: "How do quotes work?" },
   ],
 };
+
 const existingKnowledgeBase = [
   /* ------------------------------ Conversation ----------------------------- */
   {
@@ -89,8 +42,7 @@ const existingKnowledgeBase = [
       "Namaste",
     ],
     keywords: [],
-    answer:
-      "Hello! What would you like to know about CoreD's CRM services, our plans, or how AI agents fit into a CRM?",
+    answer: "Hi. Ask me about CoreD’s services, proposed pricing or what to include in a quote request.",
   },
   {
     id: "thanks",
@@ -134,8 +86,7 @@ const existingKnowledgeBase = [
       "Tum kaun ho?",
     ],
     keywords: ["talk to a human", "speak to a person", "real person"],
-    answer:
-      "I'm the CoreD website assistant, a program rather than a person. I answer from a prepared set of information about CoreD's CRM services and plans, so I can explain the Basic, Standard and Custom CRM options, but I can't assess your business or give a technical recommendation. For anything beyond that, the CoreD team can help directly.",
+    answer: "I’m CoreD’s website assistant. I match questions to our service FAQ; I can’t inspect your systems or confirm a project scope.",
     action: "contact",
   },
 
@@ -157,8 +108,7 @@ const existingKnowledgeBase = [
       "CoreD ke baare mein batao",
     ],
     keywords: ["company overview", "about your company"],
-    answer:
-      "CoreD provides CRM services to businesses. We help companies organise their workflows through CRM solutions, including custom CRM development and AI-agent-based CRM systems. You can ask me about our plans, how AI agents fit into a CRM, or how to discuss your requirements with the team.",
+    answer: "CoreD provides AI, automation and cybersecurity for businesses. We build CRM workflows and AI agents, advise on AI projects and review or help fix security issues.",
   },
   {
     id: "services-overview",
@@ -175,8 +125,7 @@ const existingKnowledgeBase = [
       "Aap kaun si services provide karte ho?",
     ],
     keywords: ["our offerings", "crm services", "service list"],
-    answer:
-      "CoreD provides CRM services to businesses. Our offerings include:\n- CRM solutions for businesses\n- Custom CRM development\n- AI-agent-based CRM solutions\n- CRM workflows tailored to your operational requirements\n- CRM options configured around the number and purpose of AI agents you need\n\nIf a standard plan can't handle your workflow well, we can discuss a custom solution.",
+    answer: "CoreD offers AI-Powered CRM, AI Agents, AI Consulting, AI Cybersecurity Consulting and Cybersecurity. Each service has a Custom option.",
   },
   {
     id: "other-services",
@@ -190,8 +139,7 @@ const existingKnowledgeBase = [
       "Do you offer AI chatbots?",
     ],
     keywords: ["cyber security", "devops", "gpt services", "cloud services"],
-    answer:
-      "The Services section of this website also lists GPT Services, Cyber Security, and Cloud Solution & DevOps alongside AI Agent Based CRM. I don't have verified details about what those services cover, so please check the Services page or ask the CoreD team directly.",
+    answer: "Alongside CRM and AI agents, CoreD offers AI consulting, AI security readiness reviews, security assessments, authorized testing and device protection.",
     action: "contact",
   },
   {
@@ -207,8 +155,7 @@ const existingKnowledgeBase = [
       "Aapne pehle kya banaya hai?",
     ],
     keywords: ["past clients", "previous work", "client examples"],
-    answer:
-      "The Case Studies page on this website describes CRM dashboards CoreD designed for three clients: Adsmark01 (an AI marketing CRM that takes enquiries through qualification and discovery-call handoff), Crawl Digitally (a centralised CRM for leads, sales pipeline and follow-ups), and NextTechWaves (an education CRM for student fees and campus communication). Each case study shows the problem, the solution and screenshots. I don't have verified performance figures to share.",
+    answer: "See our work includes CRM and digital projects for teams in sales, marketing, education and operations. You can review project screenshots, documented phases and outcomes.",
   },
 
   /* -------------------------------- Concepts ------------------------------- */
@@ -239,8 +186,7 @@ const existingKnowledgeBase = [
       "AI agent CRM kya hota hai?",
     ],
     keywords: ["agent based crm", "ai agents in crm"],
-    answer:
-      "An AI-agent-based CRM adds AI agents that are set up to handle defined parts of a CRM workflow alongside your team. CoreD offers CRM solutions built around one agent (Basic), three agents (Standard), or a custom number and purpose of agents. The exact tasks an agent performs depend on the solution, so please confirm those with CoreD.",
+    answer: "An agent-based CRM uses an AI agent for a defined job, such as classifying an enquiry or preparing a follow-up. People approve sensitive actions and can take over the workflow.",
     action: "contact",
   },
   {
@@ -269,8 +215,7 @@ const existingKnowledgeBase = [
       "Normal CRM aur AI agent CRM mein kya difference hai?",
     ],
     keywords: ["traditional crm", "regular crm", "agent workflows"],
-    answer:
-      "A traditional CRM mainly stores and organises information that people enter, review and act on. In an AI-agent-based CRM, AI agents are set up to take on defined steps of the workflow alongside your team. Which steps suit an agent depends on your process, which is worth discussing with CoreD.",
+    answer: "A CRM keeps customer records. Automation CRM runs rules; an agent-based CRM adds a defined task using approved information; a multi-agent setup splits work among roles with agreed permissions.",
     action: "contact",
   },
 
@@ -294,8 +239,7 @@ const existingKnowledgeBase = [
       "Aapke plans kya hain?",
     ],
     keywords: ["crm plans", "plan options", "available packages"],
-    answer:
-      "CoreD offers three CRM options:\n- Basic Plan: a CRM solution with one AI agent\n- Standard Plan: a CRM solution with three AI agents\n- Custom CRM Solution: built around your requirements, with the CRM functionality and the number or purpose of agents set according to your needs\n\nAsk me about any of them, or about pricing.",
+    answer: "The five service tabs list scoped plans and a Custom option. For CRM, start with CRM Workflow Pilot, AI Setup for Your CRM or LeadForge X. Extra channels, support and provider charges are separate.",
   },
   {
     id: "basic-plan",
@@ -312,8 +256,7 @@ const existingKnowledgeBase = [
       "Basic plan kya hai?",
     ],
     keywords: ["basic plan", "single agent crm", "simple crm setup"],
-    answer:
-      "The Basic Plan is a CRM solution built around one AI agent. It's an option for businesses considering a simpler, single-agent setup. I don't have verified details about its exact agent capabilities, integrations, limits or included modules, so please confirm those with CoreD.",
+    answer: "In AI Agents & Automation, Basic includes one choice: a website chatbot, WhatsApp lead capture or email enquiry routing. In AI-Powered CRM, Basic is the CRM Workflow Pilot for one source and workflow. The proposed setup prices are $300 and $750 respectively.",
     action: "contact",
   },
   {
@@ -328,8 +271,7 @@ const existingKnowledgeBase = [
       "Basic plan mein kitne agents hain?",
     ],
     keywords: ["basic agent count", "agents in basic"],
-    answer:
-      "The Basic Plan is built around one AI agent. If you expect to need more than one, the Standard Plan has three agents, and a Custom CRM Solution can be set up around your needs.",
+    answer: "The AI Agents Basic plan includes one Basic option. A website chatbot, WhatsApp lead capture and email enquiry routing are the choices. CRM packages have their own workflow scope.",
   },
   {
     id: "standard-plan",
@@ -346,8 +288,7 @@ const existingKnowledgeBase = [
       "Standard plan kya hai?",
     ],
     keywords: ["standard plan", "multi agent crm", "three agent crm"],
-    answer:
-      "The Standard Plan is a CRM solution built around three AI agents. It's an option for businesses that need a multi-agent setup. I don't have verified details about what each agent does, which workflows are included, or its integrations and limits, so please confirm those with CoreD.",
+    answer: "The AI Agents Standard plan includes one Standard option plus one Basic option, from $1,200 in proposed setup pricing. The CRM Standard plan adds one AI task and one follow-up channel to a compatible existing CRM, from $1,500.",
     action: "contact",
   },
   {
@@ -362,8 +303,7 @@ const existingKnowledgeBase = [
       "Standard plan mein kitne agents hain?",
     ],
     keywords: ["standard agent count", "agents in standard"],
-    answer:
-      "The Standard Plan is built around three AI agents. If your workflow needs a different number or purpose of agents, a Custom CRM Solution can be discussed.",
+    answer: "The AI Agents Standard package includes two choices: one Standard agent or automation and one Basic option. Three or more agents need a Custom quote.",
   },
   {
     id: "basic-vs-standard",
@@ -378,8 +318,7 @@ const existingKnowledgeBase = [
       "Basic aur Standard mein kya difference hai?",
     ],
     keywords: ["compare plans", "plan comparison", "basic or standard"],
-    answer:
-      "The difference I can confirm is the agent setup: the Basic Plan is a CRM solution with one AI agent, while the Standard Plan is a CRM solution with three AI agents. I don't have verified details on any other differences, such as features, agent tasks, limits or pricing, so please confirm those with CoreD. If neither setup fits, a Custom CRM Solution is also available.",
+    answer: "For AI Agents, Basic covers one simple option. Standard adds one connected agent or automation plus one Basic option. For CRM, Basic tests one workflow; Standard connects a compatible CRM and adds one AI task and one messaging channel.",
     action: "contact",
   },
   {
@@ -397,8 +336,7 @@ const existingKnowledgeBase = [
       "Mere business ke liye custom CRM chahiye",
     ],
     keywords: ["custom crm solution", "custom crm development", "tailored crm"],
-    answer:
-      "Yes. CoreD offers a Custom CRM Solution for businesses with specific operational requirements, including AI-agent-based CRM. The CRM functionality and the number or purpose of agents can be set according to your needs. The best next step is to discuss your workflow and requirements with CoreD. I can't confirm specific features, integrations or timelines in advance, since those depend on that discussion.",
+    answer: "Yes. Custom CRM can cover data migration, screens, reports, more teams, languages and ERP links. We confirm systems, access, scope and cost before quoting.",
     action: "contact",
   },
   {
@@ -415,8 +353,7 @@ const existingKnowledgeBase = [
       "I need more than three AI agents",
     ],
     keywords: ["custom instead of standard", "plans do not fit"],
-    answer:
-      "A Custom CRM Solution is worth exploring if your workflow is specialised, if you need a different number or purpose of AI agents than one (Basic) or three (Standard), or if you think a standard plan won't handle your process well. This is only preliminary guidance. The CoreD team can discuss your requirements to identify a suitable solution.",
+    answer: "Choose Custom CRM for multiple workflows or teams, custom screens, migration, another channel or ERP work. Tell us your current CRM and which handoff is causing trouble.",
     action: "contact",
   },
   {
@@ -431,8 +368,7 @@ const existingKnowledgeBase = [
       "Mere liye kaun sa plan sahi rahega?",
     ],
     keywords: ["choose a plan", "right plan", "which option"],
-    answer:
-      "As a starting point:\n- If you're considering one AI agent, explore the Basic Plan.\n- If you're considering three AI agents, explore the Standard Plan.\n- If your workflow is specialised or needs a different agent setup, enquire about a Custom CRM Solution.\n\nThis is preliminary guidance, not a technical assessment or a guarantee that a plan meets every requirement. Which sounds closest to your situation: one agent, three agents, or something more specific?",
+    answer: "Start with CRM Workflow Pilot if you want to prove one workflow. For a compatible CRM connection, compare AI Setup for Your CRM. For several systems or roles, request a custom quote.",
     action: "contact",
   },
 
@@ -442,12 +378,16 @@ const existingKnowledgeBase = [
     category: "enquiry",
     questions: [
       "How much does CoreD cost?",
+      "What is the pricing for a custom CRM?",
+      "Pricing for custom CRM",
       "What is the price of Basic?",
       "What is the price of the Standard plan?",
       "How much does the Basic plan cost?",
       "How much does the Standard plan cost?",
       "What is the pricing?",
       "What are your prices?",
+      "What is the cheapest option?",
+      "What is the lowest starting price?",
       "How can I enquire about pricing?",
       "Can I get a quote?",
       "How do I get pricing?",
@@ -456,8 +396,7 @@ const existingKnowledgeBase = [
       "Standard plan ki kimat kitni hai?",
     ],
     keywords: ["plan pricing", "cost of crm", "get a quote", "billing"],
-    answer:
-      "I don't have verified pricing for the Basic Plan, Standard Plan or Custom CRM Solutions, so I can't give you a number or billing details. Exact pricing needs to be confirmed with CoreD. Use the Contact us option and mention which plan you're considering.",
+    answer: pricingAnswer,
     action: "contact",
   },
   {
@@ -474,8 +413,7 @@ const existingKnowledgeBase = [
       "Apni requirements kaise discuss karu?",
     ],
     keywords: ["contact us", "speak to the team", "book a meeting", "get started"],
-    answer:
-      "The best way to discuss your requirements is through the Contact us option on this website. It helps to mention your business workflow, what you'd like to organise or automate, and whether you're thinking of one agent, three agents or a custom setup. I don't have a verified email address, phone number or booking link to share here.",
+    answer: "Use the contact link below for a general enquiry. To keep your service, plan and add-ons attached to the request, use Request quote on the Services page.",
     action: "contact",
   },
   {
@@ -489,8 +427,7 @@ const existingKnowledgeBase = [
       "Custom CRM ke liye kya information chahiye?",
     ],
     keywords: ["prepare requirements", "before the discussion", "what to share"],
-    answer:
-      "You don't need everything ready to start a conversation, but these help:\n- The workflow you want the CRM to support, such as how enquiries or leads come in and get followed up today\n- What you'd like to organise or automate, and where you think an AI agent could help\n- Roughly how many agents or separate responsibilities you have in mind\n- Who on your team would use it\n- Any existing tools or processes it would need to work alongside\n- Anything you consider a must-have\n\nThe CoreD team can then discuss what a suitable solution might look like.",
+    answer: "Share your CRM, lead sources, teams, workflow and intended outcome. Describe access needs without sending credentials or customer records.",
     action: "contact",
   },
   {
@@ -536,8 +473,7 @@ const existingKnowledgeBase = [
       "service level agreement",
       "free trial",
     ],
-    answer:
-      "I don't have verified information about integrations with other tools, supported communication channels, API access, data security practices or certifications, support commitments, implementation timelines, user limits, or trials and demos. Please ask the CoreD team directly so you get a confirmed answer rather than my guess.",
+    answer: "Compatibility and dates depend on your systems, permissions and scope. WhatsApp and email automation can be scoped; the quote will confirm what we can connect and when.",
     action: "contact",
   },
   {
@@ -553,8 +489,7 @@ const existingKnowledgeBase = [
       "Kya aap results ki guarantee dete ho?",
     ],
     keywords: ["guaranteed results", "expected outcomes", "performance promise"],
-    answer:
-      "I don't have a confirmed commitment about specific business results to share, so I can't promise outcomes such as more leads, higher conversions, time saved or revenue growth. Results depend on your business and how the CRM is used. You can discuss your goals and expectations with the CoreD team.",
+    answer: "We can't promise more sales, a specific number of leads, savings or complete protection. We can agree the checks and deliverables that are in scope.",
     action: "contact",
   },
 ];
@@ -563,6 +498,9 @@ const existingKnowledgeBase = [
 export const knowledgeBase = [
   ...existingKnowledgeBase,
   ...expandedKnowledgeBase,
+  ...aiAgentKnowledgeBase,
+  ...cyberSecurityKnowledgeBase,
+  ...basicQuestionsKnowledgeBase,
 ];
 
 

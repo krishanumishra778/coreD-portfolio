@@ -1,1058 +1,198 @@
-
 import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
+import { RevealWords } from "../components/ui/WordReveal.jsx";
+import { SERVICES, addOns, basicAgents, formatPrice, getServicePlans, securityServices, standardAgents } from "../components/services/servicesData.js";
+import { budgetCurrencies, generalEmail, phoneCountries, supportEmail } from "../data/contactOptions.js";
+import { formspreeEndpoint, submitEnquiry } from "../components/lib/submitEnquiry.js";
+import { trackEnquiry } from "../components/lib/analytics.js";
 
-import { currencies } from "countries-list/currencies";
-
-import { PhoneInput } from "react-international-phone";
-import "react-international-phone/style.css";
-
-import {
-  termsSections,
-  privacyPolicy,
-} from "../data/PortfolioData.js";
-
-// const SCRIPT_URL = import.meta.env.VITE_QUOTATION_FORM_SCRIPT_URL;
-
-const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwAd_rHgOY5MhU6cYI8uOEpNYtKVcSVuP6nji7f_ZWkIxBfibp5W_-ThK2tDgJ_emQPZA/exec";
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-
-const TURNSTILE_SCRIPT_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-
-// Spam protection settings
-const MIN_FILL_MS = 3000;
-const MAX_LINKS = 2;
-
-// Automatically load all available currencies
-const currencyOptions = Object.entries(currencies).sort(
-  ([, a], [, b]) => a.name.localeCompare(b.name)
-);
-
-const inputClassName = `
-  w-full rounded-xl border border-black/10 bg-white
-  px-4 py-3 text-sm text-[#17181C] outline-none transition-all duration-200
-  placeholder:text-[#9CA3AF] hover:border-black/20
-  focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10
-`;
-
-const labelClassName = "mb-2 block text-sm font-medium text-[#333333]";
-
-const SUCCESS_TEXT =
-  "Thank you! Your request was submitted. Our team will contact you soon.";
-
-const FIXED_PLAN_BUDGETS = {
-  Basic: "300 USD",
-  Standard: "700 USD",
-};
+const formspreeFormId = import.meta.env.VITE_FORMSPREE_FORM_ID;
+const contactConfigured = Boolean(formspreeEndpoint(formspreeFormId));
+const contactProtection = import.meta.env.VITE_CONTACT_SPAM_PROTECTION === "formshield" ? "formshield" : "turnstile";
+const turnstileRequired = contactProtection === "turnstile";
+const turnstileKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+const turnstileScript = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 export default function Contact() {
-  const formRef = useRef(null);
-  const startedAt = useRef(Date.now());
+  const [params] = useSearchParams();
+  return <ContactEnquiry key={params.toString()} params={params} />;
+}
 
-  // Cloudflare Turnstile refs
-  const turnstileContainerRef = useRef(null);
-  const turnstileWidgetId = useRef(null);
+function useTurnstile() {
+  const container = useRef(null);
+  const widget = useRef(null);
+  const [token, setToken] = useState("");
+  const [message, setMessage] = useState(!turnstileRequired ? "" : turnstileKey ? "Loading verification…" : "Verification isn’t configured here. You can email CoreD instead.");
 
-  const [status, setStatus] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [descriptionLength, setDescriptionLength] = useState(0);
-
-  // Plan and budget states
-  const [selectedPlan, setSelectedPlan] = useState("");
-  const [budgetCurrency, setBudgetCurrency] = useState("USD");
-  const [customBudget, setCustomBudget] = useState("");
-
-  // International phone state
-  const [phone, setPhone] = useState("");
-
-  // CAPTCHA states
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [captchaReady, setCaptchaReady] = useState(false);
-  const [captchaLoadError, setCaptchaLoadError] = useState("");
-
-  // Terms and Privacy modal state
-  const [activePolicy, setActivePolicy] = useState(null);
-
-  // Load and render Cloudflare Turnstile
   useEffect(() => {
-    let cancelled = false;
-
-    if (!TURNSTILE_SITE_KEY) {
-      setCaptchaLoadError(
-        "Security verification is not configured. Please try again later."
-      );
-      return;
-    }
-
-    const renderTurnstile = () => {
-      if (
-        cancelled ||
-        !turnstileContainerRef.current ||
-        !window.turnstile ||
-        turnstileWidgetId.current !== null
-      ) {
-        return;
-      }
-
+    if (!turnstileRequired || !turnstileKey) return;
+    let disposed = false;
+    const render = () => {
+      if (disposed || !container.current || !window.turnstile || widget.current != null) return;
       try {
-        turnstileWidgetId.current = window.turnstile.render(
-          turnstileContainerRef.current,
-          {
-            sitekey: TURNSTILE_SITE_KEY,
-            theme: "light",
-            size: "flexible",
-
-            callback: (token) => {
-              setTurnstileToken(token);
-              setCaptchaReady(true);
-              setCaptchaLoadError("");
-            },
-
-            "expired-callback": () => {
-              setTurnstileToken("");
-              setCaptchaLoadError(
-                "CAPTCHA verification expired. Please verify again."
-              );
-            },
-
-            "error-callback": () => {
-              setTurnstileToken("");
-              setCaptchaLoadError(
-                "CAPTCHA verification failed. Please try again."
-              );
-            },
-
-            "timeout-callback": () => {
-              setTurnstileToken("");
-              setCaptchaLoadError(
-                "CAPTCHA verification timed out. Please try again."
-              );
-            },
-          }
-        );
-
-        setCaptchaReady(true);
-        setCaptchaLoadError("");
-      } catch (error) {
-        console.error("Turnstile rendering failed:", error);
-
-        setCaptchaLoadError(
-          "Unable to load security verification. Please refresh the page."
-        );
-      }
+        widget.current = window.turnstile.render(container.current, {
+          sitekey: turnstileKey, theme: "light", size: "flexible",
+          callback: (value) => { setToken(value); setMessage(""); },
+          "expired-callback": () => { setToken(""); setMessage("Verification expired. Please verify again."); },
+          "error-callback": () => { setToken(""); setMessage("Verification failed. Please try again or email CoreD."); },
+          "timeout-callback": () => { setToken(""); setMessage("Verification timed out. Please try again."); },
+        });
+        setMessage("");
+      } catch { setMessage("Verification could not load. Please refresh or email CoreD."); }
     };
-
-    let script = document.querySelector(
-      'script[data-turnstile-script="true"]'
-    );
-
-    const handleScriptLoad = () => {
-      renderTurnstile();
-    };
-
-    const handleScriptError = () => {
-      if (!cancelled) {
-        setCaptchaLoadError(
-          "Unable to load CAPTCHA. Please check your internet connection."
-        );
-      }
-    };
-
-    if (window.turnstile) {
-      renderTurnstile();
-    } else {
+    const error = () => { if (!disposed) setMessage("Verification could not load. Please refresh or email CoreD."); };
+    let script = document.querySelector("script[data-cored-turnstile]");
+    if (window.turnstile) render();
+    else {
+      const addScript = !script;
       if (!script) {
         script = document.createElement("script");
-        script.src = TURNSTILE_SCRIPT_URL;
+        script.src = turnstileScript;
         script.async = true;
-        script.defer = true;
-        script.dataset.turnstileScript = "true";
-
-        script.addEventListener("load", handleScriptLoad);
-        script.addEventListener("error", handleScriptError);
-
-        document.head.appendChild(script);
-      } else {
-        script.addEventListener("load", handleScriptLoad);
-        script.addEventListener("error", handleScriptError);
+        script.dataset.coredTurnstile = "true";
       }
+      script.addEventListener("load", render);
+      script.addEventListener("error", error);
+      if (addScript) document.head.append(script);
     }
-
     return () => {
-      cancelled = true;
-
-      if (script) {
-        script.removeEventListener("load", handleScriptLoad);
-        script.removeEventListener("error", handleScriptError);
-      }
-
-      if (
-        turnstileWidgetId.current !== null &&
-        window.turnstile?.remove
-      ) {
-        window.turnstile.remove(turnstileWidgetId.current);
-        turnstileWidgetId.current = null;
-      }
+      disposed = true;
+      script?.removeEventListener("load", render);
+      script?.removeEventListener("error", error);
+      if (widget.current != null) window.turnstile?.remove(widget.current);
+      widget.current = null;
     };
   }, []);
 
-  // Lock background scrolling and support Escape key while a policy is open
-  useEffect(() => {
-    if (!activePolicy) return;
+  function reset() {
+    setToken("");
+    if (widget.current != null) window.turnstile?.reset(widget.current);
+  }
+  return { container, token, message, reset };
+}
 
-    const previousOverflow = document.body.style.overflow;
+function ContactEnquiry({ params }) {
+  const initialService = SERVICES.find(({ id }) => id === params.get("service"));
+  const initialPlan = getServicePlans(initialService).find(({ id }) => id === params.get("plan"));
+  const [serviceId, setService] = useState(initialService?.id ?? "");
+  const [planId, setPlan] = useState(initialPlan?.id ?? "");
+  const [countryId, setCountry] = useState("IN-91");
+  const [status, setStatus] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const inFlight = useRef(false);
+  const request = useRef({ id: "", signature: "" });
+  const turnstile = useTurnstile();
+  const service = SERVICES.find(({ id }) => id === serviceId);
+  const plan = getServicePlans(service).find(({ id }) => id === planId);
+  const custom = plan?.tier === "Custom";
+  const phoneCountry = phoneCountries.find(({ id }) => id === countryId);
+  const requestedScope = serviceId === initialService?.id && planId === initialPlan?.id
+    ? securityServices.find(({ id }) => id === params.get("scope"))?.name ?? "" : "";
 
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        setActivePolicy(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [activePolicy]);
-
-  const showError = (text) => {
-    setStatus({ type: "error", text });
-  };
-
-  const resetTurnstile = () => {
-    setTurnstileToken("");
-    setCaptchaLoadError("");
-
-    if (
-      turnstileWidgetId.current !== null &&
-      window.turnstile?.reset
-    ) {
-      window.turnstile.reset(turnstileWidgetId.current);
-    }
-  };
-
-  const showSuccess = () => {
-    setStatus({ type: "success", text: SUCCESS_TEXT });
-
-    formRef.current?.reset();
-
-    // Reset controlled fields
-    setSelectedPlan("");
-    setBudgetCurrency("USD");
-    setCustomBudget("");
-    setPhone("");
-    setDescriptionLength(0);
-
-    // Reset CAPTCHA
-    resetTurnstile();
-
-    startedAt.current = Date.now();
-  };
-
-  const handleChange = () => {
-    // Remove previous success/error message when user edits the form
-    if (status) setStatus(null);
-  };
-
-  const handlePlanChange = (event) => {
-    setSelectedPlan(event.target.value);
-    setCustomBudget("");
-  };
-
-  const handleSubmit = async (event) => {
+  async function submit(event) {
     event.preventDefault();
-
-    if (isSubmitting) return;
-
+    if (inFlight.current || status?.type === "success") return;
     const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    const get = (key) => String(formData.get(key) ?? "").trim();
-
-    // 1. Honeypot protection
-    if (get("Website") !== "") {
-      showSuccess();
-      return;
+    const fields = new FormData(form);
+    const value = (name) => String(fields.get(name) ?? "").trim();
+    const fail = (message) => setStatus({ type: "error", message });
+    if (!contactConfigured) return fail("The enquiry form is not connected yet. Please email CoreD.");
+    if (value("Website")) return fail("This request could not be verified.");
+    if (turnstileRequired && !turnstile.token) return fail("Complete security verification or email CoreD.");
+    const localPhone = value("NationalNumber").replace(/[\s()-]/g, "");
+    const fullPhone = phoneCountry ? "+" + phoneCountry.dial + localPhone : "";
+    if (!/^\+\d{7,15}$/.test(fullPhone)) return fail("Choose your country code and enter a valid phone number without the country prefix.");
+    const budget = custom ? value("BudgetAmount") : "";
+    const currency = custom ? value("BudgetCurrency") : "";
+    if (budget && (!Number.isFinite(Number(budget)) || Number(budget) <= 0 || !budgetCurrencies.some(({ code }) => code === currency))) {
+      return fail("Enter a positive budget and choose its currency.");
     }
-
-    // 2. Minimum form filling time
-    if (Date.now() - startedAt.current < MIN_FILL_MS) {
-      showError("Please review your details and submit again.");
-      return;
-    }
-
-    // 3. Terms and Privacy consent validation
-    if (get("TermsAccepted") !== "yes") {
-      showError("Please accept the Terms & Conditions.");
-      return;
-    }
-
-    if (get("PrivacyAccepted") !== "yes") {
-      showError("Please accept the Privacy Policy.");
-      return;
-    }
-
-    // 4. CAPTCHA validation
-    if (!TURNSTILE_SITE_KEY) {
-      showError("Security verification is currently unavailable.");
-      return;
-    }
-
-    if (!turnstileToken) {
-      showError("Please complete the CAPTCHA verification.");
-      return;
-    }
-
-    // 5. Form validation
-    const email = get("CompanyEmail");
-    const contactNumber = get("ContactNumber");
-    const description = get("ProjectDescription");
-    const budgetRange = get("BudgetRange");
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showError("Please enter a valid email address.");
-      return;
-    }
-
-    // Basic international phone number sanity check
-    const phoneDigits = contactNumber.replace(/\D/g, "");
-
-    if (
-      !contactNumber.startsWith("+") ||
-      phoneDigits.length < 7 ||
-      phoneDigits.length > 15
-    ) {
-      showError("Please enter a valid contact number.");
-      return;
-    }
-
-    // Validate budget according to selected plan
-    if (!budgetRange) {
-      showError("Please select a plan and enter your budget.");
-      return;
-    }
-
-    if (selectedPlan === "Custom Solution") {
-      if (
-        !Number.isFinite(Number(customBudget)) ||
-        Number(customBudget) <= 0
-      ) {
-        showError("Please enter a valid budget amount.");
-        return;
-      }
-    }
-
-    // 6. Description link spam protection
-    const linkCount = (
-      description.match(/https?:\/\/|www\./gi) || []
-    ).length;
-
-    if (linkCount > MAX_LINKS) {
-      showError("Please remove extra links from the description.");
-      return;
-    }
-
-    // 7. Prepare form data for Google Apps Script
-    const body = new URLSearchParams();
-
-    for (const [key, value] of formData.entries()) {
-      if (key === "Website") continue;
-
-      body.append(key, String(value).trim());
-    }
-
-    // Send the Cloudflare Turnstile token to the backend
-    body.set("turnstileToken", turnstileToken);
-
-    setIsSubmitting(true);
+    const selectedAddOns = fields.getAll("AddOnIds").filter((id) => service?.addOns.includes(id));
+    const basicAgent = basicAgents.find(([id]) => id === value("BasicAgent"));
+    const standardAgent = standardAgents.find(([id]) => id === value("StandardAgent"));
+    const signature = JSON.stringify([...fields.entries()].filter(([name]) => name != "cf-turnstile-response").concat([["ServiceId", serviceId], ["PlanId", planId]]));
+    if (request.current.signature !== signature) request.current = { id: crypto.randomUUID(), signature };
+    const body = new URLSearchParams({
+      RequestId: request.current.id, FullName: value("FullName"), CompanyName: value("CompanyName"),
+      CompanyEmail: value("CompanyEmail"), ContactNumber: fullPhone,
+      CountryCode: phoneCountry?.code ?? "", DialCode: "+" + (phoneCountry?.dial ?? ""),
+      ServiceId: service?.id ?? "", ServiceSelection: service?.label ?? "Help me choose",
+      PlanId: plan?.id ?? "", ChooseYourPlan: plan?.name ?? "Help me choose",
+      DisplayedPrice: plan ? formatPrice(plan) : "Not selected", PriceBasis: plan?.basis ?? "",
+      PriceAmount: plan?.amount == null ? "" : String(plan.amount), Currency: "USD", PricingStatus: "proposed",
+      BudgetRange: budget ? budget + " " + currency : "Not provided", BudgetAmount: budget, BudgetCurrency: currency,
+      AddOnIds: selectedAddOns.join(","), AddOns: selectedAddOns.map((id) => addOns[id]).join("; "),
+      BasicAgent: basicAgent?.[1] ?? "", StandardAgent: standardAgent?.[1] ?? "",
+      RequestedScope: requestedScope, ProjectDescription: value("ProjectDescription"),
+      TermsAccepted: value("TermsAccepted"), PrivacyAccepted: value("PrivacyAccepted"),
+    });
+    inFlight.current = true;
+    setSubmitting(true);
     setStatus(null);
-
     try {
-
-
-      const response = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body,
-      });
-
-      const responseText = await response.text();
-
-      let result;
-
-      try {
-        result = JSON.parse(responseText);
-      } catch {
-        // Support the previous plain-text Apps Script response
-        if (
-          response.ok &&
-          responseText.trim() === "Success: Data added to Google Sheet"
-        ) {
-          showSuccess();
-          return;
-        }
-
-        throw new Error("Unexpected response from server.");
-      }
-
-      if (!response.ok || result?.success !== true) {
-        const captchaMessages = [
-          "CAPTCHA verification required.",
-          "CAPTCHA verification failed. Please try again.",
-        ];
-
-        const serverMessage = captchaMessages.includes(result?.message)
-          ? result.message
-          : "Unable to send your request. Please try again.";
-
-        throw new Error(serverMessage);
-      }
-
-      showSuccess();
-
-
-
-    } catch (error) {
-      console.error("Contact form submission failed:", error);
-
-      showError(
-        error.message?.startsWith("CAPTCHA")
-          ? error.message
-          : "Unable to send your request. Please try again."
-      );
-
-      // Turnstile tokens are single-use, so reset after a failed attempt
-      resetTurnstile();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const activePolicyTitle =
-    activePolicy === "terms"
-      ? "Terms & Conditions"
-      : "Privacy Policy";
-
-  const activePolicySections =
-    activePolicy === "terms"
-      ? termsSections
-      : privacyPolicy;
+      await submitEnquiry({ formId: formspreeFormId, fields: body, token: turnstile.token, protection: contactProtection, signal: AbortSignal.timeout(25000) });
+      setStatus({ type: "success", message: "We received your enquiry. CoreD will review your selected plan and reply by email." });
+      try { trackEnquiry(serviceId, planId); } catch { /* Optional tracking must not affect confirmed delivery. */ }
+    } catch (error) { fail(error.message); }
+    finally { inFlight.current = false; setSubmitting(false); turnstile.reset(); }
+  }
 
   return (
-    <main className="min-h-screen bg-[#FAF7F1] px-4 pb-16 pt-28 text-[#17181C] sm:px-6 sm:pb-20 sm:pt-32 lg:px-8">
-      <div className="mx-auto w-full max-w-[1120px]">
-
-        {/* Page heading */}
-        <header className="mx-auto mb-9 max-w-2xl text-center sm:mb-12">
-          <span className="inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-orange-400/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-700 sm:text-[11px]">
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-1.5 rounded-full bg-orange-500"
-            />
-            Contact CoreDhristi
-          </span>
-
-          <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            Let's talk about your{" "}
-            <span className="text-orange-500">project.</span>
-          </h1>
-
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#6B7280] sm:text-base">
-            Tell us about your business and requirements. Our team can help you
-            find the right solution.
-          </p>
-        </header>
-
-        <div className="grid items-start gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-8">
-
-          {/* Contact information */}
-          <aside className="rounded-3xl bg-[#17181C] p-6 text-white sm:p-8 lg:p-9">
-            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-orange-400">
-              Let's get started
-            </span>
-
-            <h2 className="mt-5 text-2xl font-semibold leading-tight sm:text-3xl">
-              Tell us what you want to build.
-            </h2>
-
-            <p className="mt-4 text-sm leading-7 text-white/65">
-              Share your requirements for an AI CRM, AI agent, or a custom CRM
-              solution tailored to your business.
-            </p>
-
-            <div className="mt-8 border-t border-white/10 pt-6">
-              <p className="text-sm font-semibold">What happens next?</p>
-
-              <div className="mt-4 space-y-4 text-sm leading-6 text-white/65">
-                <p>
-                  <span className="mr-2 font-semibold text-orange-400">
-                    01.
-                  </span>
-                  Share your project requirements.
-                </p>
-
-                <p>
-                  <span className="mr-2 font-semibold text-orange-400">
-                    02.
-                  </span>
-                  Our team reviews your selected service and plan.
-                </p>
-
-                <p>
-                  <span className="mr-2 font-semibold text-orange-400">
-                    03.
-                  </span>
-                  We follow up using your contact details.
-                </p>
-              </div>
+    <div className="cd-shell contact-page">
+      <header className="page-intro"><h1><RevealWords>Reach Us Out</RevealWords></h1><p>Tell us what you need. Your selected service and plan are included in the enquiry.</p></header>
+      <div className="contact-layout">
+        <aside>
+          <h2>Talk through your project</h2>
+          <p>Share your current tools, the workflow you want to improve and any deadline. For security work, include asset types and counts.</p>
+          <p>General enquiries</p><a className="cd-text-link" href={"mailto:" + generalEmail}>{generalEmail}</a>
+          <p>Existing project support</p><a className="cd-text-link" href={"mailto:" + supportEmail}>{supportEmail}</a>
+          <Link className="cd-button cd-button--on-dark mt-4" to="/services#quotation-section">Compare services <ArrowUpRight size={17} /></Link>
+        </aside>
+        <form id="project-enquiry" className="contact-form quote-form" onSubmit={submit}>
+          <h2>Project enquiry</h2>
+          {status?.type === "success" ? <p className="quote-feedback" role="status">{status.message}</p> : <>
+            <fieldset className="quote-fields" disabled={submitting}>
+              <label className="contact-honeypot" aria-hidden="true">Website<input name="Website" tabIndex={-1} autoComplete="off" /></label>
+              <label>Your name<input name="FullName" required autoComplete="name" maxLength={100} /></label>
+              <label>Company<input name="CompanyName" required autoComplete="organization" maxLength={140} /></label>
+              <label className="quote-wide">Work email<input name="CompanyEmail" type="email" required autoComplete="email" maxLength={160} /></label>
+              <label>Phone country code<select name="PhoneCountry" value={countryId} onChange={(event) => setCountry(event.target.value)} autoComplete="country">
+                {phoneCountries.map((item) => <option key={item.id} value={item.id}>{item.name} (+{item.dial})</option>)}
+              </select></label>
+              <label>Phone number<input name="NationalNumber" type="tel" required autoComplete="tel-national" maxLength={20} placeholder="Number without the country code" /></label>
+              <label>Service<select aria-label="Service" value={serviceId} onChange={(event) => { setService(event.target.value); setPlan(""); }}>
+                <option value="">Help me choose</option>{SERVICES.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
+              </select></label>
+              <label>Plan<select aria-label="Plan" value={planId} onChange={(event) => { setPlan(event.target.value); }} disabled={!service}>
+                <option value="">Help me choose</option>{getServicePlans(service).map((item) => <option key={item.id} value={item.id}>{item.tier} · {item.name} · {formatPrice(item)}</option>)}
+              </select></label>
+              {plan && <p className="quote-choice quote-wide"><strong>{plan.tier} · {plan.name}</strong><span>{formatPrice(plan)}{plan.amount != null ? " USD" : ""} · proposed setup scope</span></p>}
+              {requestedScope && <p className="quote-wide muted">Requested service: {requestedScope}</p>}
+              {custom && <>
+                <label>Budget amount <span>(optional)</span><input name="BudgetAmount" type="number" min="0.01" step="any" inputMode="decimal" placeholder="Your budget" /></label>
+                <label>Budget currency<select name="BudgetCurrency" defaultValue="USD">{budgetCurrencies.map(({ code, name }) => <option key={code} value={code}>{code} · {name}</option>)}</select></label>
+              </>}
+              {plan?.choices?.includes("basic") && <label className="quote-wide">Choose your Basic option<select key={planId + "-basic"} name="BasicAgent" required defaultValue=""><option value="" disabled>Select one Basic option</option>{basicAgents.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>}
+              {plan?.choices?.includes("standard") && <label className="quote-wide">Choose your Standard option<select key={planId + "-standard"} name="StandardAgent" required defaultValue=""><option value="" disabled>Select one Standard option</option>{standardAgents.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>}
+              <label className="quote-wide">What do you need?<textarea name="ProjectDescription" required rows={5} maxLength={5000} /></label>
+            </fieldset>
+            {service && <fieldset className="quote-addons" disabled={submitting}>
+              <legend>Optional add-ons · priced separately</legend>
+              {service.addOns.map((id) => <label key={id}><input key={serviceId + id} type="checkbox" name="AddOnIds" value={id} />{addOns[id]}</label>)}
+            </fieldset>}
+            <div className="contact-agreements">
+              <div className="contact-agreement"><input id="contact-terms" type="checkbox" name="TermsAccepted" value="yes" required aria-labelledby="contact-terms-text" /><p id="contact-terms-text"><label htmlFor="contact-terms">I accept the</label>{" "}<a href="/termsCondition" target="_blank" rel="noopener">Terms &amp; Conditions<span className="sr-only"> (opens in a new tab)</span></a>.</p></div>
+              <div className="contact-agreement"><input id="contact-privacy" type="checkbox" name="PrivacyAccepted" value="yes" required aria-labelledby="contact-privacy-text" /><p id="contact-privacy-text"><label htmlFor="contact-privacy">I’ve read the</label>{" "}<a href="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></a>.</p></div>
             </div>
-
-            <div className="mt-8 border-t border-white/10 pt-6">
-              <p className="text-xs text-slate-300">
-                For business related query:{" "}
-                <a
-                  href="mailto:info@coredhristi.com"
-                  className="font-semibold text-orange-400 transition-colors hover:underline"
-                >
-                  info@coredhristi.com
-                </a>
-              </p>
-
-              <p className="text-xs text-slate-300">
-                Contact HR:{" "}
-                <a
-                  href="mailto:carrers@cored.com"
-                  className="font-semibold text-orange-400 transition-colors hover:underline"
-                >
-                  carrers@cored.com
-                </a>
-              </p>
-            </div>
-          </aside>
-
-          {/* Contact form */}
-          <section className="min-w-0 rounded-3xl border border-black/[0.06] bg-white p-5 shadow-[0_16px_45px_rgba(23,23,23,0.06)] sm:p-8 lg:p-9">
-
-            <form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              onChange={handleChange}
-              className="space-y-5"
-            >
-
-              {/* Honeypot: bots ke liye, user ko nahi dikhega */}
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: "-9999px",
-                  width: "1px",
-                  height: "1px",
-                  overflow: "hidden",
-                }}
-              >
-                <label htmlFor="Website">Leave this field empty</label>
-
-                <input
-                  id="Website"
-                  name="Website"
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
-              </div>
-
-              {/* Company name */}
-              <div>
-                <label htmlFor="CompanyName" className={labelClassName}>
-                  Company Name <span className="text-orange-500">*</span>
-                </label>
-
-                <input
-                  id="CompanyName"
-                  name="CompanyName"
-                  type="text"
-                  required
-                  maxLength={120}
-                  autoComplete="organization"
-                  placeholder="Enter your company name"
-                  className={inputClassName}
-                />
-              </div>
-
-              {/* Company email */}
-              <div>
-                <label htmlFor="CompanyEmail" className={labelClassName}>
-                  Company Email <span className="text-orange-500">*</span>
-                </label>
-
-                <input
-                  id="CompanyEmail"
-                  name="CompanyEmail"
-                  type="email"
-                  required
-                  maxLength={254}
-                  autoComplete="email"
-                  placeholder="name@company.com"
-                  className={inputClassName}
-                />
-              </div>
-
-              {/* Service selection */}
-              <div>
-                <label htmlFor="ServiceSelection" className={labelClassName}>
-                  Service Selection <span className="text-orange-500">*</span>
-                </label>
-
-                <select
-                  id="ServiceSelection"
-                  name="ServiceSelection"
-                  required
-                  defaultValue=""
-                  className={`${inputClassName} cursor-pointer`}
-                >
-                  <option value="" disabled>
-                    Select a service
-                  </option>
-
-                  <option value="AI Based CRM">AI Based CRM</option>
-                  <option value="AI Agent CRM">AI Agent Development</option>
-                  <option value="Custom CRM">Consultancy</option>
-                  <option value="ERP Solution">ERP Solution</option>
-                </select>
-              </div>
-
-              {/* Choose your plan */}
-              <div>
-                <label htmlFor="ChooseYourPlan" className={labelClassName}>
-                  Choose Your Plan <span className="text-orange-500">*</span>
-                </label>
-
-                <select
-                  id="ChooseYourPlan"
-                  name="ChooseYourPlan"
-                  required
-                  value={selectedPlan}
-                  onChange={handlePlanChange}
-                  className={`${inputClassName} cursor-pointer`}
-                >
-                  <option value="" disabled>
-                    Select a plan
-                  </option>
-
-                  <option value="Basic">Basic</option>
-
-                  <option value="Standard">Standard</option>
-
-                  <option value="Custom Solution">Custom Solution</option>
-                </select>
-              </div>
-
-              {/* Budget Range */}
-
-              {/* Basic Plan: Fixed $300 */}
-              {selectedPlan === "Basic" && (
-                <input
-                  type="hidden"
-                  name="BudgetRange"
-                  value={FIXED_PLAN_BUDGETS.Basic}
-                />
-              )}
-
-              {/* Standard Plan: Fixed $700 */}
-              {selectedPlan === "Standard" && (
-                <input
-                  type="hidden"
-                  name="BudgetRange"
-                  value={FIXED_PLAN_BUDGETS.Standard}
-                />
-              )}
-
-              {/* Custom Solution: Currency + Amount */}
-              {selectedPlan === "Custom Solution" && (
-                <div>
-                  <label htmlFor="CustomBudget" className={labelClassName}>
-                    Budget Range <span className="text-orange-500">*</span>
-                  </label>
-
-                  <div
-                    className="
-                      flex w-full items-center overflow-hidden rounded-xl border border-black/10 bg-white
-                      transition-all duration-200 hover:border-black/20
-                      focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-400/10"
-                  >
-                    {/* Currency dropdown */}
-                    <select
-                      aria-label="Select budget currency"
-                      value={budgetCurrency}
-                      onChange={(e) => setBudgetCurrency(e.target.value)}
-                      className="
-                        w-[125px] shrink-0 cursor-pointer border-0 bg-transparent py-3 pl-3 pr-1
-                        text-sm text-[#17181C] outline-none focus:ring-0 sm:w-[155px] sm:pl-4
-                      "
-                    >
-                      {currencyOptions.map(([code, currency]) => (
-                        <option key={code} value={code}>
-                          {code} ({currency.symbol || code})
-                        </option>
-                      ))}
-                    </select>
-
-                    {/* Vertical separator */}
-                    <span
-                      aria-hidden="true"
-                      className="h-7 w-px shrink-0 bg-black/10"
-                    />
-
-                    {/* Budget amount */}
-                    <input
-                      id="CustomBudget"
-                      type="number"
-                      min="1"
-                      step="any"
-                      required
-                      value={customBudget}
-                      onChange={(e) => setCustomBudget(e.target.value)}
-                      placeholder="Enter your budget"
-                      className="
-                        min-w-0 flex-1 border-0 bg-transparent px-3 py-3 text-sm text-[#17181C]
-                        outline-none focus:ring-0 placeholder:text-[#9CA3AF]"
-                    />
-
-                    {/* Combined value for Google Sheets */}
-                    <input
-                      type="hidden"
-                      name="BudgetRange"
-                      value={
-                        customBudget
-                          ? `${customBudget} ${budgetCurrency}`
-                          : ""
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Contact number */}
-              <div>
-                <label htmlFor="ContactNumber" className={labelClassName}>
-                  Contact Number <span className="text-orange-500">*</span>
-                </label>
-
-                <PhoneInput
-                  defaultCountry="in"
-                  value={phone}
-                  onChange={setPhone}
-                  name="ContactNumber"
-                  required
-                  autoComplete="tel"
-                  placeholder="Enter phone number"
-                  preferredCountries={["in", "ae", "us", "gb"]}
-                  className="w-full rounded-xl border border-black/10 bg-whitetransition-all duration-200 hover:border-black/20 
-                            focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-400/10"
-                  inputClassName="
-                    !h-12 !w-full !border-0 !bg-transparent
-                    !px-3 !text-sm !text-[#17181C]
-                    !shadow-none !outline-none
-                    focus:!border-0 focus:!ring-0
-                    placeholder:!text-[#9CA3AF]
-                  "
-                  style={{
-                    "--react-international-phone-height": "48px",
-                    "--react-international-phone-background-color": "#ffffff",
-                    "--react-international-phone-text-color": "#17181C",
-                    "--react-international-phone-font-size": "14px",
-                    "--react-international-phone-border-radius": "12px",
-                    "--react-international-phone-border-color": "rgba(0,0,0,0.1)",
-                  }}
-                />
-              </div>
-
-              {/* Project description */}
-              <div>
-                <label htmlFor="ProjectDescription" className={labelClassName}>
-                  Project Description <span className="text-orange-500">*</span>
-                </label>
-
-                <textarea
-                  id="ProjectDescription"
-                  name="ProjectDescription"
-                  required
-                  minLength={10}
-                  maxLength={5000}
-                  rows={4}
-                  placeholder="Describe your project, goals, or requirements..."
-                  onChange={(e) =>
-                    setDescriptionLength(e.target.value.length)
-                  }
-                  className={`${inputClassName} min-h-32 resize-y leading-6`}
-                />
-
-                <p className="mt-2 text-right text-xs text-[#6B7280]">
-                  {descriptionLength}/5000 characters
-                </p>
-              </div>
-
-              {/* Cloudflare Turnstile CAPTCHA */}
-              <div className="rounded-xl border border-black/10 bg-[#FAF7F1]/50 p-4">
-                <p className="mb-3 text-sm font-medium text-[#333333]">
-                  Security Verification{" "}
-                  <span className="text-orange-500">*</span>
-                </p>
-
-                <div
-                  ref={turnstileContainerRef}
-                  className="min-h-[65px] w-full"
-                  aria-label="Cloudflare CAPTCHA verification"
-                />
-
-                {!captchaReady && !captchaLoadError && (
-                  <p className="mt-2 text-xs text-[#6B7280]">
-                    Loading security verification...
-                  </p>
-                )}
-
-                {captchaLoadError && (
-                  <p
-                    role="alert"
-                    className="mt-2 text-xs leading-5 text-red-600"
-                  >
-                    {captchaLoadError}
-                  </p>
-                )}
-
-                <p className="mt-2 text-xs leading-5 text-[#6B7280]">
-                  This verification helps protect the form against automated
-                  submissions.
-                </p>
-              </div>
-
-              {/* Terms & Conditions consent */}
-              <div className="flex items-start gap-3">
-                <input
-                  id="TermsAccepted"
-                  name="TermsAccepted"
-                  type="checkbox"
-                  value="yes"
-                  required
-                  className="
-                    mt-1 h-4 w-4 shrink-0 cursor-pointer
-                    rounded border-black/20 accent-orange-500
-                    focus-visible:outline-none
-                    focus-visible:ring-2 focus-visible:ring-orange-400
-                    focus-visible:ring-offset-2
-                  "
-                />
-
-                <p className="text-sm leading-6 text-[#6B7280]">
-                  <label
-                    htmlFor="TermsAccepted"
-                    className="cursor-pointer"
-                  >
-                    I have read and agree to the{" "}
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => setActivePolicy("terms")}
-                    className="font-semibold text-orange-600 underline underline-offset-2 transition-colors hover:text-orange-700"
-                  >
-                    Terms & Conditions
-                  </button>
-                  .
-                  <span className="ml-1 text-orange-500">*</span>
-                </p>
-              </div>
-
-              {/* Privacy Policy consent */}
-              <div className="flex items-start gap-3">
-                <input
-                  id="PrivacyAccepted"
-                  name="PrivacyAccepted"
-                  type="checkbox"
-                  value="yes"
-                  required
-                  className="
-                    mt-1 h-4 w-4 shrink-0 cursor-pointer
-                    rounded border-black/20 accent-orange-500
-                    focus-visible:outline-none
-                    focus-visible:ring-2 focus-visible:ring-orange-400
-                    focus-visible:ring-offset-2
-                  "
-                />
-
-                <p className="text-sm leading-6 text-[#6B7280]">
-                  <label
-                    htmlFor="PrivacyAccepted"
-                    className="cursor-pointer"
-                  >
-                    I have read and agree to the{" "}
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => setActivePolicy("privacy")}
-                    className="font-semibold text-orange-600 underline underline-offset-2 transition-colors hover:text-orange-700"
-                  >
-                    Privacy Policy
-                  </button>
-                  .
-                  <span className="ml-1 text-orange-500">*</span>
-                </p>
-              </div>
-
-              {/* Status message */}
-              {status && (
-                <p
-                  role="status"
-                  aria-live="polite"
-                  className={`rounded-xl border px-4 py-3 text-sm leading-6 ${status.type === "success"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                    : "border-red-200 bg-red-50 text-red-700"
-                    }`}
-                >
-                  {status.text}
-                </p>
-              )}
-
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="
-                  flex w-full items-center justify-center
-                  rounded-xl bg-gradient-to-r from-orange-400
-                  to-amber-300 px-5 py-3.5 text-sm font-semibold
-                  text-[#17181C] transition-all duration-200
-                  hover:-translate-y-0.5
-                  hover:shadow-[0_8px_24px_rgba(249,115,22,0.20)]
-                  active:translate-y-0
-                  focus-visible:outline-none
-                  focus-visible:ring-2 focus-visible:ring-orange-400
-                  focus-visible:ring-offset-2
-                  disabled:cursor-not-allowed disabled:opacity-60
-                  disabled:hover:translate-y-0
-                  disabled:hover:shadow-none sm:text-base
-                "
-              >
-                {isSubmitting ? "Submitting..." : "Submit Request"}
-              </button>
-
-              <p className="text-center text-xs leading-5 text-[#6B7280]">
-                Share your requirements with the CoreDhristi team.
-              </p>
-
-            </form>
-          </section>
-        </div>
+            <p className="text-sm leading-6 text-ink/75">Submitting an enquiry does not place an order or authorize a payment. See the <a href="/pricingPolicy" className="cd-text-link" target="_blank" rel="noopener">Pricing Policy<span className="sr-only"> (opens in a new tab)</span></a> before accepting a quote.</p>
+            <div className="contact-verification"><div ref={turnstile.container} />{turnstile.message && <p className="muted" role="status">{turnstile.message}</p>}</div>
+            {status && <p className="quote-feedback quote-feedback--error" role="alert">{status.message}</p>}
+            {!contactConfigured && <p className="muted" role="status">The enquiry form is being connected. Please email CoreD for now.</p>}
+            <button className="cd-button cd-button--primary" type="submit" disabled={submitting || (turnstileRequired && !turnstile.token) || !contactConfigured}>{submitting ? "Sending enquiry…" : "Send enquiry"}</button>
+          </>}
+        </form>
       </div>
-
-      {/* Terms & Conditions / Privacy Policy Modal */}
-      {activePolicy && (
-        <div
-          className="
-            fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-6"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setActivePolicy(null);
-            }
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="policy-modal-title"
-            className="
-              flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl sm:rounded-3xl
-            "
-          >
-            {/* Modal header */}
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-black/10 px-5 py-4 sm:px-7 sm:py-5">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600 sm:text-xs">
-                  CoreDhristi
-                </p>
-
-                <h2
-                  id="policy-modal-title"
-                  className="mt-1 text-xl font-bold text-[#17181C] sm:text-2xl"
-                >
-                  {activePolicyTitle}
-                </h2>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setActivePolicy(null)}
-                aria-label="Close policy"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/5 text-xl text-[#17181C]
-                  transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-              >
-                &times;
-              </button>
-            </div>
-
-            {/* Modal content */}
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7 sm:py-7">
-              <div className="space-y-7">
-                {activePolicySections.map((section, index) => {
-                  const paragraphs = Array.isArray(section.paragraphs)
-                    ? section.paragraphs
-                    : section.paragraphs
-                      ? [section.paragraphs]
-                      : [];
-
-                  return (
-                    <section
-                      key={`${section.title || "policy-section"}-${index}`}
-                    >
-                      <h3 className="text-base font-semibold text-[#17181C] sm:text-lg">
-                        {section.title}
-                      </h3>
-
-                      <div className="mt-2 space-y-3 text-sm leading-7 text-[#6B7280] sm:text-[15px]">
-                        {paragraphs.map((paragraph, paragraphIndex) => (
-                          <p key={paragraphIndex}>{paragraph}</p>
-                        ))}
-
-                        {section.contact && (
-                          <p>
-                            For questions or concerns, contact us at{" "}
-                            <a
-                              href="mailto:info@coredhristi.com"
-                              className="font-semibold text-orange-600 underline underline-offset-2"
-                            >
-                              info@coredhristi.com
-                            </a>
-                            .
-                          </p>
-                        )}
-                      </div>
-                    </section>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Modal footer */}
-            <div className="shrink-0 border-t border-black/10 px-5 py-4 sm:px-7">
-              <button
-                type="button"
-                onClick={() => setActivePolicy(null)}
-                className="
-                  w-full rounded-xl bg-[#17181C] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-black/80
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2
-                "
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </main>
+    </div>
   );
 }

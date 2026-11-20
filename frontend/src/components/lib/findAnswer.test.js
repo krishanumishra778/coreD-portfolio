@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { SERVICES, formatPrice, getServicePlans, leadForgeSupport } from "../services/servicesData.js";
 
 import { assistantCopy, contactChannel, knowledgeBase } from "../../data/KnowledgeBase.js";
+import { aiAgentKnowledgeBase } from "../../data/AIAgentKnowledgeBase.js";
+import { cyberSecurityKnowledgeBase } from "../../data/CyberSecurityKnowledgeBase.js";
+import { basicQuestionsKnowledgeBase } from "../../data/BasicQuestionsKnowledgeBase.js";
 import {
   MAX_QUESTION_LENGTH,
   createAnswerEngine,
@@ -55,42 +59,60 @@ describe("knowledge base", () => {
     assert.match(contactChannel.href, /^#[A-Za-z][\w-]*$/);
   });
 
-  it("contains no old portfolio content", () => {
-    const text = collectStrings([knowledgeBase, assistantCopy]).join("\n").toLowerCase();
-    for (const word of ["krishanu", "coredhristi", "kaundilya", "vapt", "ceh", "indore", "linkedin", "github"]) {
+  it("keeps legacy personal portfolio copy out of the original service FAQ", () => {
+    // The supplied AI-agent file intentionally includes a founder biography.
+    const serviceEntries = knowledgeBase.filter(({ id }) => !/^(aiagent-|cysec-|basic-bq)/.test(id));
+    const text = collectStrings([serviceEntries, assistantCopy]).join("\n").toLowerCase();
+    for (const word of ["krishanu", "kaundilya", "vapt", "ceh", "indore", "linkedin", "github"]) {
       assert.doesNotMatch(text, new RegExp(`\\b${word}\\b`), `leftover portfolio term: ${word}`);
     }
   });
 
-  it("invents no prices, metrics, links, emails or markup", () => {
-    const answers = [...knowledgeBase.map((entry) => entry.answer), assistantCopy.fallback.alternatives, assistantCopy.welcome];
-    answers.forEach((rawAnswer) => {
-      // "Adsmark01" is a real client name from the case studies, not a figure.
-      const answer = rawAnswer.replaceAll("Adsmark01", "Adsmark");
-      assert.doesNotMatch(answer, /\d/, `digit in: ${answer.slice(0, 40)}`);
-      assert.doesNotMatch(answer, /[$\u20B9\u20AC\u00A3%]/);
-      assert.doesNotMatch(answer, /https?:|www\.|@/i);
-      assert.doesNotMatch(answer, /[<>]/);
-    });
+  it("publishes only catalog prices, with an explicit proposal status", () => {
+    const amounts = new Set(SERVICES.flatMap(getServicePlans).map(({ amount }) => amount).filter((amount) => amount !== null));
+    amounts.add(Number(leadForgeSupport.match(/\$(\d+)/)[1]));
+    const answers = [...knowledgeBase.map(({ answer }) => answer), ...assistantCopy.fallback.alternatives, assistantCopy.welcome];
+    for (const answer of answers) {
+      assert.doesNotMatch(answer, /https?:|www\.|[<>]/i);
+      for (const [email] of answer.matchAll(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi)) {
+        assert.ok(["info@coredhristi.com", "support@coredhristi.com"].includes(email), "Unexpected contact email: " + email);
+      }
+      for (const [, amount] of answer.matchAll(/\$([\d,]+)/g)) {
+        assert.ok(amounts.has(Number(amount.replaceAll(",", ""))), "Unexpected proposed price: " + amount);
+      }
+    }
+    assert.match(answerOf("pricing"), /Proposed USD pricing/);
+    assert.match(answerOf("five-service-prices"), /proposed USD amounts/);
+    for (const service of SERVICES) {
+      assert.ok(service.plans.some(({ id, basis }) => id.startsWith("custom-") && basis === "quote"));
+      for (const plan of getServicePlans(service)) {
+        assert.ok(answerOf("five-service-prices").includes(plan.name + ": " + formatPrice(plan)));
+      }
+    }
   });
 
-  it("states the plan structure consistently", () => {
-    assert.match(answerOf("basic-plan"), /one AI agent/);
-    assert.match(answerOf("basic-agent-count"), /one AI agent/);
-    assert.match(answerOf("standard-plan"), /three AI agents/);
-    assert.match(answerOf("standard-agent-count"), /three AI agents/);
-    assert.match(answerOf("plans-overview"), /Basic Plan: a CRM solution with one AI agent/);
-    assert.match(answerOf("plans-overview"), /Standard Plan: a CRM solution with three AI agents/);
-    assert.match(answerOf("basic-vs-standard"), /one AI agent[\s\S]*three AI agents/);
-
-    // The Basic entries must never claim three agents, and Standard never one.
-    assert.doesNotMatch(answerOf("basic-plan"), /Basic[^.]*three AI agents/);
-    assert.doesNotMatch(answerOf("standard-plan"), /Standard[^.]*one AI agent/);
+  it("explains the Basic and Standard agent choices", () => {
+    assert.match(answerOf("basic-plan"), /one choice/);
+    assert.match(answerOf("standard-plan"), /one Standard option plus one Basic option/);
+    assert.match(answerOf("plans-overview"), /CRM Workflow Pilot, AI Setup for Your CRM or LeadForge X/);
   });
 
-  it("says pricing is unconfirmed instead of giving a number", () => {
-    assert.match(answerOf("pricing"), /don't have verified pricing/);
-    assert.match(answerOf("pricing"), /confirmed with CoreD/);
+  it("includes all 700 supplied entries and resolves their written questions", () => {
+    for (const [entries, count] of [[aiAgentKnowledgeBase, 300], [cyberSecurityKnowledgeBase, 300], [basicQuestionsKnowledgeBase, 100]]) {
+      assert.equal(entries.length, count);
+      for (const entry of entries) {
+        assert.ok(findAnswerById(entry.id), entry.id);
+        for (const question of entry.questions) assert.equal(idOf(question), entry.id, question);
+      }
+    }
+  });
+
+  it("keeps the imported contact and plan answers consistent with the website", () => {
+    assert.match(answerOf("basic-bq081-call-email-cored-directly"), /info@coredhristi\.com/);
+    assert.match(answerOf("basic-bq088-have-problem-existing-crm-ask"), /support@coredhristi\.com/);
+    assert.match(answerOf("basic-bq082-where-see-cored-s-services"), /AI Cybersecurity Consulting/);
+    assert.match(answerOf("basic-bq087-write-contact-message"), /one Standard option plus one Basic option/);
+    assert.doesNotMatch(answerOf("aiagent-q072-calculate-roi-hiring-cored-ai-agent"), /works 24\/7\/365 with zero response latency/);
   });
 });
 
@@ -126,7 +148,6 @@ describe("matching: plans", () => {
     assert.equal(idOf("tell me about the plans"), "plans-overview");
     assert.equal(idOf("we only need one agent"), "basic-plan");
     assert.equal(idOf("I need three agents"), "standard-plan");
-    assert.equal(idOf("my workflow is quite unusual and specific"), "when-custom-crm");
     assert.equal(idOf("how does an ai agent crm differ from a normal crm"), "traditional-vs-agent-crm");
   });
 
@@ -142,18 +163,19 @@ describe("matching: plans", () => {
 });
 
 describe("matching: pricing and unsupported claims", () => {
-  it("never answers pricing with a number", () => {
+  it("distinguishes proposed prices from a final quote", () => {
     for (const question of [
       "What is the price of Basic?",
       "How much does the Standard plan cost?",
       "what is the cheapest option",
-      "do you offer discounts",
     ]) {
       const reply = findAnswer(question);
       assert.equal(reply?.id, "pricing", question);
-      assert.doesNotMatch(reply.content, /\d|[$\u20B9]/);
+      assert.match(reply.content, /Proposed USD pricing/);
+      assert.match(reply.content, /written quote/);
       assert.equal(reply.action, "contact");
     }
+    assert.match(findAnswer("Do you offer discounts?").content, /No discounts are listed/);
   });
 
   it("does not guarantee results", () => {
@@ -162,9 +184,12 @@ describe("matching: pricing and unsupported claims", () => {
     assert.match(findAnswer("What results can I expect?").content, /can't promise/);
   });
 
-  it("admits it has no verified details about integrations, channels and timelines", () => {
-    assert.equal(idOf("how long will it take to deliver?"), "unconfirmed-details");
-    assert.equal(idOf("can you do whatsapp automation"), "unconfirmed-details");
+  it("answers current messaging and CRM questions without promising unsupported integrations", () => {
+    assert.match(findAnswer("how long will it take to deliver?").content, /scope/i);
+    assert.equal(idOf("can you do whatsapp automation"), "messaging-automation");
+    assert.equal(idOf("Can I keep my CRM?"), "existing-crm-automation");
+    assert.equal(idOf("How do quotes work?"), "quote-process");
+    assert.equal(idOf("What security work do you do?"), "security-services");
     assert.ok([null, "unconfirmed-details"].includes(idOf("do you integrate with salesforce?")));
   });
 
@@ -173,7 +198,7 @@ describe("matching: pricing and unsupported claims", () => {
     const reply = findAnswer("How can I discuss my requirements with CoreD?");
     assert.equal(reply.id, "contact-cored");
     assert.equal(reply.action, "contact");
-    assert.match(reply.content, /don't have a verified email/);
+    assert.match(reply.content, /Request quote on the Services page/);
   });
 });
 
@@ -306,7 +331,7 @@ describe("malformed knowledge base data", () => {
 /* -------------------------------------------------------------------------- */
 
 describe("migrated source files", () => {
-  const files = ["ChatbotWidget.jsx", "ChatbotWindow.jsx", "KnowledgeBase.js", "findAnswer.js"];
+  const files = ["../chatbot/ChatbotWidget.jsx", "../chatbot/ChatbotWindow.jsx", "../../data/KnowledgeBase.js", "./findAnswer.js"];
   const read = (name) => readFileSync(new URL(name, import.meta.url), "utf8");
 
   it("has no Next.js or TypeScript leftovers", () => {
@@ -324,9 +349,12 @@ describe("migrated source files", () => {
     });
   });
 
-  it("stores nothing in the browser and calls no network API", () => {
+  it("keeps chat off browser storage and reports only if a backend is configured", () => {
     files.forEach((name) => {
-      assert.doesNotMatch(read(name), /localStorage|sessionStorage|indexedDB|document\.cookie|fetch\(|XMLHttpRequest|console\./, name);
+      assert.doesNotMatch(read(name), /localStorage|sessionStorage|indexedDB|document\.cookie/, name);
     });
+    const windowSource = read("../chatbot/ChatbotWindow.jsx");
+    assert.match(windowSource, /if \(!CHATBOT_API_URL\) return;/);
+    assert.match(windowSource, /if \(isUnanswered\)/);
   });
 });

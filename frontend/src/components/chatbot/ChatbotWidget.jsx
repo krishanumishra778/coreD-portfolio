@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { MessageCircle } from "lucide-react";
 
 import { ChatbotWindow } from "./ChatbotWindow.jsx";
 import { assistantCopy } from "../../data/KnowledgeBase.js";
@@ -9,15 +10,6 @@ const CHAT_PANEL_ID = "cored-chat-panel";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-const chatbotWidgetStyles = {
-  panel: "fixed inset-0 z-50 outline-none",
-
-  launcher:
-    "fixed bottom-5 right-5 z-[60] flex size-[76px] items-center justify-center overflow-hidden rounded-full border-0 bg-transparent p-0 shadow-none transition-transform duration-200 hover:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 sm:bottom-8 sm:right-8",
-
-  launcherImage: "m-0 block size-full shrink-0 rounded-full object-cover p-0",
-};
 
 // The panel covers the whole screen, so Tab must not wander into the page behind it.
 function keepFocusInside(event, container) {
@@ -47,7 +39,7 @@ function keepFocusInside(event, container) {
   }
 }
 
-export function ChatbotWidget() {
+export function ChatbotWidget({ classic = false }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const launcherButtonRef = useRef(null);
@@ -59,6 +51,8 @@ export function ChatbotWidget() {
 
     hasOpenedChatRef.current = true;
     panelRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     function handleKeyDown(event) {
       if (event.key === "Escape") {
@@ -71,13 +65,14 @@ export function ChatbotWidget() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isChatOpen]);
 
   useEffect(() => {
     if (!isChatOpen && hasOpenedChatRef.current) {
-      launcherButtonRef.current?.focus();
+      launcherButtonRef.current?.focus({ preventScroll: true });
     }
   }, [isChatOpen]);
 
@@ -95,11 +90,12 @@ export function ChatbotWidget() {
         <div
           ref={panelRef}
           id={CHAT_PANEL_ID}
-          className={chatbotWidgetStyles.panel}
+          className={classic ? "chat-panel classic-chat-panel" : "chat-panel"}
           role="dialog"
           aria-label={assistantCopy.chatLabel}
           aria-modal="true"
           tabIndex={-1}
+          onClick={(event) => { if (event.target === event.currentTarget) handleCloseChat(); }}
         >
           <ChatbotWindow onClose={handleCloseChat} />
         </div>
@@ -107,21 +103,15 @@ export function ChatbotWidget() {
         <button
           ref={launcherButtonRef}
           type="button"
-          className={chatbotWidgetStyles.launcher}
+          className={classic ? "classic-chat-launcher" : "icon-button chat-launcher"}
           onClick={handleOpenChat}
           aria-label="Open CoreD chat assistant"
           aria-haspopup="dialog"
           title="Open CoreD chat assistant"
         >
-          <img
-            src={"/Images/Chatbot.png"}
-            alt=""
-            aria-hidden="true"
-            width={120}
-            height={120}
-            decoding="async"
-            className={chatbotWidgetStyles.launcherImage}
-          />
+          {classic
+            ? <img src="/Images/Chatbot.png" alt="" width="76" height="76" decoding="async" />
+            : <MessageCircle size={20} aria-hidden="true" />}
         </button>
       )}
     </>

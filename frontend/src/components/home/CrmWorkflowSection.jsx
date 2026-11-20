@@ -1,3 +1,4 @@
+import { RevealWords } from "../ui/WordReveal.jsx";
 export default function CrmWorkflowSection() {
   return (
     <section
@@ -17,7 +18,7 @@ export default function CrmWorkflowSection() {
               className="text-4xl lg:text-5xl font-extrabold tracking-tight text-[#14161A] leading-[1.15] mb-5"
               id="crm-workflow-title"
             >
-              From first enquiry to the next conversation.
+              <RevealWords>From first enquiry to the next conversation.</RevealWords>
             </h2>
             <p className="text-lg text-[#5C616B] leading-relaxed mb-10 max-w-xl">
               Bring your leads, customer context and follow-ups into one

@@ -1,107 +1,39 @@
-import { ArrowUpRight, Check, Minus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, Check } from "lucide-react";
+import { basicAgents, formatPrice, quoteLink, standardAgents } from "./servicesData.js";
 
-function FeatureList({ features, featured }) {
+export default function QuotationCards({ service }) {
   return (
-    <ul className="space-y-2.5 text-[12px] leading-5 sm:text-[13px]">
-      {features.map((feature) => {
-        const item = typeof feature === "string"
-          ? { label: feature, status: null, included: true }
-          : feature;
-        const muted = item.included === false;
-
+    <div className={service.plans.length === 4
+      ? "mx-auto grid max-w-7xl items-stretch gap-5 md:grid-cols-2 xl:grid-cols-4"
+      : "mx-auto grid max-w-6xl items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3"}>
+      {service.plans.map((pkg) => {
+        const featured = pkg.id === "leadforge-x";
         return (
-          <li key={item.label} className={`flex items-start justify-between gap-2 ${muted ? (featured ? "text-white/35" : "text-black/35") : (featured ? "text-white/90" : "text-[#1C1C1C]")}`}>
-            <span className="flex min-w-0 items-start gap-2">
-              {muted ? (
-                <Minus className="mt-0.5 h-3.5 w-3.5 shrink-0 text-current" aria-hidden="true" />
-              ) : (
-                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#FF9100]" aria-hidden="true" />
-              )}
-              <span>{item.label}</span>
-            </span>
-            {item.status ? <span className={`shrink-0 text-[9px] font-semibold ${featured ? (muted ? "text-white/30" : "text-[#FF9100]") : (muted ? "text-black/25" : "text-[#FF9100]")}`}>{item.status}</span> : null}
-          </li>
+          <article key={pkg.id} id={"plan-" + pkg.id} tabIndex={-1} className={"flex min-w-0 flex-col rounded-3xl border p-6 shadow-sm " + (featured ? "border-white/10 bg-[#14161a] text-white" : "border-black/10 bg-white text-[#14161a]")}>
+            <p className={"text-xs font-bold uppercase tracking-wider " + (featured ? "text-amber-300" : "text-amber-800")}>{pkg.tier}</p>
+            <h3 className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">{pkg.name}</h3>
+            <p className="mt-2 text-2xl font-bold">{formatPrice(pkg)}{pkg.amount != null && <small className="ml-1 text-xs">USD</small>}</p>
+            <p className={"mt-2 text-sm " + (featured ? "text-white/80" : "text-[#555]")}>{pkg.fit}</p>
+            <div className={"mt-5 flex-1 border-t pt-4 text-sm leading-6 " + (featured ? "border-white/15" : "border-black/10")}>
+              <h4 className="mb-2 font-bold">What you get</h4>
+              <ul className="space-y-2">{pkg.includes.map((item) => <li key={item} className="flex gap-2"><Check size={15} className="mt-1 shrink-0 text-orange-500" aria-hidden="true" />{item}</li>)}</ul>
+              {pkg.choices?.map((type) => (
+                <div key={type} className="mt-4">
+                  <h4 className="font-bold">{type === "basic" ? "Choose one Basic option" : "Choose one Standard option"}</h4>
+                  <ul className="mt-1 list-disc space-y-1 pl-4">
+                    {(type === "basic" ? basicAgents : standardAgents).map(([id, label, detail]) => <li key={id}><strong>{label}</strong> <span className="text-[#555]">{detail}</span></li>)}
+                  </ul>
+                </div>
+              ))}
+              <p className={"mt-4 border-t pt-3 text-xs leading-5 " + (featured ? "border-white/15 text-white/75" : "border-black/10 text-[#555]")}><strong>Scope:</strong> {pkg.boundary}</p>
+            </div>
+            <Link to={quoteLink(service, pkg)} className="cd-button cd-button--primary cd-button--block mt-6" aria-label={"Request quote: " + pkg.name}>
+              Request quote <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </article>
         );
       })}
-    </ul>
-  );
-}
-
-function PackageCard({ service, pkg, onRequest }) {
-  const featured = Boolean(pkg.featured);
-  const showAgentTypeHeading = Boolean(pkg.listTitle);
-
-  return (
-    <article className={`relative flex h-full min-w-0 flex-col overflow-hidden rounded-[24px] border p-6 transition duration-200 hover:-translate-y-0.5 sm:p-7 lg:p-8 ${featured ? "border-white/10 bg-gradient-to-br from-[#14161A] to-[#0E0F12] text-white shadow-[0_20px_60px_rgba(20,22,26,0.20)]" : "border-black/[0.08] bg-white text-[#1C1C1C] shadow-[0_4px_20px_rgba(0,0,0,0.06)]"}`}>
-      {featured ? <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-white/[0.045] blur-2xl" /> : null}
-
-      <div className="relative flex-1">
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <span className={`text-[10px] font-bold uppercase tracking-[0.12em] sm:text-[11px] ${featured ? "text-white/65" : "text-[#6B6B6B]"}`}>{pkg.tier}</span>
-          <span className={`inline-flex max-w-[55%] items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-semibold leading-tight sm:text-[10px] ${featured ? "border border-[#FF9100]/30 bg-[#FF9100]/15 text-[#FF9100]" : "bg-black/[0.04] text-[#424242]"}`}>
-            {featured ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#FF9100]" /> : null}
-            {pkg.badge}
-          </span>
-        </div>
-
-        <h3 className={`font-[Roboto_Flex,Roboto,sans-serif] text-[21px] font-bold leading-tight tracking-[-0.025em] sm:text-2xl ${featured ? "text-white" : "text-[#14161A]"}`}>{pkg.title}</h3>
-
-        {pkg.price ? (
-          <div className="mt-2 flex flex-wrap items-baseline gap-1.5">
-            <span className={`font-[Roboto_Flex,Roboto,sans-serif] text-3xl font-bold tracking-tight ${featured ? "text-white" : "text-[#14161A]"}`}>{pkg.price}</span>
-            {pkg.billing ? <span className={`text-[11px] ${featured ? "text-white/60" : "text-[#6B6B6B]"}`}>{pkg.billing}</span> : null}
-          </div>
-        ) : null}
-
-        <p className="mt-1 text-[10px] font-semibold text-[#FF9100]">{pkg.status}</p>
-        <p className={`mt-4 min-h-[52px] text-[12px] leading-5 sm:text-[13px] ${featured ? "text-white/65" : "text-[#6B6B6B]"}`}>{pkg.description}</p>
-
-        {showAgentTypeHeading ? (
-          <div className={`mt-5 flex items-center justify-between gap-2 border-t pt-4 text-[9px] font-bold uppercase tracking-[0.09em] ${featured ? "border-white/10 text-white/45" : "border-black/[0.08] text-[#777]"}`}>
-            <span>{pkg.listTitle}</span>
-            <span className={featured ? "text-[#FF9100]" : "text-[#777]"}>{pkg.id === "custom" ? "Custom scope" : "Included"}</span>
-          </div>
-        ) : (
-          <div className={`mt-5 border-t pt-5 ${featured ? "border-white/10" : "border-black/[0.08]"}`} />
-        )}
-
-        <div className={showAgentTypeHeading ? "mt-3" : "mt-0"}>
-          <FeatureList features={pkg.features} featured={featured} />
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => onRequest(service, pkg)}
-        className={`group mt-7 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-center text-xs font-semibold transition duration-200 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF9100] focus-visible:ring-offset-2 ${featured ? "bg-white text-[#14161A] hover:bg-[#FAF7F1] focus-visible:ring-offset-[#14161A]" : "bg-[#14161A] text-white hover:bg-black focus-visible:ring-offset-white"}`}
-      >
-        {pkg.cta}
-        <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#FF9100] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
-      </button>
-    </article>
-  );
-}
-
-export default function QuotationCards({ service, onRequest }) {
-  const isTwoCards = service.packages.length === 2;
-
-  return (
-    <section id="quotation-section" className="scroll-mt-28" aria-labelledby="quotation-title">
-      <div className="mx-auto mb-8 max-w-2xl px-2 text-center sm:mb-11">
-        <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.13em] text-[#FF9100] sm:text-xs">{service.comparison.eyebrow}</span>
-        <h2 id="quotation-title" className="font-[Roboto_Flex,Roboto,sans-serif] text-2xl font-bold tracking-[-0.035em] text-[#14161A] sm:text-3xl lg:text-[34px]">{service.comparison.title}</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#6B6B6B] sm:text-[15px]">{service.comparison.description}</p>
-      </div>
-
-      <div className={`mx-auto grid w-full items-stretch gap-4 sm:gap-5 lg:gap-6 ${isTwoCards ? "max-w-4xl grid-cols-1 md:grid-cols-2" : "max-w-6xl grid-cols-1 md:grid-cols-2 xl:grid-cols-3"}`}>
-        {service.packages.map((pkg) => (
-          <PackageCard key={`${service.id}-${pkg.id}`} service={service} pkg={pkg} onRequest={onRequest} />
-        ))}
-      </div>
-
-      <p className="mx-auto mt-6 max-w-2xl rounded-2xl border border-black/[0.05] bg-black/[0.02] px-4 py-3 text-center text-[10px] leading-5 text-[#6B6B6B] sm:mt-7 sm:px-6 sm:text-[11px]">
-        <strong className="text-[#14161A]">Transparent scoping:</strong> Your quotation will define the build scope, integrations and any ongoing usage, hosting or support costs.
-      </p>
-    </section>
+    </div>
   );
 }
