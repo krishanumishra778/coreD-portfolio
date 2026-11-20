@@ -16,6 +16,12 @@ In hPanel, point the subdomain DNS to the assigned website, activate its SSL cer
 
 ## Contact and quotation delivery
 
+### FAQ assistant registration
+
+The floating FAQ assistant first collects a name, email and phone number with a country code. It submits a separately labelled assistant enquiry to the same configured Formspree form, with the existing Turnstile protection. Questions unlock only after a confirmed Formspree receipt. Failed or uncertain receipts keep the registration form open; concurrent submits are blocked. Registration is remembered in React state while the site stays open, without persisting contact details or chat transcripts in browser storage. The Privacy Policy explains this flow. Registration does not subscribe visitors to marketing.
+
+Mobile changes keep client logos in a single continuous row and Selected work in an equal-width, two-group loop without a scrollbar. Reduced motion displays a static layout. Keyboard focus pauses the work carousel and allows its links to be reached. CRM illustrations and service diagrams wrap their text; project descriptions are shown in full.
+
 Request quote links open `/reach-us` with the selected service, plan and optional security scope. Contact and quotations use the same Formspree form. Set `VITE_FORMSPREE_FORM_ID` to the public ID shown after `/f/` on the form's Integration page. There is no Google Apps Script fallback. A missing ID disables submission and keeps the enquiry email visible.
 
 The request includes name, company, email, full international phone, service and plan IDs/labels, displayed proposed price and basis, optional Custom budget/currency, add-ons, agent selections, requested scope, legal acknowledgements and a reference ID. Formspree's standard name/email/message fields are also populated for readable dashboard previews and reply-to. The client prevents concurrent submissions; the reference ID aids support and does not promise provider-side deduplication.

@@ -1,7 +1,6 @@
 import { RevealWords } from "../ui/WordReveal.jsx";
-import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import gsap from "gsap";
+import "../ui/Marquee.css";
 import { ArrowRight, ArrowUpRight, Layers, Images } from "lucide-react";
 import { caseStudies } from "../../data/PortfolioData.js";
 
@@ -40,35 +39,6 @@ function SectionHeading({
 export default function PortfolioSection() {
 
 
-  const marqueeRef = useRef(null);
-  const tweenRef = useRef(null);
-
-  useEffect(() => {
-    const track = marqueeRef.current;
-
-    if (!track || caseStudies.length < 2) {
-      return undefined;
-    }
-
-    // Respect the user's reduced-motion preference.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return undefined;
-    }
-
-    const tween = gsap.to(track, {
-      xPercent: -50,
-      duration: 35,
-      ease: "none",
-      repeat: -1,
-    });
-
-    tweenRef.current = tween;
-
-    return () => {
-      tween.kill();
-      tweenRef.current = null;
-    };
-  }, []);
   if (!Array.isArray(caseStudies) || caseStudies.length === 0) {
     return null;
   }
@@ -86,21 +56,17 @@ export default function PortfolioSection() {
         </div>
 
         <div
-          className="classic-portfolio-track mt-12 overflow-x-auto motion-reduce:overflow-x-auto"
-          onMouseEnter={() => tweenRef.current?.pause()}
-          onMouseLeave={() => tweenRef.current?.resume()}
-          onFocus={() => tweenRef.current?.pause()}
-          onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) tweenRef.current?.resume(); }}
+          className="classic-portfolio-track mt-12"
+          onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.scrollLeft = 0; }}
         >
           <div
-            ref={marqueeRef}
-            className="flex w-max will-change-transform"
+            className="portfolio-marquee"
           >
             {[false, true].map((isDuplicate) => (
               <div
                 key={isDuplicate ? "duplicate-cards" : "original-cards"}
                 aria-hidden={isDuplicate ? true : undefined}
-                className={`flex shrink-0 gap-8 pr-8 ${isDuplicate ? "motion-reduce:hidden" : ""}`}
+                className="portfolio-marquee-group"
               >
                 {caseStudies.map((item) => (
                   <Link
@@ -130,7 +96,7 @@ export default function PortfolioSection() {
 
                       </div>
 
-                      <p className="mt-1.5 line-clamp-2 min-h-[40px] text-sm leading-5 text-slate-500">
+                      <p className="mt-1.5 min-h-[40px] text-sm leading-5 text-slate-500">
                         {item.shortDescription}
                       </p>
 

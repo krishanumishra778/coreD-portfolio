@@ -1294,13 +1294,14 @@ export const privacyPolicy = [
   {
     "title": "Who handles submissions",
     "paragraphs": [
-      "Formspree receives and stores contact and quotation submissions in its hosted dashboard. It may send a notification to CoreD’s configured enquiry inbox, where authorized staff review and reply. The submission includes the details listed above and a request identifier for reference. The form uses Cloudflare Turnstile, Formspree’s spam filtering and a hidden honeypot field. Formspree and the email provider process the enquiry under their respective privacy terms."
+      "Formspree receives and stores contact, quotation and assistant registration submissions in its hosted dashboard. It may send a notification to CoreD’s configured enquiry inbox, where authorized staff review and reply. The submission includes the details listed in this notice and a request identifier for reference. The forms use Cloudflare Turnstile, Formspree’s spam filtering and a hidden honeypot field. Formspree and the email provider process the enquiry under their respective privacy terms."
     ]
   },
   {
     "title": "The website assistant",
     "paragraphs": [
-      "The assistant matches questions to a built-in FAQ in your browser. The chat transcript stays in the open page. If question reporting is configured, an unanswered question may be sent to the CoreD backend and saved in its database so the team can improve the FAQ. Do not include personal or confidential information in chat."
+      "Before using the FAQ assistant, you submit your name, email address and phone number with its country code. These details and an assistant enquiry reference are sent to CoreD through Formspree so the team can follow up about your enquiry. This does not subscribe you to marketing. Registration is remembered only in the open website session; this site does not put your contact details in local or session storage.",
+      "The assistant matches questions to a built-in FAQ in your browser. The chat transcript stays in the open page and is not included in the registration submission. If question reporting is configured, an unanswered question may be sent to the CoreD backend and saved in its database so the team can improve the FAQ. Do not include personal or confidential information in chat."
     ]
   },
   {

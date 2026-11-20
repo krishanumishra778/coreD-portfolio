@@ -230,7 +230,7 @@ function ScreenshotCard({
             </>
           )}
 
-          <span className={`ml-2 text-xs font-mono truncate ${urlClassName}`}>
+          <span className={`ml-2 min-w-0 text-xs font-mono break-all ${urlClassName}`}>
             {shot.url || screenshotLabel}
           </span>
         </div>

@@ -121,7 +121,7 @@ export default function SeeOurWork() {
                                         {study.title}
                                     </h2>
 
-                                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                                    <p className="mt-3 text-sm leading-6 text-slate-600">
                                         {description}
                                     </p>
 

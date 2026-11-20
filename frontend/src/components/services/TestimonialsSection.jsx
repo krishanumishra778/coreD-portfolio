@@ -60,7 +60,7 @@ function TestimonialCard({ testimonial, index, count, isActive }) {
         </div>
 
         <div className="min-w-0 text-left">
-          <p className="truncate text-sm font-bold leading-5 text-[#17181C] sm:text-[15px]">
+          <p className="text-sm font-bold leading-5 text-[#17181C] sm:text-[15px]">
             {name}
           </p>
 
@@ -228,7 +228,7 @@ export default function TestimonialsSection({
 
         {/* Testimonial slides */}
         <div
-          className="relative mx-auto mt-8 h-[390px] w-full max-w-[1000px] overflow-hidden sm:mt-10 sm:h-[410px] md:h-[420px]"
+          className="relative mx-auto mt-8 grid min-h-[390px] w-full max-w-[1000px] place-items-center overflow-hidden py-6 sm:mt-10 sm:min-h-[410px] md:min-h-[420px]"
           aria-label="Client testimonial slides"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -246,15 +246,15 @@ export default function TestimonialsSection({
             const isAdjacent = Math.abs(offset) === 1;
 
             const transform = isActive
-              ? "translate(-50%, -50%) scale(1)"
+              ? "translateX(0) scale(1)"
               : offset < 0
-                ? "translate(calc(-50% - clamp(16rem, 28vw, 22rem)), -50%) scale(0.9)"
-                : "translate(calc(-50% + clamp(16rem, 28vw, 22rem)), -50%) scale(0.9)";
+                ? "translateX(calc(0px - clamp(16rem, 28vw, 22rem))) scale(0.9)"
+                : "translateX(clamp(16rem, 28vw, 22rem)) scale(0.9)";
 
             return (
               <div
                 key={`${testimonial.name ?? "testimonial"}-${index}`}
-                className={`absolute left-1/2 top-1/2 ${
+                className={`col-start-1 row-start-1 ${
                   isActive
                     ? "w-[min(88vw,40rem)] md:w-[min(78vw,40rem)]"
                     : "hidden md:block md:w-[min(72vw,28rem)]"

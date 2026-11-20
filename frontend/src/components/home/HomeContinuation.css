@@ -74,6 +74,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.home-continuation .crm-illustration {
+  height: auto;
+  min-height: 14rem;
+  gap: .75rem;
+}
+.home-continuation .crm-illustration :is(div, span, p) { min-width: 0; overflow-wrap: anywhere; }
+.home-continuation .crm-illustration .flex { flex-wrap: wrap; }
+.home-continuation .crm-illustration .flex.justify-between { gap: .5rem; }
+
+@media (max-width: 639px) {
+  .home-continuation .crm-illustration > .grid { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 767px) {
   .home-continuation > section {
     padding-block: 64px;

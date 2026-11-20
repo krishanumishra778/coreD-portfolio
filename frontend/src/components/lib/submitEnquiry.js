@@ -4,7 +4,7 @@ export function formspreeEndpoint(formId) {
   return formIdPattern.test(formId ?? "") ? `https://formspree.io/f/${formId}` : "";
 }
 
-export async function submitEnquiry({ formId, fields, token, protection = "turnstile", signal, fetchRequest = fetch }) {
+export async function submitEnquiry({ formId, fields, token, protection = "turnstile", subject = "CoreD · Project enquiry", signal, fetchRequest = fetch }) {
   const endpoint = formspreeEndpoint(formId);
   if (!endpoint) throw new Error("The enquiry form is not connected yet. Please email CoreD.");
   if (!["turnstile", "formshield"].includes(protection)) throw new Error("The enquiry form is not connected yet. Please email CoreD.");
@@ -15,7 +15,7 @@ export async function submitEnquiry({ formId, fields, token, protection = "turns
   body.set("name", body.get("FullName") ?? "");
   body.set("email", body.get("CompanyEmail") ?? "");
   body.set("message", body.get("ProjectDescription") ?? "");
-  body.set("subject", "CoreD · Project enquiry");
+  body.set("subject", subject);
   body.set("_gotcha", body.get("Website") ?? "");
   if (protection === "turnstile") body.set("cf-turnstile-response", token);
   else body.delete("cf-turnstile-response");

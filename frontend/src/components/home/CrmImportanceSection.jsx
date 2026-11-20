@@ -44,7 +44,7 @@ export default function CrmImportanceSection() {
                     <div className="text-[10px] font-bold text-[#A35D00] uppercase">
                       Email Thread
                     </div>
-                    <div className="text-xs font-medium text-[#14161A] mt-1 truncate">
+                    <div className="text-xs font-medium text-[#14161A] mt-1">
                       Quote inquiry from Maya
                     </div>
                     <div className="text-[10px] text-[#5C616B] mt-0.5">
@@ -55,7 +55,7 @@ export default function CrmImportanceSection() {
                     <div className="text-[10px] font-bold text-[#FF9100] uppercase">
                       WhatsApp Chat
                     </div>
-                    <div className="text-xs font-medium text-[#14161A] mt-1 truncate">
+                    <div className="text-xs font-medium text-[#14161A] mt-1">
                       Sent PDF proposal
                     </div>
                     <div className="text-[10px] text-[#5C616B] mt-0.5">
@@ -66,7 +66,7 @@ export default function CrmImportanceSection() {
                     <div className="text-[10px] font-bold text-[#14161A] uppercase">
                       Form Submission
                     </div>
-                    <div className="text-xs font-medium text-[#14161A] mt-1 truncate">
+                    <div className="text-xs font-medium text-[#14161A] mt-1">
                       Enterprise RFP form
                     </div>
                     <div className="text-[10px] text-[#5C616B] mt-0.5">
@@ -232,9 +232,6 @@ export default function CrmImportanceSection() {
                     <span className="px-2 py-0.5 rounded bg-white text-[10px] font-medium border border-[#14161A]/8 text-[#5C616B]">
                       WhatsApp
                     </span>
-                    <span className="px-2 py-0.5 rounded bg-[#FFF3E0] text-[10px] font-bold border border-[#FF9100]/30 text-[#A35D00]">
-                      +3 more
-                    </span>
                   </div>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-[#14161A]/8 shadow-xs">
@@ -250,8 +247,8 @@ export default function CrmImportanceSection() {
                     </span>
                   </div>
                   <p className="text-xs text-[#14161A] mt-2 italic bg-[#FAF7F1] p-2 rounded-lg border border-[#14161A]/5">
-                    "Hi Rohan, following up on our demonstration yesterday
-                    regarding the customized inventory pipeline..."
+                    "Hi Rohan, following up on yesterday’s demo. Shall we
+                    review the inventory workflow together this week?"
                   </p>
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-[#5C616B]">

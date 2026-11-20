@@ -22,7 +22,7 @@ body { background: var(--cd-paper); color: var(--cd-ink); font-family: var(--fon
 .cd-button:hover svg, .cd-text-link:hover svg { transform: translate(2px, -2px); }
 .cd-button:active, .icon-button:active { transform: translateY(1px); }
 .cd-button:disabled, .icon-button:disabled { cursor: not-allowed; opacity: .55; }
-.cd-text-link { color: var(--cd-accent-ink); text-underline-offset: .22em; background: none; border: 0; padding: 0; }
+.cd-text-link { max-width: 100%; white-space: normal; overflow-wrap: anywhere; color: var(--cd-accent-ink); text-underline-offset: .22em; background: none; border: 0; padding: 0; }
 .cd-text-link:hover { text-decoration: underline; }
 .icon-button { min-width: 44px; border: var(--rule-hair) solid var(--cd-rule); border-radius: var(--radius-pill); background: transparent; }
 .icon-button:hover { border-color: currentColor; }

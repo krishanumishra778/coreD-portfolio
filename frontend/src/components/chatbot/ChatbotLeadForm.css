@@ -1,0 +1,21 @@
+.chat-lead-panel { display: flex; flex-direction: column; min-width: 0; height: 100%; height: 100dvh; color: var(--cd-ink); background: var(--cd-surface); }
+.chat-lead-header { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--cd-rule); padding: 1rem 1.25rem; }
+.chat-lead-header strong { font-size: 1rem; }
+.chat-lead-header p { margin-top: .25rem; color: var(--cd-muted); font-size: .8rem; }
+.chat-lead-close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border: 1px solid var(--cd-rule); border-radius: 50%; font-size: 1.6rem; cursor: pointer; }
+.chat-lead-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.5rem clamp(1rem, 4vw, 2rem) max(1.5rem, env(safe-area-inset-bottom)); }
+.chat-lead-avatar { border-radius: 1rem; margin-bottom: 1rem; }
+.chat-lead-body h2 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 750; line-height: 1.15; }
+.chat-lead-body > p { margin-block: .75rem 1.5rem; line-height: 1.6; color: var(--cd-muted); }
+.chat-lead-form { display: grid; gap: 1rem; }
+.chat-lead-form fieldset { border: 0; min-width: 0; display: grid; gap: .5rem; }
+.chat-lead-form label { display: block; font-size: .875rem; font-weight: 650; }
+.chat-lead-form :is(input, select) { width: 100%; min-width: 0; min-height: 48px; border: 1px solid var(--cd-rule); border-radius: .75rem; padding: .7rem .75rem; font: inherit; font-size: 1rem; color: var(--cd-ink); background: var(--cd-paper); }
+.chat-lead-form fieldset > input { margin-bottom: .5rem; }
+.chat-lead-phone { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: .75rem; }
+.chat-lead-phone label { margin-bottom: .5rem; }
+.chat-lead-notice, .chat-lead-form [role="status"] { font-size: .8rem; line-height: 1.6; color: var(--cd-muted); }
+.chat-lead-notice a { text-decoration: underline; text-underline-offset: .2em; }
+.chat-lead-error { padding: .875rem; border-radius: .75rem; color: #9a2b12; background: #fff0e9; line-height: 1.5; }
+.chat-lead-form > button { width: 100%; }
+.chat-lead-form > button:disabled { opacity: .55; cursor: default; }

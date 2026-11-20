@@ -77,7 +77,7 @@ const chatbotStyles = {
   suggestionsTitle: "text-xs font-semibold text-[var(--cd-muted)]",
 
   suggestionButton:
-    "max-w-full shrink-0 whitespace-nowrap rounded-full border border-[var(--cd-rule)] bg-[var(--cd-band)] px-3 py-2 text-left text-xs text-[var(--cd-ink)] transition-colors hover:border-[var(--cd-accent-ink)] hover:bg-[var(--cd-paper)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)]",
+    "max-w-full shrink-0 whitespace-normal rounded-full border border-[var(--cd-rule)] bg-[var(--cd-band)] px-3 py-2 text-left text-xs text-[var(--cd-ink)] transition-colors hover:border-[var(--cd-accent-ink)] hover:bg-[var(--cd-paper)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cd-focus)]",
 
   limitNotice: "px-5 pb-1 text-xs text-amber-700",
 
@@ -300,6 +300,8 @@ export function ChatbotWindow({ onClose }) {
   const conversationEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  useEffect(() => { inputRef.current?.focus({ preventScroll: true }); }, []);
+
   const isThinking = pending !== null;
   const canSend = !isThinking && inputValue.trim().length > 0;
   const isAtLimit = inputValue.length >= MAX_QUESTION_LENGTH;
@@ -435,7 +437,7 @@ export function ChatbotWindow({ onClose }) {
             <div className={chatbotStyles.suggestions}>
               <p className={chatbotStyles.suggestionsTitle}>Try asking</p>
 
-              <div className="flex max-w-full flex-nowrap items-center gap-2 overflow-x-auto">
+              <div className="flex max-w-full flex-wrap items-center gap-2">
                 {assistantCopy.suggestions.map((suggestion) => (
                   <button
                     key={suggestion.faqId}

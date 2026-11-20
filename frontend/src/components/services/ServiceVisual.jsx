@@ -19,13 +19,13 @@ function DiagramCard({ eyebrow, title, note, status, icon: Icon }) {
   return (
     <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.055] p-2.5 sm:p-3">
       <div className="mb-1 flex items-center justify-between gap-2">
-        <span className="truncate text-[8px] font-medium uppercase tracking-[0.12em] text-white/50 sm:text-[9px]">
+        <span className="min-w-0 break-words text-[10px] font-medium uppercase tracking-[0.08em] text-white/60">
           {eyebrow}
         </span>
         {status ? <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${statusClass}`} /> : null}
       </div>
-      <div className="truncate text-[10px] font-semibold text-white/90 sm:text-[11px]">{title}</div>
-      {note ? <div className="mt-1 line-clamp-2 text-[8px] leading-snug text-white/50 sm:text-[9px]">{note}</div> : null}
+      <div className="break-words text-xs font-semibold text-white/90">{title}</div>
+      {note ? <div className="mt-1 text-[11px] leading-relaxed text-white/60">{note}</div> : null}
       {Icon ? <Icon className="mt-1.5 h-3 w-3 text-[#FF9100]" aria-hidden="true" /> : null}
     </div>
   );
@@ -89,7 +89,7 @@ function AgentTopology() {
     <div className="mx-auto w-full max-w-[340px]">
       <Hub icon={Workflow} title="Central Task Hub" subtitle="Autonomous Orchestrator" centered />
       <Connector />
-      <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <DiagramCard eyebrow="Knowledge" title="Knowledge Node" note="Docs & RAG" icon={BookOpen} />
         <DiagramCard eyebrow="Qualification" title="Lead Qual Node" note="Scoring & Fit" icon={CheckCircle2} />
         <DiagramCard eyebrow="Follow-up" title="Follow-up Node" note="Email & Msg" icon={MessageCircle} />
@@ -132,7 +132,7 @@ export default function ServiceVisual({ service, serviceNumber }) {
           <span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />
           Service {String(serviceNumber).padStart(2, "0")}
         </span>
-        <span className="truncate font-mono text-[8px] text-white/40 sm:text-[10px]">{service.label}</span>
+        <span className="min-w-0 text-right font-mono text-[10px] text-white/60">{service.label}</span>
       </div>
 
       <div className="relative z-10 flex flex-1 items-center py-7 sm:py-8" aria-hidden="true">

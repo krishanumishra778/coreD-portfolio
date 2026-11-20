@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { MessageCircle } from "lucide-react";
 
 import { ChatbotWindow } from "./ChatbotWindow.jsx";
+import ChatbotLeadForm from "./ChatbotLeadForm.jsx";
 import { assistantCopy } from "../../data/KnowledgeBase.js";
 
 
@@ -15,7 +16,8 @@ const FOCUSABLE_SELECTOR =
 function keepFocusInside(event, container) {
   if (!container) return;
 
-  const focusable = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR));
+  const focusable = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR))
+    .filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
 
   if (focusable.length === 0) {
     event.preventDefault();
@@ -41,6 +43,7 @@ function keepFocusInside(event, container) {
 
 export function ChatbotWidget({ classic = false }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(false);
 
   const launcherButtonRef = useRef(null);
   const panelRef = useRef(null);
@@ -52,7 +55,9 @@ export function ChatbotWidget({ classic = false }) {
     hasOpenedChatRef.current = true;
     panelRef.current?.focus();
     const previousOverflow = document.body.style.overflow;
+    const previousRootOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
 
     function handleKeyDown(event) {
       if (event.key === "Escape") {
@@ -66,6 +71,7 @@ export function ChatbotWidget({ classic = false }) {
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.documentElement.style.overflow = previousRootOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isChatOpen]);
@@ -97,7 +103,9 @@ export function ChatbotWidget({ classic = false }) {
           tabIndex={-1}
           onClick={(event) => { if (event.target === event.currentTarget) handleCloseChat(); }}
         >
-          <ChatbotWindow onClose={handleCloseChat} />
+          {hasRegistered
+            ? <ChatbotWindow onClose={handleCloseChat} />
+            : <ChatbotLeadForm onComplete={() => setHasRegistered(true)} onClose={handleCloseChat} />}
         </div>
       ) : (
         <button
