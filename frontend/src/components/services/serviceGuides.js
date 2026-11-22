@@ -46,32 +46,3 @@ export const serviceGuides = {
     ],
   },
 };
-
-export const crmAddOnGroups = [
-  { title: "Sales & customer support", items: [
-    ["AI Lead Qualification Agent", "Reviews lead details against agreed criteria and records the result in the CRM."],
-    ["AI Customer Support Assistant", "Drafts answers from approved support content and routes exceptions to staff."],
-    ["AI Sales Conversation Coaching Assistant", "Reviews approved conversation records and drafts feedback for your sales team. This is AI-assisted review, not a human coaching service."],
-  ] },
-  { title: "Operations", items: [
-    ["AI Operations Intake Agent", "Collects request details, checks missing fields and creates an agreed task or CRM record."],
-    ["AI Project Status Assistant", "Summarizes approved project updates and flags overdue work for the owner."],
-    ["AI Inventory Assistant", "Reads the connected stock records and flags agreed exceptions for review."],
-  ] },
-  { title: "Finance administration", items: [
-    ["AI Supplier Invoice Processing Assistant", "Extracts fields from supplied invoices and prepares records for staff review."],
-    ["Payment Reminder Automation", "Uses balances verified in the finance system to prepare or send approved reminders. It does not move money."],
-    ["AI Reconciliation Assistant", "Suggests matches between approved finance records and flags differences for a person to check."],
-  ] },
-  { title: "HR & management", items: [
-    ["AI Employee Policy Assistant", "Answers employee questions using approved policies and routes requests to HR."],
-    ["Employee Onboarding Automation", "Tracks an agreed checklist and reminds the named HR owner about missing steps."],
-    ["AI Management Briefing Assistant", "Summarizes agreed business reports and links managers to the source records. Managers make the decisions."],
-    ["Approval Routing Automation", "Sends requests to authorized approvers, reminds them and records their response."],
-  ] },
-  { title: "Meetings & follow-up", items: [
-    ["AI Meeting Capture Agent", "Joins a supported meeting as a visible bot and creates a transcript, with the required permission and participant consent."],
-    ["AI MOM Creation Assistant", "Turns an approved transcript into Minutes of Meeting (MOM): decisions, actions, owners and deadlines for staff to review before sharing."],
-    ["Meeting-to-CRM Automation", "Saves approved meeting notes and creates agreed follow-up tasks in the compatible CRM."],
-  ] },
-];

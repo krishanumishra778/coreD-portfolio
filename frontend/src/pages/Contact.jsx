@@ -1,8 +1,11 @@
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { RevealWords } from "../components/ui/WordReveal.jsx";
 import { SERVICES, addOns, basicAgents, formatPrice, getServicePlans, securityServices, standardAgents } from "../components/services/servicesData.js";
+import { allowedModuleIds, supportsCrmModules } from "../components/services/crmModules.js";
+import QuoteModules from "../components/services/QuoteModules.jsx";
+import { quoteSelection } from "../components/lib/quoteSelection.js";
 import { budgetCurrencies, generalEmail, phoneCountries, supportEmail } from "../data/contactOptions.js";
 import { formspreeEndpoint, submitEnquiry } from "../components/lib/submitEnquiry.js";
 import { useTurnstile, contactProtection, turnstileRequired } from "../components/lib/useTurnstile.js";
@@ -23,6 +26,7 @@ function ContactEnquiry({ params }) {
   const initialPlan = getServicePlans(initialService).find(({ id }) => id === params.get("plan"));
   const [serviceId, setService] = useState(initialService?.id ?? "");
   const [planId, setPlan] = useState(initialPlan?.id ?? "");
+  const [moduleIds, setModules] = useState(() => allowedModuleIds(initialService?.id, params.getAll("module")));
   const [countryId, setCountry] = useState("IN-91");
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -31,10 +35,11 @@ function ContactEnquiry({ params }) {
   const turnstile = useTurnstile();
   const service = SERVICES.find(({ id }) => id === serviceId);
   const plan = getServicePlans(service).find(({ id }) => id === planId);
-  const custom = plan?.tier === "Custom";
+  const needsQuote = plan?.basis === "quote";
+  const customScope = needsQuote || moduleIds.length > 0;
   const phoneCountry = phoneCountries.find(({ id }) => id === countryId);
   const requestedScope = serviceId === initialService?.id && planId === initialPlan?.id
-    ? securityServices.find(({ id }) => id === params.get("scope"))?.name ?? "" : "";
+    ? securityServices.find(({ id, planId: targetPlan }) => serviceId === "cybersecurity" && id === params.get("scope") && targetPlan === plan?.id)?.name ?? "" : "";
 
   async function submit(event) {
     event.preventDefault();
@@ -49,28 +54,17 @@ function ContactEnquiry({ params }) {
     const localPhone = value("NationalNumber").replace(/[\s()-]/g, "");
     const fullPhone = phoneCountry ? "+" + phoneCountry.dial + localPhone : "";
     if (!/^\+\d{7,15}$/.test(fullPhone)) return fail("Choose your country code and enter a valid phone number without the country prefix.");
-    const budget = custom ? value("BudgetAmount") : "";
-    const currency = custom ? value("BudgetCurrency") : "";
-    if (budget && (!Number.isFinite(Number(budget)) || Number(budget) <= 0 || !budgetCurrencies.some(({ code }) => code === currency))) {
-      return fail("Enter a positive budget and choose its currency.");
-    }
-    const selectedAddOns = fields.getAll("AddOnIds").filter((id) => service?.addOns.includes(id));
-    const basicAgent = basicAgents.find(([id]) => id === value("BasicAgent"));
-    const standardAgent = standardAgents.find(([id]) => id === value("StandardAgent"));
+    let selection;
+    try {
+      selection = quoteSelection({ serviceId, planId, fields, scopeId: requestedScope ? params.get("scope") : "" });
+    } catch (error) { return fail(error.message); }
     const signature = JSON.stringify([...fields.entries()].filter(([name]) => name != "cf-turnstile-response").concat([["ServiceId", serviceId], ["PlanId", planId]]));
     if (request.current.signature !== signature) request.current = { id: crypto.randomUUID(), signature };
     const body = new URLSearchParams({
       RequestId: request.current.id, FullName: value("FullName"), CompanyName: value("CompanyName"),
       CompanyEmail: value("CompanyEmail"), ContactNumber: fullPhone,
       CountryCode: phoneCountry?.code ?? "", DialCode: "+" + (phoneCountry?.dial ?? ""),
-      ServiceId: service?.id ?? "", ServiceSelection: service?.label ?? "Help me choose",
-      PlanId: plan?.id ?? "", ChooseYourPlan: plan?.name ?? "Help me choose",
-      DisplayedPrice: plan ? formatPrice(plan) : "Not selected", PriceBasis: plan?.basis ?? "",
-      PriceAmount: plan?.amount == null ? "" : String(plan.amount), Currency: "USD", PricingStatus: "proposed",
-      BudgetRange: budget ? budget + " " + currency : "Not provided", BudgetAmount: budget, BudgetCurrency: currency,
-      AddOnIds: selectedAddOns.join(","), AddOns: selectedAddOns.map((id) => addOns[id]).join("; "),
-      BasicAgent: basicAgent?.[1] ?? "", StandardAgent: standardAgent?.[1] ?? "",
-      RequestedScope: requestedScope, ProjectDescription: value("ProjectDescription"),
+      ...selection, ProjectDescription: value("ProjectDescription"),
       TermsAccepted: value("TermsAccepted"), PrivacyAccepted: value("PrivacyAccepted"),
     });
     inFlight.current = true;
@@ -107,22 +101,31 @@ function ContactEnquiry({ params }) {
                 {phoneCountries.map((item) => <option key={item.id} value={item.id}>{item.name} (+{item.dial})</option>)}
               </select></label>
               <label>Phone number<input name="NationalNumber" type="tel" required autoComplete="tel-national" maxLength={20} placeholder="Number without the country code" /></label>
-              <label>Service<select aria-label="Service" value={serviceId} onChange={(event) => { setService(event.target.value); setPlan(""); }}>
+              <label>Service<select aria-label="Service" value={serviceId} onChange={(event) => { setService(event.target.value); setPlan(""); setModules([]); }}>
                 <option value="">Help me choose</option>{SERVICES.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
               </select></label>
-              <label>Plan<select aria-label="Plan" value={planId} onChange={(event) => { setPlan(event.target.value); }} disabled={!service}>
+              <label>Plan<select aria-label="Plan" value={planId} onChange={(event) => { setPlan(event.target.value); setModules([]); }} disabled={!service}>
                 <option value="">Help me choose</option>{getServicePlans(service).map((item) => <option key={item.id} value={item.id}>{item.tier} · {item.name} · {formatPrice(item)}</option>)}
               </select></label>
-              {plan && <p className="quote-choice quote-wide"><strong>{plan.tier} · {plan.name}</strong><span>{formatPrice(plan)}{plan.amount != null ? " USD" : ""} · proposed setup scope</span></p>}
+              {plan && <p className="quote-choice quote-wide"><strong>{plan.tier} · {plan.name}</strong><span>{formatPrice(plan)}{plan.amount != null ? " USD" : ""}{needsQuote ? " · price confirmed after scope review" : moduleIds.length ? " · package price; custom modules by quote" : " · proposed setup scope"}</span></p>}
+              {service && <p className="quote-wide text-sm leading-6 text-[#555]">{service.prompt}</p>}
               {requestedScope && <p className="quote-wide muted">Requested service: {requestedScope}</p>}
-              {custom && <>
-                <label>Budget amount <span>(optional)</span><input name="BudgetAmount" type="number" min="0.01" step="any" inputMode="decimal" placeholder="Your budget" /></label>
+              {customScope && <Fragment key={serviceId + planId + "-quote-scope"}>
+                <p className="quote-wide rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm leading-6"><strong>By quote means we price your agreed scope.</strong> {needsQuote ? "Share the systems, volume and timing below if you know them." : "The listed package price covers its stated scope. Your selected custom modules need a separate quote."} Your budget is a preference, not a confirmed price. We send a written scope and price before work starts.</p>
+                <label>{needsQuote ? "Budget amount" : "Budget amount for custom modules"} <span>(optional)</span><input name="BudgetAmount" type="number" min="0.01" step="any" inputMode="decimal" placeholder="Your budget" /></label>
                 <label>Budget currency<select name="BudgetCurrency" defaultValue="USD">{budgetCurrencies.map(({ code, name }) => <option key={code} value={code}>{code} · {name}</option>)}</select></label>
-              </>}
+                <label className="quote-wide">{serviceId === "cybersecurity" ? "Assets and test scope" : "Users, agents and workflows"} <span>(optional)</span><input name="RequestedVolume" maxLength={300} placeholder={serviceId === "cybersecurity" ? "Example: one web app, two named hostnames, ten devices" : "Example: five users, two agents, one sales workflow"} /></label>
+                <label className="quote-wide">Target timeline <span>(optional)</span><input name="TargetTimeline" maxLength={120} placeholder="Your preferred deadline or test window" /></label>
+              </Fragment>}
+              {customScope && <Fragment key={serviceId + planId + "-systems"}>
+                <label className="quote-wide">Current CRM, systems or platforms <span>(optional)</span><input name="CurrentSystems" maxLength={300} placeholder="The tools your team already uses" /></label>
+                <label className="quote-wide">Integrations you need <span>(optional)</span><input name="RequestedIntegrations" maxLength={300} placeholder="Example: CRM, calendar, WhatsApp or finance system" /></label>
+              </Fragment>}
               {plan?.choices?.includes("basic") && <label className="quote-wide">Choose your Basic option<select key={planId + "-basic"} name="BasicAgent" required defaultValue=""><option value="" disabled>Select one Basic option</option>{basicAgents.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>}
               {plan?.choices?.includes("standard") && <label className="quote-wide">Choose your Standard option<select key={planId + "-standard"} name="StandardAgent" required defaultValue=""><option value="" disabled>Select one Standard option</option>{standardAgents.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>}
               <label className="quote-wide">What do you need?<textarea name="ProjectDescription" required rows={5} maxLength={5000} /></label>
             </fieldset>
+            {supportsCrmModules(serviceId) && <QuoteModules selected={moduleIds} onChange={setModules} disabled={submitting} />}
             {service && <fieldset className="quote-addons" disabled={submitting}>
               <legend>Optional add-ons · priced separately</legend>
               {service.addOns.map((id) => <label key={id}><input key={serviceId + id} type="checkbox" name="AddOnIds" value={id} />{addOns[id]}</label>)}

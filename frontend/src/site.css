@@ -121,8 +121,9 @@ body { background: var(--cd-paper); color: var(--cd-ink); font-family: var(--fon
 .quote-dialog-inner { padding: clamp(1rem, 4vw, 2rem); }
 .quote-dialog-header { display: flex; gap: var(--space-sm); justify-content: space-between; align-items: center; }
 .quote-dialog-header h2 { font-size: clamp(1.45rem, 4vw, 2.3rem); font-weight: 740; line-height: 1.1; letter-spacing: -.04em; }
-.quote-choice { display: flex; align-items: start; justify-content: space-between; gap: var(--space-sm); padding-block: var(--space-md); border-bottom: var(--rule-hair) solid var(--cd-rule); font-size: .9rem; }
-.quote-choice strong { flex: none; color: var(--cd-accent-ink); }
+.quote-choice { display: flex; flex-direction: column; align-items: start; gap: .5rem; min-width: 0; padding-block: var(--space-md); border-bottom: var(--rule-hair) solid var(--cd-rule); font-size: .9rem; }
+.quote-choice strong { flex: none; max-width: 100%; overflow-wrap: anywhere; color: var(--cd-accent-ink); }
+.quote-choice > span { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
 .quote-form { display: grid; gap: var(--space-md); padding-top: var(--space-md); }
 .quote-form .muted { font-size: .89rem; line-height: 1.55; }
 .quote-form a, .quote-feedback a { text-decoration: underline; text-underline-offset: .2em; }
@@ -163,8 +164,6 @@ body { background: var(--cd-paper); color: var(--cd-ink); font-family: var(--fon
 @media (max-width: 24rem) {
   .service-tabs { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .service-tabs button { text-align: left; }
-  .quote-fields { grid-template-columns: minmax(0, 1fr); }
-  .quote-choice { flex-direction: column; }
   .cd-button, .cd-text-link { font-size: .85rem; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -271,6 +270,7 @@ body { background: var(--cd-paper); color: var(--cd-ink); font-family: var(--fon
 .chat-privacy-note { margin-block: var(--space-xs); font-size: .75rem; line-height: 1.45; }
 
 @media (max-width: 47.999rem) {
+  .quote-fields { grid-template-columns: minmax(0, 1fr); }
   .case-story, .case-gallery > div, .case-impact > div:not(.section-lead), .case-timeline ol, .journal-columns, .legal-layout, .contact-layout { grid-template-columns: minmax(0, 1fr); }
   .case-facts { grid-template-columns: minmax(0, 1fr); gap: var(--space-sm); }
   .case-impact > div:not(.section-lead) { gap: var(--space-xs); }

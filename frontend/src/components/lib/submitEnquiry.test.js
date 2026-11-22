@@ -8,8 +8,12 @@ const fields = new URLSearchParams({
   CountryCode: "US", DialCode: "+1", ServiceId: "ai-powered-crm",
   ServiceSelection: "AI-Powered CRM", PlanId: "custom-crm", ChooseYourPlan: "Custom Multi-Agent CRM",
   DisplayedPrice: "By quote", PriceBasis: "quote", PriceAmount: "", PricingStatus: "proposed",
-  BudgetAmount: "2000", BudgetCurrency: "INR", AddOnIds: "channel,migration",
+  BudgetAmount: "2000", BudgetCurrency: "INR", BudgetScope: "Whole quoted project", AddOnIds: "channel,migration",
   AddOns: "Extra channel; Data migration", BasicAgent: "", StandardAgent: "",
+  QuoteStatus: "Scope review required; price to be confirmed in a written quote",
+  ModuleIds: "meeting-capture,mom-creation", RequestedModules: "AI Meeting Capture Agent; AI MOM Creation Assistant",
+  ModulePricing: "By quote; additional scope only; overlapping package work charged once",
+  CurrentSystems: "Existing CRM", RequestedIntegrations: "Calendar", RequestedVolume: "Two workflows", TargetTimeline: "Next month",
   RequestedScope: "", TermsAccepted: "yes", PrivacyAccepted: "yes", RequestId: "qa-request",
 });
 const request = (fetchRequest, extra = {}) => submitEnquiry({ formId: "qaformid", fields, token: "test-only-token", fetchRequest, ...extra });

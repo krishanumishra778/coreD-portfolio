@@ -117,9 +117,10 @@ export const SERVICES = [
 
 export const getServicePlans = (service) => service?.standalonePlans ? [...service.plans, ...service.standalonePlans] : service?.plans ?? [];
 
-export function quoteLink(service, pkg, scope) {
+export function quoteLink(service, pkg, scope, modules = []) {
   const query = new URLSearchParams({ service: service.id, plan: pkg.id });
   if (scope) query.set("scope", scope);
+  for (const id of modules) query.append("module", id);
   return "/reach-us?" + query + "#project-enquiry";
 }
 
