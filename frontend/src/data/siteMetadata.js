@@ -5,7 +5,7 @@ export const siteName = "CoreD";
 export const homeDescription = "CoreD builds AI agents and CRM automation for businesses and provides cybersecurity assessments, fixes and device protection.";
 const routes = {
   "/": ["AI, Automation and Cybersecurity for Businesses", homeDescription],
-  "/services": ["AI, Automation & Cybersecurity Services", "Compare CoreD’s proposed USD plans for AI-powered CRM, agents, consulting, AI security and cybersecurity. Request a fixed-scope or custom quote."],
+  "/services": ["Services & Pricing: AI, Automation & Cybersecurity", "Compare CoreD’s USD setup prices, Basic and Standard AI agent options, CRM integrations, consulting deliverables and cybersecurity scope. Request a written quote."],
   "/see-our-work": ["CRM Case Studies & Cybersecurity Sample", "See CoreD’s CRM project work with real screenshots and documented scope, plus a clearly labeled sample cybersecurity assessment."],
   "/blog": ["CoreD Journal: AI, CRM & Cybersecurity", "Practical guides to AI agents, CRM automation, WhatsApp and email follow-ups, and security reviews."],
   "/faq": ["Frequently Asked Questions", "Learn how CoreD scopes AI, CRM and cybersecurity work, what proposed pricing includes and how to request a quote."],

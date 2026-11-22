@@ -72,9 +72,9 @@ export const SERVICES = [
     addOns: ["teams", "support"],
     plans: [
       plan("discovery", "Basic", "AI Discovery", "fixed", 350, "Evaluate one business process.",
-        ["One workshop and a map of how the process works today", "Shortlist use cases, flag data or approval gaps, and recommend the next step"], "Includes written recommendations. Implementation is separate."),
+        ["One workshop and a written map of how one business process works today", "A shortlist of AI use cases with data and approval gaps identified", "Written recommendations and a practical next step for your team"], "Consulting and written advice only. Building the recommended workflow is separate."),
       plan("roadmap", "Standard", "AI Implementation Roadmap", "from", 1200, "Prepare an actionable pilot plan.",
-        ["Rank use cases by business value, effort and risk", "Compare build-versus-buy options, vendor costs and required integrations", "Deliver a phased plan, ownership, a cost estimate and pilot acceptance checks"], "The quote lists teams and workflows. Software and implementation are separate."),
+        ["A ranked use-case list based on business value, effort and risk", "A build-versus-buy comparison covering vendor costs and required integrations", "A written phased plan, named responsibilities, a cost estimate and checks for accepting the pilot"], "The quote lists teams, workflows and planning deliverables. Software, development and implementation are separate."),
       plan("custom-consulting", "Custom", "AI Transformation Advisory", "quote", null, "Plan a rollout across multiple teams.",
         ["Scope data readiness, architecture, vendor review, governance or team training", "Set decision owners, delivery phases and measures for adoption", "Add pilot oversight or ongoing advisory if needed"], "Workshops, implementation and support are agreed in writing."),
     ],

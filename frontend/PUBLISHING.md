@@ -4,7 +4,7 @@ Run `npm run dev -- --port 5174` from this directory. Use `npm test` for the FAQ
 
 ## Hostinger file hosting
 
-Use the latest **`frontend/dist`**, not the older repository-root `dist` (dated 24 October 2026 at this check). Build from `frontend` with Node 22 or 24, then upload the **contents** of `frontend/dist` into the document root assigned to `cored.coredhristi.com`. For an independent Hostinger website this is normally its own `public_html`; confirm the exact root in hPanel. Do not replace the separate marketplace site's files.
+Use the latest **`frontend/dist`**, not the older repository-root `dist` (dated 24 October 2026 at this check). Build from `frontend` with Node 22.12+ or 24 (Vite 7 requires Node 20.19+ or 22.12+), then upload the **contents** of `frontend/dist` into the document root assigned to `cored.coredhristi.com`. For an independent Hostinger website this is normally its own `public_html`; confirm the exact root in hPanel. Do not replace the separate marketplace site's files.
 
 The output includes `.htaccess`, `index.html`, all pre-rendered route directories, assets, images, sitemap/robots and `404.html`. Preserve the hidden `.htaccess` file when uploading or extracting the archive. Its rules serve existing files and generated route indexes, and keep a real 404 for unknown URLs. Every production build checks local links/assets with exact case so Windows-only filename matches do not silently break on Linux. The source `.htaccess` is for manual Web/Cloud file hosting; when using Hostinger's managed app deployment, review its generated routing rather than overwriting it blindly.
 

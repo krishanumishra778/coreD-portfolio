@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, Check } from "lucide-react";
 import { basicAgents, formatPrice, quoteLink, standardAgents } from "./servicesData.js";
 
-export default function QuotationCards({ service }) {
+export default function QuotationCards({ service, plans = service.plans }) {
   return (
-    <div className={service.plans.length === 4
+    <div className={plans.length === 4
       ? "mx-auto grid max-w-7xl items-stretch gap-5 md:grid-cols-2 xl:grid-cols-4"
-      : "mx-auto grid max-w-6xl items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3"}>
-      {service.plans.map((pkg) => {
+      : `mx-auto grid max-w-6xl items-stretch gap-5 md:grid-cols-2 ${plans.length === 3 ? "xl:grid-cols-3" : ""}`}>
+      {plans.map((pkg) => {
         const featured = pkg.id === "leadforge-x";
         return (
           <article key={pkg.id} id={"plan-" + pkg.id} tabIndex={-1} className={"flex min-w-0 flex-col rounded-3xl border p-6 shadow-sm " + (featured ? "border-white/10 bg-[#14161a] text-white" : "border-black/10 bg-white text-[#14161a]")}>
@@ -21,9 +21,8 @@ export default function QuotationCards({ service }) {
               {pkg.choices?.map((type) => (
                 <div key={type} className="mt-4">
                   <h4 className="font-bold">{type === "basic" ? "Choose one Basic option" : "Choose one Standard option"}</h4>
-                  <ul className="mt-1 list-disc space-y-1 pl-4">
-                    {(type === "basic" ? basicAgents : standardAgents).map(([id, label, detail]) => <li key={id}><strong>{label}</strong> <span className="text-[#555]">{detail}</span></li>)}
-                  </ul>
+                  <p className="mt-1 text-[#555]">{(type === "basic" ? basicAgents : standardAgents).map(([, label]) => label).join(" · ")}</p>
+                  <a href={`#agent-options-${type}`} className="cd-text-link mt-1 inline-block">Read what each {type === "basic" ? "Basic" : "Standard"} option does</a>
                 </div>
               ))}
               <p className={"mt-4 border-t pt-3 text-xs leading-5 " + (featured ? "border-white/15 text-white/75" : "border-black/10 text-[#555]")}><strong>Scope:</strong> {pkg.boundary}</p>

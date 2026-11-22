@@ -12,7 +12,7 @@ export const navLinks = [
     href: "/",
   },
   {
-    label: "Services",
+    label: "Services & Pricing",
     href: "/services",
   },
    {

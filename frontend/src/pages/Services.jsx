@@ -4,6 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import ServiceHero from "../components/services/ServiceHero.jsx";
 import ServiceTabs from "../components/services/ServiceTabs.jsx";
 import QuotationCards from "../components/services/QuotationCards.jsx";
+import ServiceGuide from "../components/services/ServiceGuide.jsx";
+import CrmAddOns from "../components/services/CrmAddOns.jsx";
 import { SERVICES, formatPrice, getServicePlans, leadForgeSupport, quoteLink, securityServices } from "../components/services/servicesData.js";
 
 export default function Services() {
@@ -22,9 +24,9 @@ export default function Services() {
   return (
     <>
       <header className="classic-services-intro mx-auto mb-8 max-w-2xl px-4 text-center sm:mb-9">
-        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.035] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.13em] text-[#6B6B6B]"><span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />CoreD · Services</span>
-        <h1 className="text-[34px] font-bold leading-[1.08] tracking-[-0.04em] text-[#14161A] sm:text-[42px] lg:text-[48px]"><RevealWords>Services</RevealWords></h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6B6B6B] sm:text-base sm:leading-7">Compare AI, automation and cybersecurity packages. See what each plan delivers and what changes the price.</p>
+        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.035] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.13em] text-[#6B6B6B]"><span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />CoreD · Services &amp; Pricing</span>
+        <h1 className="text-[34px] font-bold leading-[1.08] tracking-[-0.04em] text-[#14161A] sm:text-[42px] lg:text-[48px]"><RevealWords>Services &amp; Pricing</RevealWords></h1>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6B6B6B] sm:text-base sm:leading-7">Choose AI help for your team or security for your systems. Compare what you get, what it costs and what stays in your control.</p>
         <div className="cd-actions mt-5 justify-center">
           <a className="cd-button cd-button--primary" href="#quotation-section">Compare plans</a>
           <a className="cd-button cd-button--line" href="#cybersecurity">Cybersecurity <ArrowUpRight size={16} /></a>
@@ -39,7 +41,7 @@ export default function Services() {
         <ServiceTabs services={SERVICES} activeId={active.id} onChange={changeService} />
         <div role="tabpanel" id="service-content" aria-labelledby={`service-tab-${active.id}`}>
           <ul className="mb-6 grid grid-cols-2 gap-2 rounded-2xl border border-black/10 bg-white px-3 py-2 md:flex md:flex-wrap md:justify-center" aria-label="Prices at a glance">
-            {active.plans.map((pkg) => (
+            {getServicePlans(active).map((pkg) => (
               <li key={pkg.id} className="min-w-0 md:flex-1">
                 <a className="block rounded-xl px-3 py-2 text-sm hover:bg-amber-50" href={'#plan-' + pkg.id}>
                   <span className="block text-xs font-semibold text-[#5c616b]">{pkg.tier}</span><span className="block">{pkg.name}</span>
@@ -48,9 +50,16 @@ export default function Services() {
               </li>
             ))}
           </ul>
+          <ServiceGuide service={active} />
           <div id="plan-cards" tabIndex={-1}>
             <QuotationCards service={active} />
           </div>
+          {active.standalonePlans && <section className="mt-10" aria-labelledby="standalone-pricing-title">
+            <h3 id="standalone-pricing-title" className="mb-3 text-2xl font-bold tracking-tight text-[#14161a]">Need one service? Start here.</h3>
+            <p className="mb-5 max-w-3xl text-sm leading-6 text-[#555]">These starting prices cover the listed standalone scope. They are not prices for the full VA/PT or repair packages above.</p>
+            <QuotationCards service={active} plans={active.standalonePlans} />
+          </section>}
+          <CrmAddOns service={active} />
           <div className="mt-12"><ServiceHero service={active} activeIndex={activeIndex} serviceCount={SERVICES.length}
             onPrevious={() => changeService(SERVICES[(activeIndex - 1 + SERVICES.length) % SERVICES.length].id)}
             onNext={() => changeService(SERVICES[(activeIndex + 1) % SERVICES.length].id)}  /></div>

@@ -6,7 +6,7 @@ const NAVBAR_BG = "#14161aeb";
 
 const navigation = [
   { label: "Home", path: "/", end: true },
-  { label: "Services", path: "/services", end: true },
+  { label: "Services & Pricing", path: "/services", end: true },
   { label: "See Our Work", path: "/see-our-work" },
   { label: "Blog", path: "/blog" },
   { label: "FAQ", path: "/faq" },

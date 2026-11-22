@@ -14,7 +14,7 @@ import {
 const GeneralEmail = "info@coredhristi.com";
 const SupportEmail = "support@coredhristi.com";
 const navLinks = [
-  ["Services", "/services"], ["Cybersecurity", "/services#cybersecurity"], ["See our work", "/see-our-work"],
+  ["Services & Pricing", "/services"], ["Cybersecurity", "/services#cybersecurity"], ["See our work", "/see-our-work"],
   ["Blog", "/blog"], ["FAQ", "/faq"], ["Privacy Policy", "/privacyPolicy"], ["Terms & Conditions", "/termsCondition"], ["Pricing Policy", "/pricingPolicy"],
 ].map(([label, href]) => ({ label, href }));
 
