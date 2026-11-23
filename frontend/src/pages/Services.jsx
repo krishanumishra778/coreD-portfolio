@@ -8,30 +8,39 @@ import ServiceGuide from "../components/services/ServiceGuide.jsx";
 import CrmAddOns from "../components/services/CrmAddOns.jsx";
 import { SERVICES, formatPrice, getServicePlans, leadForgeSupport, quoteLink, securityServices } from "../components/services/servicesData.js";
 
-export default function Services() {
+export default function Services({ serviceId }) {
   const [params] = useSearchParams();
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();
-  const active = SERVICES.find(({ id }) => id === params.get("service")) ?? SERVICES[0];
+  const active = SERVICES.find(({ id }) => id === (serviceId || params.get("service"))) ?? SERVICES[0];
   const activeIndex = SERVICES.indexOf(active);
   const security = SERVICES.find(({ id }) => id === "cybersecurity");
   const changeService = (id) => {
     const next = new URLSearchParams(params);
-    if (id === SERVICES[0].id) next.delete("service"); else next.set("service", id);
-    navigate({ pathname, search: next.toString(), hash }, { replace: true, preventScrollReset: true });
+    if (serviceId || id === SERVICES[0].id) next.delete("service"); else next.set("service", id);
+    navigate({ pathname: serviceId ? `/services/${id}` : pathname, search: next.toString(), hash }, { replace: true, preventScrollReset: true });
   };
 
   return (
     <>
       <header className="classic-services-intro mx-auto mb-8 max-w-2xl px-4 text-center sm:mb-9">
         <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/[0.06] bg-black/[0.035] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.13em] text-[#6B6B6B]"><span className="h-1.5 w-1.5 rounded-full bg-[#FF9100]" />CoreD · Services &amp; Pricing</span>
-        <h1 className="text-[34px] font-bold leading-[1.08] tracking-[-0.04em] text-[#14161A] sm:text-[42px] lg:text-[48px]"><RevealWords>Services &amp; Pricing</RevealWords></h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6B6B6B] sm:text-base sm:leading-7">Choose AI help for your team or security for your systems. Compare what you get, what it costs and what stays in your control.</p>
+        <h1 className="text-[34px] font-bold leading-[1.08] tracking-[-0.04em] text-[#14161A] sm:text-[42px] lg:text-[48px]"><RevealWords>{serviceId ? active.label + " · Services & Pricing" : "Services & Pricing"}</RevealWords></h1>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6B6B6B] sm:text-base sm:leading-7">{serviceId ? active.intro : "Choose AI help for your team or security for your systems. Compare what you get, what it costs and what stays in your control."}</p>
         <div className="cd-actions mt-5 justify-center">
           <a className="cd-button cd-button--primary" href="#quotation-section">Compare plans</a>
           <a className="cd-button cd-button--line" href="#cybersecurity">Cybersecurity <ArrowUpRight size={16} /></a>
         </div>
       </header>
+
+      {!serviceId && <section className="cd-shell service-directory" aria-labelledby="service-directory-title">
+        <h2 id="service-directory-title">Which service do you need?</h2>
+        <p>Read the scope and pricing for each service. CoreD is the services division of CoreDhristi LLP.</p>
+        <ul>{SERVICES.map((service) => <li key={service.id}>
+          <h3><Link to={`/services/${service.id}`}>{service.label} <ArrowUpRight size={16} aria-hidden="true" /></Link></h3>
+          <p>{service.intro}</p>
+        </li>)}</ul>
+      </section>}
 
       <section id="quotation-section" className="mx-auto w-full max-w-[1280px] px-4 pb-16 sm:px-6 lg:px-8" aria-labelledby="pricing-title">
         <div className="mx-auto mb-6 max-w-2xl px-2 text-center">

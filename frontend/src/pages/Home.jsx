@@ -101,7 +101,7 @@ function HomeAgentPlans() {
         ))}
       </div>
       <div className="cd-actions mt-8 justify-center">
-        <Link className="cd-button cd-button--primary" to="/services?service=ai-agents#quotation-section">Compare AI agent plans <ArrowRight size={16} aria-hidden="true" /></Link>
+        <Link className="cd-button cd-button--primary" to="/services/ai-agents#quotation-section">Compare AI agent plans <ArrowRight size={16} aria-hidden="true" /></Link>
       </div>
     </section>
   );
@@ -171,7 +171,7 @@ export default function Home() {
           ].map(([title, detail]) => <article className="rounded-2xl border border-black/10 bg-white p-5" key={title}><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-[#5c616b]">{detail}</p></article>)}
         </div>
         <div className="cd-actions mt-6 justify-center">
-          <Link className="cd-button cd-button--primary" to="/services?service=cybersecurity#quotation-section">See cybersecurity pricing <ArrowRight size={16} /></Link>
+          <Link className="cd-button cd-button--primary" to="/services/cybersecurity#quotation-section">See cybersecurity pricing <ArrowRight size={16} /></Link>
           <Link className="cd-button cd-button--line" to="/see-our-work#security-sample">View a sample assessment <ArrowUpRight size={16} /></Link>
         </div>
       </section>

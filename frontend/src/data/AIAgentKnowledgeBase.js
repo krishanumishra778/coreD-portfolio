@@ -993,7 +993,7 @@ export const aiAgentKnowledgeBase = [
     ],
     keywords: ["verify am dealing official"],
     answer:
-      "CoreD services use cored.coredhristi.com; the related marketplace uses coredhristi.com. General enquiries go to info@coredhristi.com and support to support@coredhristi.com. Use the website contact form if you need the team to confirm a message.",
+      "CoreD’s services website is coredhristi.com. The related marketplace is temporarily not published on this domain. General enquiries go to info@coredhristi.com and support to support@coredhristi.com. Use the website contact form if you need the team to confirm a message.",
   },
   {
     id: "aiagent-q097-cored-help-migrate-old-excel-sheets",

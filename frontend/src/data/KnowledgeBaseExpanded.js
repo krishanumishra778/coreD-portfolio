@@ -74,7 +74,7 @@ const extendedEntries = [
       "Kya CoreD ka apna marketplace hai?",
     ],
     keywords: ["marketplace website", "marketplace access", "marketplace availability"],
-    answer: "The related CoreDhristi marketplace is available online. Use this website’s Services page for CoreD implementation and security quotes.",
+    answer: "The related CoreDhristi marketplace is temporarily not published on this domain. This website is for CoreD implementation, consulting and security quotes. Marketplace listings and purchases are separate from service enquiries.",
     action: "contact",
   },
   {
@@ -744,6 +744,13 @@ export const pricingAnswer = "Proposed USD pricing: " +
   ". See Services for every offer. The written quote confirms scope, third-party charges and optional support.";
 
 const publicEntries = [
+  {
+    id: "cored-services-identity",
+    question: "What is CoreD, and which services does it provide?",
+    alternatives: ["Who provides these services?", "Is this the CoreD services website?"],
+    keywords: ["cored services", "coredhristi llp", "ai crm cybersecurity"],
+    answer: "CoreD is the services division of CoreDhristi LLP, registered in India with LLPIN ADC-9115. We provide AI-powered CRM workflows, AI agents and automation, AI consulting, AI cybersecurity consulting and scoped cybersecurity services. This main-domain website handles service enquiries; the related marketplace is temporarily not published here.",
+  },
   {
     id: "existing-crm-automation",
     question: "Can you add automation to the CRM we already use?",

@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import WordReveal from "./components/ui/WordReveal.jsx";
 import ClassicNavbar from "./components/layout/ClassicNavbar.jsx";
 import ClassicFooter from "./components/layout/ClassicFooter.jsx";
 import CustomCursor from "./components/ui/CustomCurser.jsx";
-import { ChatbotWidget } from "./components/chatbot/ChatbotWidget.jsx";
 import PageMetadata from "./components/layout/PageMetadata.jsx";
+import Breadcrumbs from "./components/layout/Breadcrumbs.jsx";
 import AnalyticsPreferences from "./components/layout/AnalyticsPreferences.jsx";
 import Home from "./pages/Home.jsx";
 import Services from "./pages/Services.jsx";
@@ -17,6 +17,10 @@ import Contact from "./pages/Contact.jsx";
 import PrivacyNotice from "./pages/PrivacyNotice.jsx";
 import TermsCondition from "./pages/TermsCondition.jsx";
 import PricingPolicy from "./pages/PricingPolicy.jsx";
+import { SERVICES } from "./components/services/servicesData.js";
+
+const ChatbotWidget = lazy(() => import("./components/chatbot/ChatbotWidget.jsx")
+  .then((module) => ({ default: module.ChatbotWidget })));
 
 export default function App() {
   const { pathname, hash, search, key } = useLocation();
@@ -53,9 +57,11 @@ export default function App() {
       <ClassicNavbar />
       <WordReveal />
       <main id="main-content" className={pathname === "/" ? "cd-main classic-home" : "cd-main"} tabIndex={-1} ref={main}>
+        <Breadcrumbs />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
+          {SERVICES.map(({ id }) => <Route key={id} path={`/services/${id}`} element={<Services serviceId={id} />} />)}
           <Route path="/see-our-work" element={<SeeOurWork />} />
           <Route path="/seeOurWork" element={<Navigate replace to="/see-our-work" />} />
           <Route path="/case-studies" element={<Navigate replace to="/see-our-work" />} />
@@ -74,7 +80,7 @@ export default function App() {
       </main>
       <ClassicFooter />
       <AnalyticsPreferences />
-      <ChatbotWidget classic />
+      {!import.meta.env.SSR && <Suspense fallback={null}><ChatbotWidget classic /></Suspense>}
     </div>
   );
 }

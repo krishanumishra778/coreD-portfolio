@@ -8,7 +8,7 @@ const server = await createServer({ mode: "production", logLevel: "error", serve
 const escape = (text) => String(text).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
 try {
-  const { normalizeSiteOrigin, renderPage, resolveMetadata, staticPaths, structuredData } = await server.ssrLoadModule("/src/entry-static.jsx");
+  const { metadataTags, normalizeSiteOrigin, renderPage, resolveMetadata, searchDocuments, staticPaths, structuredData } = await server.ssrLoadModule("/src/entry-static.jsx");
   const origin = normalizeSiteOrigin(process.env.VITE_SITE_URL || loadEnv("production", process.cwd()).VITE_SITE_URL);
   const sitemap = new Set();
   const buildHtml = (url) => {
@@ -18,13 +18,8 @@ try {
     const schema = structuredData(data, origin);
     const head = [
       `<title>${escape(data.title)}</title>`,
-      `<meta name="description" content="${escape(data.description)}">`,
-      `<meta property="og:title" content="${escape(data.title)}">`,
-      `<meta property="og:description" content="${escape(data.description)}">`,
-      `<meta property="og:type" content="${data.article ? "article" : "website"}">`,
-      data.noindex && '<meta name="robots" content="noindex, follow">',
-      canonical && `<link rel="canonical" href="${escape(canonical)}"><meta property="og:url" content="${escape(canonical)}">`,
-      origin && data.image && `<meta property="og:image" content="${escape(origin + data.image)}">`,
+      ...metadataTags(data, origin).filter(([, , value]) => value).map(([key, name, value]) => `<meta ${key}="${name}" content="${escape(value)}">`),
+      canonical && `<link rel="canonical" href="${escape(canonical)}">`,
       schema && `<script id="page-schema" type="application/ld+json">${JSON.stringify(schema).replaceAll("<", "\\u003c")}</script>`,
     ].filter(Boolean).join("\n    ");
     const alias = data.path && url !== data.path && url !== "/reach-us";
@@ -43,6 +38,7 @@ try {
   await mkdir(path.join(output, "thank-you"), { recursive: true });
   await writeFile(path.join(output, "thank-you", "index.html"), await readFile(path.join(output, "thank-you.html"), "utf8"));
   await writeFile(path.join(output, "robots.txt"), `User-agent: *\nAllow: /\n${origin ? `Sitemap: ${origin}/sitemap.xml\n` : ""}`);
+  for (const [file, content] of Object.entries(searchDocuments(origin))) await writeFile(path.join(output, file), content);
   if (origin) await writeFile(path.join(output, "sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[...sitemap].map((url) => `\n  <url><loc>${escape(url)}</loc></url>`).join("")}\n</urlset>\n`);
   console.log(`Pre-rendered ${staticPaths.length} pages${origin ? " and wrote sitemap.xml" : " (set VITE_SITE_URL for canonical URLs and a sitemap)"}.`);

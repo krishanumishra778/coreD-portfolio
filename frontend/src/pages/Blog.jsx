@@ -17,7 +17,7 @@ const sectionId = (heading) => heading.toLowerCase().replace(/[^a-z0-9]+/g, "-")
 function ArticleMeta({ article }) {
   const words = [article.answer, ...article.sections.flatMap(({ heading, body }) => [heading, ...body])].join(" ").split(/\s+/).length;
   return <p className="journal-meta"><span>{article.topic}</span><span aria-hidden="true">·</span><span>{Math.max(1, Math.ceil(words / 200))} min read</span>
-    {article.author && <span>· {article.author}</span>}{article.date && <time dateTime={article.date}>{article.date}</time>}
+    <span>· By {article.author || "CoreD"}</span>{article.date && <time dateTime={article.date}>{article.date}</time>}
   </p>;
 }
 
@@ -62,9 +62,9 @@ export default function Blog() {
             </ul></details></li>;
           })}</ul>
           <div className="journal-related-site">
-            <h2>CoreDhristi Marketplace</h2>
-            <p>Explore the related marketplace for AI agents and automations.</p>
-            <a className="cd-button cd-button--line" href="https://www.coredhristi.com/">Visit CoreDhristi <ArrowUpRight size={16} /></a>
+            <h2>Put the guide into practice</h2>
+            <p>Compare CoreD’s AI agent, CRM automation and cybersecurity services, including scope and setup pricing.</p>
+            <Link className="cd-button cd-button--line" to="/services">Services &amp; Pricing <ArrowUpRight size={16} /></Link>
           </div>
         </aside>
       </div>

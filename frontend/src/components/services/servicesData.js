@@ -121,7 +121,7 @@ export function quoteLink(service, pkg, scope, modules = []) {
   const query = new URLSearchParams({ service: service.id, plan: pkg.id });
   if (scope) query.set("scope", scope);
   for (const id of modules) query.append("module", id);
-  return "/reach-us?" + query + "#project-enquiry";
+  return "/contact?" + query + "#project-enquiry";
 }
 
 export const securityServices = [

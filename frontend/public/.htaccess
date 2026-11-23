@@ -6,6 +6,18 @@ ErrorDocument 404 /404.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Preserve page paths and query strings when visitors use the former domain.
+  RewriteCond %{HTTP_HOST} ^(?:www\.)?cored\.coredhristi\.com$ [NC]
+  RewriteRule ^(.*)$ https://coredhristi.com/$1 [R=301,L]
+
+  # Resolve legacy URLs on the server, before the app or real directories load.
+  RewriteRule ^(?:seeOurWork|case-studies)/?$ /see-our-work [R=301,L]
+  RewriteRule ^reach-us/?$ /contact [R=301,L]
+  RewriteRule ^pricing-policy/?$ /pricingPolicy [R=301,L]
+
+  RewriteCond %{QUERY_STRING} (^|&)service=(ai-powered-crm|ai-agents|ai-consulting|ai-cybersecurity|cybersecurity)(&|$)
+  RewriteRule ^services/?$ /services/%2 [R=301,L,QSD]
+
   # Keep real assets and generated HTML files directly accessible.
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]

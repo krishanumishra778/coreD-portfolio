@@ -7,7 +7,7 @@ export const articles = [
     description: "Pick one repeatable task, give the agent an approved source, and decide what a person must still approve.",
     imageAlt: "Amber routing card and a document tray on a charcoal desk",
     answer: "Start with one reversible task, such as classifying enquiries or drafting answers from approved material. Keep staff in charge of sending, define when the agent should stop, and compare the pilot with the way the team works today.",
-    service: ["Explore AI agent plans", "/services?service=ai-agents#quotation-section"],
+    service: ["Explore AI agent plans", "/services/ai-agents#quotation-section"],
     sections: [
       { heading: "Pick a task you can check", body: [
         "A useful first agent does one job with a clear finish. Take a support inbox: you might ask the agent to classify incoming questions and draft answers from your approved help pages. A staff member reviews the draft and sends it. This is easier to test than asking an agent to ‘handle support’.",
