@@ -39,6 +39,9 @@ try {
     await writeFile(path.join(directory, "index.html"), buildHtml(url));
   }
   await writeFile(path.join(output, "404.html"), buildHtml("/not-found"));
+  // Keep the standalone confirmation page available at its clean main-domain URL.
+  await mkdir(path.join(output, "thank-you"), { recursive: true });
+  await writeFile(path.join(output, "thank-you", "index.html"), await readFile(path.join(output, "thank-you.html"), "utf8"));
   await writeFile(path.join(output, "robots.txt"), `User-agent: *\nAllow: /\n${origin ? `Sitemap: ${origin}/sitemap.xml\n` : ""}`);
   if (origin) await writeFile(path.join(output, "sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[...sitemap].map((url) => `\n  <url><loc>${escape(url)}</loc></url>`).join("")}\n</urlset>\n`);
