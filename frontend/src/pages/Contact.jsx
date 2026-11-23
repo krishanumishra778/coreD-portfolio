@@ -72,8 +72,10 @@ function ContactEnquiry({ params }) {
     setStatus(null);
     try {
       await submitEnquiry({ formId: formspreeFormId, fields: body, token: turnstile.token, protection: contactProtection, signal: AbortSignal.timeout(25000) });
-      setStatus({ type: "success", message: "We received your enquiry. CoreD will review your selected plan and reply by email." });
+      setStatus({ type: "success", message: "We received your enquiry. Opening your thank-you page…" });
       try { trackEnquiry(serviceId, planId); } catch { /* Optional tracking must not affect confirmed delivery. */ }
+      // A fixed destination keeps submitted details out of the URL and prevents open redirects.
+      try { window.location.assign("https://coredhristi.com/thank-you"); } catch { /* Keep the confirmed receipt and manual link if navigation is blocked. */ }
     } catch (error) { fail(error.message); }
     finally { inFlight.current = false; setSubmitting(false); turnstile.reset(); }
   }
@@ -91,7 +93,7 @@ function ContactEnquiry({ params }) {
         </aside>
         <form id="project-enquiry" className="contact-form quote-form" onSubmit={submit}>
           <h2>Project enquiry</h2>
-          {status?.type === "success" ? <p className="quote-feedback" role="status">{status.message}</p> : <>
+          {status?.type === "success" ? <p className="quote-feedback" role="status">{status.message} <a className="cd-text-link" href="https://coredhristi.com/thank-you">Continue to thank you</a></p> : <>
             <fieldset className="quote-fields" disabled={submitting}>
               <label className="contact-honeypot" aria-hidden="true">Website<input name="Website" tabIndex={-1} autoComplete="off" /></label>
               <label>Your name<input name="FullName" required autoComplete="name" maxLength={100} /></label>
