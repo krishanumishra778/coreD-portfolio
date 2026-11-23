@@ -31,6 +31,7 @@ export function searchDocuments(origin) {
     "## Services", "",
     ...SERVICES.map(s => `- [${s.label}](${origin}/services/${s.id}): ${s.intro}`), "",
     "## Scope, pricing and contact", "",
+    `- [About CoreD and CoreDhristi LLP](${origin}/about): Business identity, services, contact details and the current purpose of this domain.`,
     `- [Services and pricing](${origin}/services): Package scope, Basic and Standard choices, custom CRM roles and third-party costs.`,
     `- [Plain-text pricing reference](${origin}/pricing.md): Generated from the same current service catalogue.`,
     `- [Service FAQ](${origin}/faq): Delivery, approvals, support and quotation questions.`,

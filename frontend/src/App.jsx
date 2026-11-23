@@ -8,6 +8,7 @@ import PageMetadata from "./components/layout/PageMetadata.jsx";
 import Breadcrumbs from "./components/layout/Breadcrumbs.jsx";
 import AnalyticsPreferences from "./components/layout/AnalyticsPreferences.jsx";
 import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
 import Services from "./pages/Services.jsx";
 import SeeOurWork from "./pages/SeeOurWork.jsx";
 import CaseStudies from "./pages/CaseStudies.jsx";
@@ -60,6 +61,7 @@ export default function App() {
         <Breadcrumbs />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           {SERVICES.map(({ id }) => <Route key={id} path={`/services/${id}`} element={<Services serviceId={id} />} />)}
           <Route path="/see-our-work" element={<SeeOurWork />} />

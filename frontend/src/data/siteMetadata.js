@@ -4,10 +4,11 @@ import { SERVICES } from "../components/services/servicesData.js";
 import { websiteFaq } from "./KnowledgeBaseExpanded.js";
 
 export const siteName = "CoreD";
-export const homeDescription = "CoreD builds AI agents and CRM automation for businesses and provides cybersecurity assessments, fixes and device protection.";
+export const homeDescription = "CoreD, a services division of CoreDhristi LLP, builds AI-powered CRM workflows, AI agents and automation, and provides scoped cybersecurity services.";
 export const defaultImage = "/Images/hero/cored-robot-background.webp";
 const routes = {
-  "/": ["AI, Automation and Cybersecurity for Businesses", homeDescription],
+  "/": ["CoreDhristi: AI CRM, AI Agents & Cybersecurity", homeDescription],
+  "/about": ["About CoreD & CoreDhristi LLP", "CoreD is the services division of CoreDhristi LLP. Learn about its AI CRM, agent, automation, consulting and cybersecurity work, and how to contact the team."],
   "/services": ["Services & Pricing: AI, Automation & Cybersecurity", "Compare CoreD’s USD setup prices, Basic and Standard AI agent options, CRM integrations, consulting deliverables and cybersecurity scope. Request a written quote."],
   "/see-our-work": ["CRM Case Studies & Cybersecurity Sample", "See CoreD’s CRM project work with real screenshots and documented scope, plus a clearly labeled sample cybersecurity assessment."],
   "/blog": ["CoreD Journal: AI, CRM & Cybersecurity", "Practical guides to AI agents, CRM automation, WhatsApp and email follow-ups, and security reviews."],
@@ -68,7 +69,7 @@ export function structuredData(metadata, origin) {
   if (!origin || !metadata.path || metadata.noindex) return null;
   const url = origin + metadata.path;
   const organization = { "@type": "Organization", "@id": origin + "/#organization", name: siteName,
-    description: homeDescription, url: origin + "/", logo: origin + "/Images/coreD.svg",
+    alternateName: "CoreD by CoreDhristi", description: homeDescription, url: origin + "/", logo: origin + "/Images/coreD.svg",
     email: "info@coredhristi.com", sameAs: ["https://www.linkedin.com/company/coredhristi/"],
     parentOrganization: { "@type": "Organization", name: "CoreDhristi LLP", identifier: "ADC-9115" },
     contactPoint: [
@@ -78,7 +79,7 @@ export function structuredData(metadata, origin) {
   };
   const website = { "@type": "WebSite", "@id": origin + "/#website", url: origin + "/", name: siteName,
     publisher: { "@id": organization["@id"] }, inLanguage: "en" };
-  const page = { "@type": metadata.path === "/faq" ? "FAQPage" : metadata.path === "/contact" ? "ContactPage"
+  const page = { "@type": metadata.path === "/faq" ? "FAQPage" : metadata.path === "/contact" ? "ContactPage" : metadata.path === "/about" ? "AboutPage"
     : ["/blog", "/see-our-work"].includes(metadata.path) ? "CollectionPage" : "WebPage",
     "@id": url + "#webpage", url, name: metadata.title, description: metadata.description,
     isPartOf: { "@id": website["@id"] }, about: { "@id": organization["@id"] }, inLanguage: "en" };

@@ -58,7 +58,7 @@ function HomeServiceIndex() {
     <section id="home-services" className="cd-shell cd-section" aria-labelledby="home-services-title">
       <div className="classic-section-lead">
         <h2 id="home-services-title"><RevealWords>Three ways we help you stay ahead</RevealWords></h2>
-        <p>Pick where to start. Many projects combine them, such as a new CRM with a security review before launch.</p>
+        <p>CoreD is the services division of <Link className="cd-text-link" to="/about">CoreDhristi LLP</Link>. We build AI-powered CRM workflows, AI agents and automation, and help secure your systems. Many projects combine them, such as a new CRM with a security review before launch.</p>
       </div>
       <div className="home-service-paths">
         {homeServices.map(({ title, detail, anchor, link }, index) => (

@@ -18,6 +18,10 @@ test("each service has a canonical landing page; old query links resolve without
 });
 
 test("indexable pages carry the correct identity, sharing image and unique schema IDs", () => {
+  assert.match(resolveMetadata("/").title, /CoreDhristi/);
+  assert.match(resolveMetadata("/").description, /services division of CoreDhristi LLP/);
+  assert.ok(staticPaths.includes("/about"));
+  assert.equal(structuredData(resolveMetadata("/about"), origin)["@graph"].find(n => n["@id"] === origin + "/about#webpage")["@type"], "AboutPage");
   for (const path of staticPaths) {
     const metadata = resolveMetadata(path);
     const graph = structuredData(metadata, origin);
