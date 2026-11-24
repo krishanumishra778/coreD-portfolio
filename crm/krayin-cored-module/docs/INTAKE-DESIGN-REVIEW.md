@@ -49,3 +49,8 @@ Browser on `coredhristi.com` → `crm.coredhristi.com` is cross-origin. Proposal
 2. Provide Turnstile widget (site key) + secret for `coredhristi.com`.
 3. Confirm exact allowed origins.
 4. Confirm Formspree stays as dual-write/fallback until CRM is verified in production.
+
+## 9. Finding: Formspree + CRM dual-write cannot share one Turnstile token
+A Turnstile token is single-use (Cloudflare: reuse returns `timeout-or-duplicate`). Formspree's CAPTCHA and the CRM would both validate the same token, so the second would fail. Therefore:
+- Staging/preview builds (`VITE_INTAKE_MODE=crm`) send to the CRM **only** (implemented; Formspree untouched).
+- Production dual-write needs a second widget execution (a fresh token per receiver) or a server-side forward. Decision needed before go-live; until then production stays Formspree-only.
