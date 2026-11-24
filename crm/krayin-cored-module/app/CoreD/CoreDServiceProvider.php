@@ -2,6 +2,7 @@
 
 namespace App\CoreD;
 
+use App\CoreD\Console\ImportFormspreeCommand;
 use App\CoreD\Console\SeedDemoCommand;
 use App\CoreD\Console\SmokeCommand;
 use Illuminate\Support\Facades\Event;
@@ -30,7 +31,7 @@ class CoreDServiceProvider extends ServiceProvider
         $this->bootBranding();
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SeedDemoCommand::class, SmokeCommand::class]);
+            $this->commands([SeedDemoCommand::class, SmokeCommand::class, ImportFormspreeCommand::class]);
         }
     }
 

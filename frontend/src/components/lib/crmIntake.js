@@ -9,18 +9,45 @@ export function crmEndpoint(url) {
   } catch { return ""; }
 }
 
+// Public API base from an https origin (e.g. https://crm.coredhristi.com): no path, query, hash or credentials.
+export function crmBaseFrom(origin) {
+  try {
+    const u = new URL(origin);
+    return u.protocol === "https:" && (u.pathname === "/" || u.pathname === "") && !u.search && !u.hash && !u.username ? `${u.origin}/cored/api/` : "";
+  } catch { return ""; }
+}
+
+// Form field name -> CRM details key (the server keeps an allow-list of the same keys and max lengths).
+const DETAILS = {
+  service_id: "ServiceId", service: "ServiceSelection", plan_id: "PlanId", plan: "ChooseYourPlan", displayed_price: "DisplayedPrice",
+  price_basis: "PriceBasis", price_amount: "PriceAmount", currency: "Currency", pricing_status: "PricingStatus", quote_status: "QuoteStatus",
+  budget_amount: "BudgetAmount", budget_currency: "BudgetCurrency", budget_range: "BudgetRange", budget_scope: "BudgetScope",
+  add_on_ids: "AddOnIds", add_ons: "AddOns", module_ids: "ModuleIds", modules: "RequestedModules", module_pricing: "ModulePricing",
+  basic_agent: "BasicAgent", standard_agent: "StandardAgent", requested_scope: "RequestedScope", current_systems: "CurrentSystems",
+  requested_integrations: "RequestedIntegrations", requested_volume: "RequestedVolume", target_timeline: "TargetTimeline",
+};
+const amount = (v) => { const n = Number(v); return v !== "" && Number.isFinite(n) && n > 0 && n < 1e12 ? String(Math.round(n * 100) / 100) : v; };
+
 export function crmPayload(fields, token) {
   const get = (name) => String(fields.get(name) ?? "").trim();
   const requestId = idPattern.test(get("RequestId")) ? get("RequestId") : crypto.randomUUID();
-  const context = [get("ServiceSelection") && `Service: ${get("ServiceSelection")}`, get("ChooseYourPlan") && `Plan: ${get("ChooseYourPlan")}`]
-    .filter(Boolean).join(" | ");
-  const message = [get("ProjectDescription"), context].filter(Boolean).join("\n\n").slice(0, 3000);
+  const details = {};
+  for (const [key, field] of Object.entries(DETAILS)) {
+    let v = get(field);
+    if (key === "budget_amount" || key === "price_amount") v = amount(v);
+    if (v) details[key] = v;
+  }
+  const faq = get("LeadSource") === "FAQ chatbot";
+  const quote = details.price_basis === "quote" || Boolean(details.module_ids) || /scope review/i.test(details.quote_status ?? "");
   return {
-    kind: get("LeadSource") === "FAQ chatbot" ? "faq_chatbot" : "contact",
-    request_id: requestId, name: get("FullName"), email: get("CompanyEmail"),
-    ...(get("ContactNumber") ? { phone: get("ContactNumber") } : {}),
+    kind: faq ? "faq_chatbot" : quote ? "quote" : "contact",
+    request_id: requestId, name: get("FullName"), email: get("CompanyEmail"), phone: get("ContactNumber"),
+    ...(get("CountryCode") ? { phone_country: get("CountryCode") } : {}),
+    ...(get("DialCode") ? { dial_code: get("DialCode") } : {}),
     ...(get("CompanyName") ? { company: get("CompanyName") } : {}),
-    message, website: get("Website"), turnstile_token: token ?? "",
+    message: get("ProjectDescription"),
+    consent: faq ? { privacy_notice: get("PrivacyNoticeShown") === "yes" } : { terms: get("TermsAccepted") === "yes", privacy: get("PrivacyAccepted") === "yes" },
+    details, website: get("Website"), turnstile_token: token ?? "",
   };
 }
 
@@ -31,7 +58,7 @@ export async function submitCrmLead({ url, fields, token, signal, fetchRequest =
   let response;
   try {
     response = await fetchRequest(endpoint, {
-      method: "POST", body: JSON.stringify(crmPayload(fields, token)), credentials: "include", signal,
+      method: "POST", body: JSON.stringify(crmPayload(fields, token)), credentials: "same-origin", signal,
       headers: { "Content-Type": "application/json", Accept: "application/json" },
     });
   } catch { throw new Error("We couldn’t confirm receipt. Please email CoreD before sending again."); }

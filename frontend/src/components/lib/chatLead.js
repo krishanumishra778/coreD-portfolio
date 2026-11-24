@@ -19,7 +19,7 @@ export async function submitChatLead({ fields, requestId, ...delivery }) {
     CountryCode: country.code, DialCode: `+${country.dial}`,
     LeadSource: "FAQ chatbot", ServiceSelection: "FAQ assistant enquiry",
     ProjectDescription: "This visitor asked to use CoreD’s FAQ assistant and shared their details for enquiry follow-up.",
-    RequestId: requestId, Website: "",
+    RequestId: requestId, Website: "", PrivacyNoticeShown: "yes",
   });
   await submitEnquiry({ ...delivery, fields: lead, subject: "CoreD · FAQ assistant enquiry" });
   return { name };

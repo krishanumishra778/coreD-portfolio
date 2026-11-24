@@ -10,5 +10,5 @@ class IntakeEvent extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['is_duplicate' => 'boolean'];
+    protected $casts = ['is_duplicate' => 'boolean', 'is_import' => 'boolean', 'payload' => 'array', 'consent_at' => 'datetime', 'notified_at' => 'datetime', 'submitted_at' => 'datetime'];
 }

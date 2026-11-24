@@ -2,13 +2,14 @@
 
 namespace App\CoreD\Http\Controllers;
 
+use App\CoreD\Services\IntakePayload;
 use App\CoreD\Services\IntakeService;
 use App\CoreD\Services\TurnstileVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 
 class IntakeController
 {
@@ -21,30 +22,19 @@ class IntakeController
         }
         RateLimiter::hit($ipKey, 60);
 
-        $v = Validator::make($r->all(), [
-            'kind' => 'required|in:contact,faq_chatbot',
-            'request_id' => ['required', 'regex:/^[A-Za-z0-9_-]{16,64}$/'],
-            'name' => 'required|string|min:2|max:120',
-            'email' => 'required|email:rfc|max:254',
-            'phone' => ['nullable', 'string', 'max:24', 'regex:/^[0-9+\-\s()]{6,24}$/'],
-            'company' => 'nullable|string|max:120',
-            'message' => 'nullable|string|max:3000',
-            'website' => 'nullable|string|max:200',           // honeypot
-            'turnstile_token' => 'nullable|string|max:2048',
-        ]);
+        $v = Validator::make($r->all(), IntakePayload::rules());
         if ($v->fails()) {
             return response()->json(['ok' => false, 'error' => 'invalid', 'fields' => array_keys($v->errors()->toArray())], 422);
         }
-        $d = $v->validated();
-        $d = array_map(fn ($x) => is_string($x) ? trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/u', '', $x)) : $x, $d);
+        $d = IntakePayload::clean($v->validated());
 
         if (($d['website'] ?? '') !== '') {                    // bot: acknowledge silently, store nothing
             return response()->json(['ok' => true, 'receipt' => $d['request_id']]);
         }
-        if ($d['kind'] === 'contact' && mb_strlen($d['message'] ?? '') < 5) {
-            return response()->json(['ok' => false, 'error' => 'invalid', 'fields' => ['message']], 422);
+        if ($bad = IntakePayload::crossChecks($d)) {
+            return response()->json(['ok' => false, 'error' => 'invalid', 'fields' => $bad], 422);
         }
-        $emailKey = 'cored:intake:email:'.hash('sha256', mb_strtolower($d['email']));
+        $emailKey = 'cored:intake:email:'.hash('sha256', $d['email']);
         if (RateLimiter::tooManyAttempts($emailKey, $limits['intake_per_hour_email'])) {
             return response()->json(['ok' => false, 'error' => 'rate_limited'], 429);
         }
@@ -57,8 +47,8 @@ class IntakeController
             return response()->json(['ok' => false, 'error' => 'verification_failed'], $t['reason'] === 'not_configured' ? 503 : 422);
         }
 
-        app(IntakeService::class)->record($d['kind'], $d); // resolved lazily: only after every cheap check passed
+        $result = app(IntakeService::class)->record($d['kind'], $d); // resolved lazily: only after every cheap check passed
 
-        return response()->json(['ok' => true, 'receipt' => $d['request_id']]);
+        return response()->json(['ok' => true, 'receipt' => $d['request_id'], 'status' => $result['status']]);
     }
 }

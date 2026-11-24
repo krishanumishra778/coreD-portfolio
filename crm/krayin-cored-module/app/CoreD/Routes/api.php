@@ -3,10 +3,12 @@
 use App\CoreD\Http\Controllers\BookingController;
 use App\CoreD\Http\Controllers\IntakeController;
 use App\CoreD\Http\Controllers\PartnerApiController;
+use App\CoreD\Http\Middleware\CorsAllowlist;
 use Illuminate\Support\Facades\Route;
 
 // Stateless JSON endpoints: no session, no CSRF cookie. Abuse control = Turnstile + rate limits + validation.
-Route::prefix('cored/api')->middleware('throttle:60,1')->group(function () {
+Route::prefix('cored/api')->middleware(['throttle:60,1', CorsAllowlist::class])->group(function () {
+    Route::options('{any}', fn () => response()->noContent())->where('any', '.*'); // answered by CorsAllowlist
     Route::post('intake', [IntakeController::class, 'store']);
     Route::get('booking/availability', [BookingController::class, 'availability']);
     Route::post('booking', [BookingController::class, 'store']);

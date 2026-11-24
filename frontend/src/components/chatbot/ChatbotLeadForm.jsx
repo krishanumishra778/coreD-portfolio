@@ -67,7 +67,7 @@ export default function ChatbotLeadForm({ onComplete, onClose }) {
               </div>
             </div>
           </fieldset>
-          <p className="chat-lead-notice">Your details are sent to CoreD through Formspree. Read our <a href="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></a>. This does not sign you up for marketing.</p>
+          <p className="chat-lead-notice">{crmIntakeUrl ? "Your details are saved in CoreD’s CRM so the team can follow up. Read our" : "Your details are sent to CoreD through Formspree. Read our"} <a href="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></a>. This does not sign you up for marketing.</p>
           <div className="contact-verification"><div ref={verification.container} />{verification.message && <p role="status">{verification.message}</p>}</div>
           {error && <p className="chat-lead-error" role="alert">{error}</p>}
           {!(crmIntakeUrl || formspreeEndpoint(formId)) && <p role="status">Chat registration is unavailable. Email <a href={`mailto:${generalEmail}`}>{generalEmail}</a>.</p>}
