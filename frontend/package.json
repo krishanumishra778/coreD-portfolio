@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs && node scripts/check-static-build.mjs",
     "preview": "vite preview",
-    "test": "node --test src/components/lib/findAnswer.test.js src/components/lib/submitEnquiry.test.js src/components/lib/crmIntake.test.js src/components/lib/analytics.test.js src/components/lib/chatLead.test.js src/components/lib/quoteSelection.test.js src/data/siteMetadata.test.js"
+    "test": "node --test src/components/lib/findAnswer.test.js src/components/lib/submitEnquiry.test.js src/components/lib/crmIntake.test.js src/components/lib/crmApi.test.js src/components/lib/analytics.test.js src/components/lib/chatLead.test.js src/components/lib/quoteSelection.test.js src/data/siteMetadata.test.js"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
+import { crmApiBase } from "../lib/crmConfig.js";
+
 const NAVBAR_BG = "#14161aeb";
 
 const navigation = [
@@ -11,6 +13,7 @@ const navigation = [
   { label: "Blog", path: "/blog" },
   { label: "FAQ", path: "/faq" },
 ];
+if (crmApiBase) navigation.splice(2, 0, { label: "Partners & Cloud", path: "/cloud-partners" }, { label: "Book a session", path: "/book-appointment" });
 
 export default function ClassicNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
