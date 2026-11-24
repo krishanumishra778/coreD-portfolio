@@ -54,3 +54,42 @@ Browser on `coredhristi.com` → `crm.coredhristi.com` is cross-origin. Proposal
 A Turnstile token is single-use (Cloudflare: reuse returns `timeout-or-duplicate`). Formspree's CAPTCHA and the CRM would both validate the same token, so the second would fail. Therefore:
 - Staging/preview builds (`VITE_INTAKE_MODE=crm`) send to the CRM **only** (implemented; Formspree untouched).
 - Production dual-write needs a second widget execution (a fresh token per receiver) or a server-side forward. Decision needed before go-live; until then production stays Formspree-only.
+
+## 10. Single-destination intake: delivery design, staging evidence and cutover (2026-11-24)
+
+**Status: design for owner approval. Nothing below has been applied to production. The Basic Auth exemption has NOT been applied.**
+
+### 10.1 Delivery path (decision needed)
+The website is static hosting, so there is no server of its own to relay through. The browser must call the CRM host directly.
+
+| | Option A (recommended): scoped public route on crm.coredhristi.com | Option B: same-origin relay |
+|---|---|---|
+| What | hPanel Basic-Auth exemption limited to the path `/cored/api/*` only. The admin UI, login and everything else stay behind Basic Auth. | A proxy on coredhristi.com forwarding to the CRM. |
+| Feasible now | Yes, one hPanel/.htaccess rule for one path. | Not on static hosting. It would need a server function or a new host. |
+| Browser rules | Cross-origin: exact-origin CORS allow-list, no credentials, no wildcard. | Same origin: no CORS. |
+
+Controls in both options (all built and tested): exact https origins only (`CORED_ALLOWED_ORIGINS`, default = the CRM's own origin; a foreign Origin gets 403 on POST/OPTIONS); server-side Cloudflare Turnstile that fails closed (a missing/invalid token stores nothing); per-IP limit 60/min and per-e-mail limit 5/h; honeypot; server-side validation with length limits and an allow-list of detail keys; no cookies (stateless, `credentials: same-origin`); secrets (Turnstile secret, SMTP, notify address) only in the server `.env`; request_id idempotency so a retry never creates a second lead.
+
+### 10.2 What is stored
+Every enquiry keeps: source label (Reach Us Out / Quote request / FAQ chatbot, kept separate), request ID, original submission time, name, company, e-mail, phone in E.164 plus country code and dial code, service, plan, displayed price and pricing status, add-ons, modules, budget with currency and scope, requested scope, current systems, integrations, volume, timeline, the message, the consent choices with the consent-text version, and a full audit copy of the payload (without the Turnstile token or the honeypot). The lead description holds the same text in readable form. The same e-mail resolves to one contact; a booking links to that existing contact.
+
+### 10.3 Independent switches (frontend build flags)
+`VITE_CRM_API_BASE` (the CRM origin), `VITE_INTAKE_MODE=crm` (enquiries go to the CRM instead of Formspree), `VITE_BOOKING_ENABLED=on`, `VITE_PARTNERS_ENABLED=on`. They do not depend on each other (verified in the browser). The main build sets none of them, so it stays on Formspree.
+
+### 10.4 Notification and privacy copy
+`CORED_NOTIFY_TO=info@coredhristi.com` plus SMTP settings in the server `.env`. A failed e-mail never blocks the save: the outcome is recorded on the event. In CRM mode the privacy policy and the chatbot notice name CoreD's CRM, not Formspree (tested); in Formspree mode the text is unchanged.
+
+### 10.5 Cutover steps (only after owner go-ahead)
+1. Owner supplies real Turnstile keys, the allowed hostnames and the SMTP details; set them in the server `.env` (never in a file or in chat).
+2. Owner approves Option A (or names another route). Only then is the `/cored/api/*` exemption applied.
+3. Run the E2E checks against the real hostname with the real Turnstile.
+4. Build the site with the flags from 10.3 and publish it. Formspree is no longer called by the site from that moment.
+5. Watch the CRM for the first real enquiry and the e-mail to info@coredhristi.com.
+
+### 10.6 Rollback
+- Fastest (seconds to minutes): publish the previous site build, or rebuild without `VITE_INTAKE_MODE=crm`. Enquiries return to Formspree. CRM records already saved stay.
+- Server side: remove the `/cored/api/*` exemption (the route is then behind Basic Auth again and refuses everyone). Set `CORED_TURNSTILE_MODE=required` to stay closed.
+- Full module rollback: `scripts/rollback.sh <krayin-root>` removes the provider and the CoreD tables only (never Krayin's own); the pre-change DB dump and `providers.php.pre-cored` are in `backups/`.
+
+### 10.7 Historical Formspree import
+`php artisan cored:import-formspree <export.csv|json>` is a dry run by default: it prints totals, the original date range, importable counts per source, duplicates, spam, QA/test rows and e-mails that match existing contacts, and writes a report that contains row numbers only. A real import needs both `--confirm-import` and `CORED_IMPORT_APPROVED=yes`, keeps the original dates, creates no notifications, and never touches Formspree. No export has been provided yet; the owner has to export it from the Formspree dashboard.
