@@ -1,10 +1,14 @@
+import { submitCrmLead } from "./crmIntake.js";
+
 const formIdPattern = /^[a-zA-Z0-9]{6,32}$/;
 
 export function formspreeEndpoint(formId) {
   return formIdPattern.test(formId ?? "") ? `https://formspree.io/f/${formId}` : "";
 }
 
-export async function submitEnquiry({ formId, fields, token, protection = "turnstile", subject = "CoreD · Project enquiry", signal, fetchRequest = fetch }) {
+export async function submitEnquiry({ formId, fields, token, protection = "turnstile", subject = "CoreD · Project enquiry", signal, fetchRequest = fetch, crmUrl = "" }) {
+  // Staging/preview builds only: deliver to the CRM instead of Formspree (Turnstile tokens are single-use, so never both).
+  if (crmUrl) return submitCrmLead({ url: crmUrl, fields, token, signal, fetchRequest });
   const endpoint = formspreeEndpoint(formId);
   if (!endpoint) throw new Error("The enquiry form is not connected yet. Please email CoreD.");
   if (!["turnstile", "formshield"].includes(protection)) throw new Error("The enquiry form is not connected yet. Please email CoreD.");

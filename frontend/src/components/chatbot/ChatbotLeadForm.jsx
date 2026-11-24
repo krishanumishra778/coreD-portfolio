@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { phoneCountries, generalEmail } from "../../data/contactOptions.js";
 import { formspreeEndpoint } from "../lib/submitEnquiry.js";
 import { submitChatLead } from "../lib/chatLead.js";
+import { crmIntakeUrl } from "../lib/crmConfig.js";
 import { useTurnstile, contactProtection, turnstileRequired } from "../lib/useTurnstile.js";
 import "./ChatbotLeadForm.css";
 
@@ -27,7 +28,7 @@ export default function ChatbotLeadForm({ onComplete, onClose }) {
     requestId.current ||= crypto.randomUUID();
     try {
       await submitChatLead({ fields, requestId: requestId.current, formId,
-        token: verification.token, protection: contactProtection, signal: AbortSignal.timeout(25000) });
+        token: verification.token, protection: contactProtection, signal: AbortSignal.timeout(25000), crmUrl: crmIntakeUrl });
       onComplete();
     } catch (failure) {
       setError(failure.message);
@@ -69,8 +70,8 @@ export default function ChatbotLeadForm({ onComplete, onClose }) {
           <p className="chat-lead-notice">Your details are sent to CoreD through Formspree. Read our <a href="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></a>. This does not sign you up for marketing.</p>
           <div className="contact-verification"><div ref={verification.container} />{verification.message && <p role="status">{verification.message}</p>}</div>
           {error && <p className="chat-lead-error" role="alert">{error}</p>}
-          {!formspreeEndpoint(formId) && <p role="status">Chat registration is unavailable. Email <a href={`mailto:${generalEmail}`}>{generalEmail}</a>.</p>}
-          <button className="cd-button cd-button--primary" type="submit" disabled={sending || !formspreeEndpoint(formId) || (turnstileRequired && !verification.token)}>{sending ? "Sending your details…" : "Start chatting"}</button>
+          {!(crmIntakeUrl || formspreeEndpoint(formId)) && <p role="status">Chat registration is unavailable. Email <a href={`mailto:${generalEmail}`}>{generalEmail}</a>.</p>}
+          <button className="cd-button cd-button--primary" type="submit" disabled={sending || !(crmIntakeUrl || formspreeEndpoint(formId)) || (turnstileRequired && !verification.token)}>{sending ? "Sending your details…" : "Start chatting"}</button>
         </form>
       </div>
     </section>

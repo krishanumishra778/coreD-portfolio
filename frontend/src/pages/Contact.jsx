@@ -10,9 +10,10 @@ import { budgetCurrencies, generalEmail, phoneCountries, supportEmail } from "..
 import { formspreeEndpoint, submitEnquiry } from "../components/lib/submitEnquiry.js";
 import { useTurnstile, contactProtection, turnstileRequired } from "../components/lib/useTurnstile.js";
 import { trackEnquiry } from "../components/lib/analytics.js";
+import { crmIntakeUrl } from "../components/lib/crmConfig.js";
 
 const formspreeFormId = import.meta.env.VITE_FORMSPREE_FORM_ID;
-const contactConfigured = Boolean(formspreeEndpoint(formspreeFormId));
+const contactConfigured = Boolean(crmIntakeUrl || formspreeEndpoint(formspreeFormId));
 
 
 export default function Contact() {
@@ -71,7 +72,7 @@ function ContactEnquiry({ params }) {
     setSubmitting(true);
     setStatus(null);
     try {
-      await submitEnquiry({ formId: formspreeFormId, fields: body, token: turnstile.token, protection: contactProtection, signal: AbortSignal.timeout(25000) });
+      await submitEnquiry({ formId: formspreeFormId, fields: body, token: turnstile.token, protection: contactProtection, signal: AbortSignal.timeout(25000), crmUrl: crmIntakeUrl });
       setStatus({ type: "success", message: "We received your enquiry. Opening your thank-you page…" });
       try { trackEnquiry(serviceId, planId); } catch { /* Optional tracking must not affect confirmed delivery. */ }
       // A fixed destination keeps submitted details out of the URL and prevents open redirects.
