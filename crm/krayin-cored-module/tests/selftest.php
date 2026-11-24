@@ -76,4 +76,23 @@ t('IP rate limit -> 429 after 5',in_array(429,$codes)&&$codes[0]===422);
 t('availability invalid date 422',call('GET','/cored/api/booking/availability?date=bad')->getStatusCode()===422);
 $r=call('GET','/cored/api/booking/availability?date=2026-12-08'); t('availability 200 json',$r->getStatusCode()===200 && ($r->getData(true)['ok']??false));
 t('booking bad service 422',call('POST','/cored/api/booking',['request_id'=>'req_0123456789abcdef','name'=>'A B','email'=>'a@b.co','service'=>'nope','channel'=>'email','starts_at'=>'2026-12-08T04:30:00Z','timezone'=>'Asia/Kolkata'])->getStatusCode()===422);
+
+// 7 CoreDhristi branding
+$B=__DIR__.'/../app/CoreD/Resources/brand/';
+$r=call('GET','/cored/brand/cored-crm.css'); t('brand css served 200 text/css',$r->getStatusCode()===200 && str_contains((string)$r->headers->get('Content-Type'),'text/css') && $r->headers->get('X-Content-Type-Options')==='nosniff');
+foreach(['logo-light.svg','logo-dark.svg','mark.svg','favicon.svg','favicon-32.png','favicon.ico'] as $f) t("brand asset $f 200",call('GET','/cored/brand/'.$f)->getStatusCode()===200);
+t('unknown brand file 404',call('GET','/cored/brand/secret.txt')->getStatusCode()===404 && call('GET','/cored/brand/.env')->getStatusCode()===404 && call('GET','/cored/brand/composer.json')->getStatusCode()===404);
+t('brand route sets no cookies',count(call('GET','/cored/brand/mark.svg')->headers->getCookies())===0);
+t('app name is CoreDhristi',config('app.name')==='CoreDhristi');
+$head=view('cored::branding.head')->render();
+t('head template: css + svg/png/ico favicons + title suffix',str_contains($head,'cored/brand/cored-crm.css?v=') && str_contains($head,'favicon.svg') && str_contains($head,'favicon-32.png') && str_contains($head,'favicon.ico') && str_contains($head,'document.title'));
+t('head template has no upstream names',!preg_match('/krayin|webkul/i',$head));
+$mgr=new class{public array $t=[];public function addTemplate($n){$this->t[]=$n;}};
+Illuminate\Support\Facades\Event::dispatch('admin.layout.head.after',$mgr); Illuminate\Support\Facades\Event::dispatch('admin.layout.head',$mgr);
+t('head hooks add the template for both layouts',$mgr->t===['cored::branding.head','cored::branding.head']);
+t('help/support config has no upstream links',!preg_match('/krayin|webkul/i',json_encode(config('support'))) && config('support.contact_url')==='mailto:support@coredhristi.com');
+$lang=require __DIR__.'/../app/CoreD/Resources/lang-override/en/app.php'; t('lang override has no upstream names',is_array($lang) && !preg_match('/krayin|webkul/i',json_encode($lang)));
+$css=file_get_contents($B.'cored-crm.css'); t('css uses website palette, no remote urls',str_contains($css,'#FFB734') && str_contains($css,'#7A4208') && str_contains($css,'#120F0B') && !preg_match('#https?://#',$css));
+t('logo files are valid SVG with CoreD mark',(function() use($B){foreach(['logo-light.svg','logo-dark.svg','mark.svg','favicon.svg'] as $f){$x=@simplexml_load_file($B.$f); if(!$x||!str_contains(file_get_contents($B.$f),'#FF9000'))return false;} return true;})());
+t('footer default patched when upstream config exists',(function(){config(['core_config'=>[['key'=>'general.settings.footer','fields'=>[['name'=>'show'],['name'=>'label','default'=>'Powered by Krayin']]]]]); (new App\CoreD\CoreDServiceProvider(app()))->boot(); $l=config('core_config.0.fields.1.default'); return $l===config('cored.brand.footer_label') && str_contains($l,'CoreDhristi');})());
 echo "\n$pass passed, $fail failed\n"; exit($fail?1:0);

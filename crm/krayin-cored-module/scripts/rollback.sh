@@ -7,4 +7,5 @@ cd "$KR"
 php artisan migrate:rollback --path=app/CoreD/Database/Migrations --force
 if [ -f bootstrap/providers.php.pre-cored ]; then cp bootstrap/providers.php.pre-cored bootstrap/providers.php; else
   sed -i '/CoreDServiceProvider/d' bootstrap/providers.php; fi
+rm -f lang/vendor/admin/en/app.php; rmdir lang/vendor/admin/en lang/vendor/admin lang/vendor 2>/dev/null || true
 rm -rf app/CoreD && php artisan optimize:clear >/dev/null && echo "CoreD module removed"

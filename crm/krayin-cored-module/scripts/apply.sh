@@ -11,6 +11,8 @@ if ! grep -q 'CoreDServiceProvider' "$KR/bootstrap/providers.php"; then
   sed -i 's#^use App\\Providers\\AppServiceProvider;#use App\\CoreD\\CoreDServiceProvider;\nuse App\\Providers\\AppServiceProvider;#' "$KR/bootstrap/providers.php"
   sed -i 's#^    WebFormServiceProvider::class,#    WebFormServiceProvider::class,\n    CoreDServiceProvider::class,#' "$KR/bootstrap/providers.php"
 fi
+# CoreDhristi UI strings: partial override of the package language file (Laravel merges lang/vendor/admin/en/app.php over it)
+mkdir -p "$KR/lang/vendor/admin/en" && cp "$KR/app/CoreD/Resources/lang-override/en/app.php" "$KR/lang/vendor/admin/en/app.php"
 grep -c 'CoreDServiceProvider' "$KR/bootstrap/providers.php" | sed 's/^/provider refs (expect 2): /'
 cd "$KR" && php -l bootstrap/providers.php && php artisan optimize:clear >/dev/null
 echo "--- migration preview (nothing executed) ---"

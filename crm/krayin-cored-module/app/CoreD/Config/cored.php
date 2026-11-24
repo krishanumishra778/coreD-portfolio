@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'brand' => [
+        'name' => 'CoreDhristi',
+        'footer_label' => '© '.date('Y').' CoreDhristi. All rights reserved.',
+    ],
     // Turnstile. mode "required" fails closed when no secret is configured.
     'turnstile' => [
         'secret' => env('CORED_TURNSTILE_SECRET'),

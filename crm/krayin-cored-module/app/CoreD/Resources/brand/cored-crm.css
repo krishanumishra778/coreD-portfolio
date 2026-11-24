@@ -1,0 +1,64 @@
+/*
+ * CoreDhristi theme for the CRM admin (login, password reset, dashboard, sidebar, header, footer, help).
+ * Palette = the website's design tokens (frontend/tokens.css). Loaded through the admin.layout.head hooks
+ * registered by App\CoreD\CoreDServiceProvider; no upstream Krayin file is modified.
+ */
+:root {
+  --cd-ink: #2B251F;
+  --cd-muted: #5E5750;
+  --cd-paper: #FAF7F1;
+  --cd-surface: #FDFBF9;
+  --cd-band: #F2ECE3;
+  --cd-rule: #D7D0C6;
+  --cd-amber: #FFB734;
+  --cd-amber-hover: #FFCC62;
+  --cd-accent-ink: #7A4208;
+  --cd-dark: #120F0B;
+  --cd-focus: #CC6700;
+  --brand-color: var(--cd-accent-ink);
+}
+
+/* Surfaces */
+html:not(.dark) body,
+html:not(.dark) .bg-gray-100 { background-color: var(--cd-paper); }
+html:not(.dark) header.sticky,
+html:not(.dark) #admin-sidebar { background-color: var(--cd-surface); border-color: var(--cd-rule); }
+html:not(.dark) .border-gray-300,
+html:not(.dark) .border-gray-200 { border-color: var(--cd-rule); }
+
+/* Logo: every upstream <img> logo is replaced by the CoreD logo (alt text = app name). Paths are relative to this stylesheet. */
+img[alt="CoreDhristi"] { content: url("logo-light.svg"); height: 2.5rem; width: auto; max-width: none; }
+html.dark img[alt="CoreDhristi"] { content: url("logo-dark.svg"); }
+.gap-5 > img[alt="CoreDhristi"] { height: 3.25rem; }
+img[alt="CoreDhristi"].sm\:hidden { content: url("mark.svg"); height: 2.25rem; }
+html.dark img[alt="CoreDhristi"].sm\:hidden { content: url("mark.svg"); }
+
+/* Buttons: amber pill with dark label, like the website CTAs */
+.primary-button,
+.bg-brandColor { background-color: var(--cd-amber); border-color: var(--cd-amber); color: var(--cd-dark); }
+.primary-button { border-radius: 999px; }
+.primary-button:hover,
+.primary-button:focus { background-color: var(--cd-amber-hover); border-color: var(--cd-amber-hover); opacity: 1; }
+.secondary-button { border-color: var(--cd-dark); color: var(--cd-dark); border-radius: 999px; }
+html.dark .secondary-button { color: #fff; border-color: var(--cd-rule); }
+.transparent-button { border-radius: 999px; }
+
+/* Links and active states */
+.text-brandColor { color: var(--cd-accent-ink); }
+html.dark .text-brandColor { color: var(--cd-amber); }
+.group\/item.active > a { background-color: var(--cd-dark); border-radius: .5rem; }
+.group\/item.active > a *,
+.group\/item.active > a p { color: #fff; }
+.group\/item.active > a [class*="icon-"] { color: var(--cd-amber); }
+.border-brandColor { border-color: var(--cd-accent-ink); }
+
+/* Focus (visible, uses the website focus colour) */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+[tabindex]:focus-visible { outline: 2px solid var(--cd-focus); outline-offset: 2px; }
+
+/* Cards */
+html:not(.dark) .box-shadow { border: 1px solid var(--cd-rule); box-shadow: 0 8px 24px rgba(18, 15, 11, .08); border-radius: 1rem; }
+
+@media (max-width: 639px) {
+  .gap-5 > img[alt="CoreDhristi"] { height: 2.75rem; }
+}
