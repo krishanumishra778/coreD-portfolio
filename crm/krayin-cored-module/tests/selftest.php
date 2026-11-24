@@ -133,6 +133,13 @@ $f=array_values(array_filter($an['importable'],fn($n)=>$n['kind']==='faq_chatbot
 $js=json_encode(['submissions'=>array_map(fn($r)=>array_combine($H,$r),$R)]); t('same export as JSON gives identical numbers',FormspreeImport::analyse(FormspreeImport::parse($js))['report']['counts']==$c);
 t('empty / bad input handled',FormspreeImport::parse('')===[] && (function(){try{FormspreeImport::parse('{bad');return false;}catch(\InvalidArgumentException $e){return true;}})());
 
+// 6d the payloads the real built frontend sends (captured by the browser e2e) satisfy the server contract
+foreach(['contact','faq'] as $fx){ $pl=json_decode(file_get_contents(__DIR__."/fixtures/browser-$fx-payload.json"),true);
+  $v=\Illuminate\Support\Facades\Validator::make($pl,\App\CoreD\Services\IntakePayload::rules()); $cl=$v->fails()?[]:\App\CoreD\Services\IntakePayload::clean($v->validated());
+  t("browser $fx payload passes validation",!$v->fails() || print_r($v->errors()->all(),true)==='' );
+  t("browser $fx payload passes cross-checks",$cl!==[] && \App\CoreD\Services\IntakePayload::crossChecks($cl)===[]);
+  t("browser $fx payload keeps every detail after clean()",$cl!==[] && count($cl['details'])===count($pl['details'])); }
+
 // 7 CoreDhristi branding
 $B=__DIR__.'/../app/CoreD/Resources/brand/';
 $r=call('GET','/cored/brand/cored-crm.css'); t('brand css served 200 text/css',$r->getStatusCode()===200 && str_contains((string)$r->headers->get('Content-Type'),'text/css') && $r->headers->get('X-Content-Type-Options')==='nosniff');

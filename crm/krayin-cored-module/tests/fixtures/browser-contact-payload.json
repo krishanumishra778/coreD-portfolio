@@ -1,0 +1,30 @@
+{
+ "kind": "contact",
+ "request_id": "27dfed15-0eec-4e20-90df-4a57f96f5146",
+ "name": "[SYNTHETIC] Asha Rao",
+ "email": "asha@example.invalid",
+ "phone": "+919811111111",
+ "phone_country": "IN",
+ "dial_code": "+91",
+ "company": "Acme QA",
+ "message": "Need an AI CRM with ERPNext sync for 20 users",
+ "consent": {
+  "terms": true,
+  "privacy": true
+ },
+ "details": {
+  "service_id": "ai-powered-crm",
+  "service": "AI-Powered CRM",
+  "plan_id": "workflow-pilot",
+  "plan": "CRM Workflow Pilot",
+  "displayed_price": "$750 fixed",
+  "price_basis": "fixed",
+  "price_amount": "750",
+  "currency": "USD",
+  "pricing_status": "proposed",
+  "quote_status": "Listed plan scope; extras quoted separately",
+  "budget_range": "Not provided"
+ },
+ "website": "",
+ "turnstile_token": "XXXX.DUMMY.TOKEN.XXXX"
+}
