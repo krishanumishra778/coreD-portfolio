@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 import { RevealWords } from "../components/ui/WordReveal.jsx";
 import CompanyLogoSection from "../components/CompanyLogoSection.jsx";
+import { publicAsset } from "../components/lib/publicAsset.js";
 import CrmWorkflowSection from "../components/home/CrmWorkflowSection.jsx";
 import CrmImportanceSection from "../components/home/CrmImportanceSection.jsx";
 import PortfolioSection from "../components/home/PortfolioSection.jsx";
@@ -15,9 +16,9 @@ import "./Home.css";
 function HeroGuardian() {
   return (
     <picture className="home-hero-background" data-reveal="off" aria-hidden="true">
-      <source media="(max-width: 1023px)" srcSet="/Images/hero/cored-robot-background-mobile.webp" />
+      <source media="(max-width: 1023px)" srcSet={publicAsset("/Images/hero/cored-robot-background-mobile.webp")} />
       <img
-        src="/Images/hero/cored-robot-background.webp"
+        src={publicAsset("/Images/hero/cored-robot-background.webp")}
         width="1920"
         height="1080"
         alt=""

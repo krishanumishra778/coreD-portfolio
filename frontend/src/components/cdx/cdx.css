@@ -42,6 +42,8 @@
 .cdx-chip{border:0;background:#ece6da;border-radius:999px;padding:8px 16px;font-weight:600;font-size:13px;cursor:pointer}.cdx-chip[aria-pressed=true]{background:#14161A;color:#fff}
 .cdx-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .cdx-pcard{display:flex;flex-direction:column;gap:12px}.cdx-pcard h3{margin:0;font-size:1.6rem;font-weight:800}
+.cdx-partner-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cdx-partner-logo{width:72px;height:44px;object-fit:contain;background:#fff;border:1px solid #e4ded3;border-radius:8px;padding:4px}
 .cdx-tags{display:flex;flex-wrap:wrap;gap:6px}.cdx-tag{background:#f3ede2;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;text-transform:uppercase}
 .cdx-demo{background:#ffe9b0;color:#6b4300}
 .cdx-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:#f6f2e9;border-radius:12px;padding:14px}

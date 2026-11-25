@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { assistantCopy, contactChannel } from "../../data/KnowledgeBase.js";
 import { MAX_QUESTION_LENGTH, resolveAnswer, validateQuestion } from "../lib/findAnswer.js";
+import { publicAsset } from "../lib/publicAsset.js";
 
 
 /* -------------------------------------------------------------------------- */
@@ -143,7 +144,7 @@ function AssistantAvatar() {
   return (
     <div className={chatbotStyles.avatar} aria-hidden="true">
       <img
-        src={"/Images/ChatWindow.png"}
+        src={publicAsset("/Images/ChatWindow.png")}
         alt=""
         width={32}
         height={32}
@@ -184,7 +185,7 @@ function ChatHeader({ onReset, onClose }) {
       <div className={chatbotStyles.brandGroup}>
         <div className={chatbotStyles.brandLogo} aria-hidden="true">
           <img
-            src={"/Images/ChatWindow.png"}
+            src={publicAsset("/Images/ChatWindow.png")}
             alt=""
             width={44}
             height={44}

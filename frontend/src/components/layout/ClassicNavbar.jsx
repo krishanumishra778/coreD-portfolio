@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
 import { bookingEnabled, partnersEnabled } from "../lib/crmConfig.js";
+import { publicAsset } from "../lib/publicAsset.js";
 
 const NAVBAR_BG = "#14161aeb";
 
@@ -112,7 +113,7 @@ export default function ClassicNavbar() {
             className="group flex shrink-0 items-center"
           >
             <img
-              src="/Images/CoreD.png"
+              src={publicAsset("/Images/CoreD.png")}
               alt="CoreD"
               className="
                 h-8 w-auto max-w-[112px] object-contain

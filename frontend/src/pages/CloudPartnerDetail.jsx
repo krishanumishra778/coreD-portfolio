@@ -25,7 +25,10 @@ export default function CloudPartnerDetail() {
     <div className="cdx-page"><div className="cdx-wrap">
       <nav className="cdx-crumbs" aria-label="Breadcrumb"><Link to="/">Home</Link> / <Link to="/cloud-partners">Cloud partners</Link> / <span aria-current="page">{p.name}</span></nav>
       {p.is_demo && <span className="cdx-eyebrow cdx-demo">Demo data — not an endorsement</span>}
-      <h1>{p.name}</h1>
+      <div className="cdx-partner-heading">
+        {p.logo_url && <img className="cdx-partner-logo" src={p.logo_url} alt="" width="72" height="44" decoding="async" />}
+        <h1>{p.name}</h1>
+      </div>
       {p.tagline && <p className="cdx-lead" style={{ fontWeight: 600 }}>{p.tagline}</p>}
       {p.summary && <p className="cdx-lead">{p.summary}</p>}
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", margin: "18px 0" }}>

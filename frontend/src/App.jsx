@@ -65,6 +65,7 @@ export default function App() {
         <Breadcrumbs />
         <Routes>
           <Route path="/" element={<Home />} />
+          {import.meta.env.BASE_URL !== "/" && <Route path="/index.html" element={<Navigate replace to={{ pathname: "/", search, hash }} />} />}
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           {SERVICES.map(({ id }) => <Route key={id} path={`/services/${id}`} element={<Services serviceId={id} />} />)}

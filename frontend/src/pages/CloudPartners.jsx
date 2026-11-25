@@ -39,7 +39,10 @@ export default function CloudPartners() {
         {shown.map((p) => (
           <article className="cdx-card cdx-pcard" key={p.slug}>
             <div className="cdx-tags">{p.is_demo && <span className="cdx-tag cdx-demo">Demo data</span>}{(p.tags ?? []).filter((t) => t !== "demo").map((t) => <span className="cdx-tag" key={t}>{t}</span>)}</div>
-            <h3>{p.name}</h3>
+            <div className="cdx-partner-heading">
+              {p.logo_url && <img className="cdx-partner-logo" src={p.logo_url} alt="" width="72" height="44" loading="lazy" decoding="async" />}
+              <h3>{p.name}</h3>
+            </div>
             {p.tagline && <p style={{ margin: 0, fontWeight: 600 }}>{p.tagline}</p>}
             {p.summary && <p style={{ margin: 0, color: "#5c5a55" }}>{p.summary}</p>}
             {(p.details?.metrics ?? []).length > 0 && <div className="cdx-metrics">{p.details.metrics.slice(0, 3).map((m) => <div key={m.label}><small>{m.label}</small><strong>{m.value}</strong></div>)}</div>}

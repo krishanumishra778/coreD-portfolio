@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { portfolioCaseStudies } from "../data/PortfolioData.js";
+import { publicAsset } from "../components/lib/publicAsset.js";
 
 /* ------------------------------------------------------------------ */
 /* Constants                                                          */
@@ -245,7 +246,7 @@ function ScreenshotCard({
       <div className="my-auto">
         {imageSrc ? (
           <img
-            src={imageSrc}
+            src={publicAsset(imageSrc)}
             alt={shot.alt || screenshotLabel}
             loading="lazy"
             decoding="async"
@@ -384,7 +385,7 @@ function ScreenshotLightbox({ shot, onClose, report }) {
         <div className={report ? "overflow-hidden rounded-xl bg-white" : "h-64 sm:h-80 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-4"}>
           {imageSrc ? (
             <img
-              src={imageSrc}
+              src={publicAsset(imageSrc)}
               alt={shot.alt || screenshotLabel}
               decoding="async"
               referrerPolicy="no-referrer"

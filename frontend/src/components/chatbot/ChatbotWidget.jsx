@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { ChatbotWindow } from "./ChatbotWindow.jsx";
 import ChatbotLeadForm from "./ChatbotLeadForm.jsx";
 import { assistantCopy } from "../../data/KnowledgeBase.js";
+import { publicAsset } from "../lib/publicAsset.js";
 
 
 const CHAT_PANEL_ID = "cored-chat-panel";
@@ -118,7 +119,7 @@ export function ChatbotWidget({ classic = false }) {
           title="Open CoreD chat assistant"
         >
           {classic
-            ? <img src="/Images/Chatbot.png" alt="" width="76" height="76" decoding="async" />
+            ? <img src={publicAsset("/Images/Chatbot.png")} alt="" width="76" height="76" decoding="async" />
             : <MessageCircle size={20} aria-hidden="true" />}
         </button>
       )}

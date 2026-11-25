@@ -1,6 +1,7 @@
 import { RevealWords } from "../components/ui/WordReveal.jsx";
 import { Link } from "react-router-dom";
 import { portfolioCaseStudies } from "../data/PortfolioData.js";
+import { publicAsset } from "../components/lib/publicAsset.js";
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
@@ -84,7 +85,7 @@ export default function SeeOurWork() {
                                     <div className="flex aspect-[4/3] items-center justify-center overflow-hidden bg-slate-100">
                                         {coverImage ? (
                                             <img
-                                                src={coverImage.src}
+                                                src={publicAsset(coverImage.src)}
                                                 alt={
                                                     coverImage.alt ||
                                                     `${study.client} project screenshot`
