@@ -101,17 +101,42 @@ Scope requested by the owner: only `POST` and `OPTIONS` to `/cored/api/intake` b
 ### 11.1 Current gate (read-only check on staging)
 `public_html/.htaccess`, lines 11-14: `AuthType Basic`, `AuthName "Restricted Access"`, `AuthUserFile .../public_html/.htpasswd`, `Require valid-user`. No other access rule exists.
 
-### 11.2 Proposed change (one line replaced)
+### 11.2 Proposed change (validated on a throwaway path, NOT applied to the real route)
+The first draft in this section used Apache `Require expr`. It was tested on staging on a harmless path (`/gate-test/ping.php`, a 1-line script, since removed) and **does not work on this host**: the web server is not plain Apache (response header `server: hcdn`; `SetEnvIf Query_String` and `Require method` are not honoured). Observed on the throwaway path:
+- draft A (`Require env` + `Require method POST OPTIONS` inside `RequireAll`): **GET and PUT returned 200 without credentials** (fails open). Never use it.
+- draft B (`Require expr "%{REQUEST_URI} == ... && -z %{QUERY_STRING} && ..."`): everything returned 401, including the allowed POST (fails closed, but unusable).
+
+The rule that passed (draft C), written for the throwaway path:
 ```
-# before
+AuthType Basic
+AuthName "Restricted Access"
+AuthUserFile <same .htpasswd as today>
+SetEnvIf Request_URI "^/gate-test/ping\.php$" GATE_OK
+SetEnvIf Request_Method "^(?!POST$|OPTIONS$)" !GATE_OK
+RewriteEngine On
+RewriteCond %{QUERY_STRING} .
+RewriteRule ^ - [F]
+Satisfy Any
 Require valid-user
-# after
-<RequireAny>
-    Require valid-user
-    Require expr "%{REQUEST_URI} == '/cored/api/intake' && %{REQUEST_METHOD} in {'POST','OPTIONS'}"
-</RequireAny>
+Order deny,allow
+Deny from all
+Allow from env=GATE_OK
 ```
-`==` is an exact match (no prefix, no wildcard, no query-string variants of other paths). Whether the host's web server accepts `Require expr` has to be proven first. Steps: (1) back up `.htaccess`; (2) on staging, apply the rule and run the matrix below; (3) if the server rejects the syntax (HTTP 500), restore the backup at once; the fallback is a second `.htaccess`-free option decided with the owner (hPanel protected-directory exclusions or Cloudflare Access bypass for that one path).
+How it works: the path flag is set only for the exact URI, it is removed again for every method except POST and OPTIONS, `Satisfy Any` lets either a valid Basic Auth login or the flag through, and any query string is refused with 403 (on the throwaway folder this applied to everyone).
+
+Measured result (unauthenticated `curl`, `/gate-test/` omitted):
+| Request | Result |
+|---|---|
+| `POST ping.php`, `OPTIONS ping.php` | 200 |
+| `GET`, `PUT`, `DELETE ping.php` | 401 |
+| `POST ping.php?x=1` | 403 |
+| `POST ping.php?` (empty query) | 200 (an empty query string is the same as none) |
+| `POST ping.php/`, `ping.php/extra` | 401 |
+| `POST other.php` (same folder), `POST /admin/login` | 401 |
+| `POST //gate-test/ping.php`, `POST /gate-test/%70ing.php` | 200 (the server normalises both to the same resource and path, so the method limit still applies) |
+| `GET ping.php` in the signed-in browser (cached Basic Auth) | 200, still works for logged-in staff |
+
+To use it on the real route (only after owner approval): replace the host-specific lines by `SetEnvIf Request_URI "^/cored/api/intake$" GATE_OK`, scope the query-string refusal so it cannot affect the admin panel (`RewriteCond %{REQUEST_URI} ^/cored/api/intake/?$` before `RewriteCond %{QUERY_STRING} .`) and place the block above the Laravel front-controller rewrite. The matrix below must be re-run on the real route, with the dummy Turnstile secret still in place until the real keys are configured, because an open route with a dummy secret would accept test posts. The validated draft is kept on the host at `backups/gate-test-rule-validated.htaccess`. If the owner prefers not to touch `.htaccess`, the alternatives are an hPanel protected-directory exclusion for that path or a Cloudflare Access bypass limited to that path and those methods.
 
 ### 11.3 Acceptance matrix (all must hold before it is used for production)
 | Request | Expected |
@@ -120,7 +145,8 @@ Require valid-user
 | `OPTIONS /cored/api/intake` from `https://coredhristi.com` | 204 with `Access-Control-Allow-Origin: https://coredhristi.com` |
 | `OPTIONS` or `POST` from any other origin | 403 `origin_not_allowed` (no CORS headers) |
 | `GET /cored/api/intake` | 401 (Basic Auth) |
-| `POST /cored/api/intake/` or `/cored/api/intake?x=1` | 401 |
+| `POST /cored/api/intake/` | 401 |
+| `POST /cored/api/intake?x=1` | 403 (query string refused; 401 is also acceptable, 200 is not) |
 | `/cored/api/booking`, `/cored/api/booking/availability`, `/cored/api/partners`, `/cored/api/partners/<slug>` (any method) | 401 |
 | `/admin/*`, `/`, `/installer`, `/cored/brand/*` | 401 |
 | `POST` with a missing or invalid Turnstile token | 422 `verification_failed`, nothing stored |
