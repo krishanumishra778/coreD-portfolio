@@ -75,7 +75,15 @@ $ip='7.7.7.7'; $codes=[]; for($i=0;$i<7;$i++){$r=Illuminate\Http\Request::create
 t('IP rate limit -> 429 after 5',in_array(429,$codes)&&$codes[0]===422);
 t('availability invalid date 422',call('GET','/cored/api/booking/availability?date=bad')->getStatusCode()===422);
 $r=call('GET','/cored/api/booking/availability?date=2026-12-08'); t('availability 200 json',$r->getStatusCode()===200 && ($r->getData(true)['ok']??false));
-t('booking bad service 422',call('POST','/cored/api/booking',['request_id'=>'req_0123456789abcdef','name'=>'A B','email'=>'a@b.co','service'=>'nope','channel'=>'email','starts_at'=>'2026-12-08T04:30:00Z','timezone'=>'Asia/Kolkata'])->getStatusCode()===422);
+$booking = ['request_id' => 'req_0123456789abcdef', 'name' => 'A B', 'email' => 'a@b.co', 'channel' => 'email', 'starts_at' => '2026-12-08T04:30:00Z', 'timezone' => 'Asia/Kolkata'];
+foreach (['AI-Powered CRM', 'AI Agents & Automation', 'AI Consulting', 'AI Cybersecurity Consulting', 'Cybersecurity'] as $service) {
+    $response = call('POST', '/cored/api/booking', ['service' => $service] + $booking);
+    t("booking accepts catalog service: $service", $response->getStatusCode() === 422 && ($response->getData(true)['error'] ?? null) === 'verification_failed');
+}
+foreach (['Web development', 'Cloud & AI infrastructure', 'Automation & AI agents', 'General consultation', 'nope'] as $service) {
+    $response = call('POST', '/cored/api/booking', ['service' => $service] + $booking);
+    t("booking rejects service outside the catalog: $service", $response->getStatusCode() === 422 && in_array('service', $response->getData(true)['fields'] ?? [], true));
+}
 
 // 6b intake contract (full form data, consent, phone) and CORS allow-list
 use App\CoreD\Services\IntakePayload; use App\CoreD\Http\Middleware\CorsAllowlist;

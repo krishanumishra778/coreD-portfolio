@@ -4,11 +4,11 @@ import { ChevronLeft, ChevronRight, Clock, ShieldCheck } from "lucide-react";
 import { crmApiBase } from "../components/lib/crmConfig.js";
 import { fetchSlots, submitBooking } from "../components/lib/crmApi.js";
 import { useTurnstile, turnstileRequired } from "../components/lib/useTurnstile.js";
+import { SERVICES } from "../components/services/servicesData.js";
 import { generalEmail, phoneCountries } from "../data/contactOptions.js";
 import "../components/cdx/cdx.css";
 
-// Must match config('cored.booking.services') / channels on the CRM.
-const SERVICES = ["Cloud & AI infrastructure", "Web development", "Automation & AI agents", "General consultation"];
+// Must match config('cored.booking.channels') on the CRM.
 const CHANNELS = [["phone", "Phone call"], ["whatsapp", "WhatsApp"], ["email", "Email"]];
 const pad = (n) => String(n).padStart(2, "0");
 const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -69,7 +69,7 @@ export default function BookAppointment() {
     <div className="cdx-page"><div className="cdx-wrap">
       <span className="cdx-eyebrow">Direct consultation · 30-minute session</span>
       <h1>Book an Architecture &amp; Strategy Session</h1>
-      <p className="cdx-lead">Schedule a 30-minute conversation with CoreDhristi engineers to scope your AI CRM, automation agents, cloud infrastructure or security assessment.</p>
+      <p className="cdx-lead">Schedule a 30-minute conversation with CoreDhristi engineers about AI-powered CRM, AI agents and automation, AI consulting or cybersecurity.</p>
       <div className="cdx-badges"><span className="cdx-badge"><Clock size={14} aria-hidden="true" /> 30-minute call</span><span className="cdx-badge">No obligation</span><span className="cdx-badge">Free scoping</span></div>
 
       <div className="cdx-grid2">
@@ -113,7 +113,7 @@ export default function BookAppointment() {
                   <input name="NationalNumber" inputMode="tel" required aria-label="Phone number" maxLength={20} /></span></label>
                 <label>Company (optional)<input name="CompanyName" maxLength={120} autoComplete="organization" /></label>
               </div>
-              <label>Primary service *<select name="Service" required defaultValue=""><option value="" disabled>Select a focus area</option>{SERVICES.map((s) => <option key={s}>{s}</option>)}</select></label>
+              <label>Primary service *<select name="Service" required defaultValue=""><option value="" disabled>Select a service</option>{SERVICES.map(({ id, label }) => <option key={id} value={label}>{label}</option>)}</select></label>
               <label>What would you like to discuss? *<textarea name="Overview" rows={4} required minLength={5} maxLength={3000} placeholder="Your current stack, bottlenecks, timeline…" /></label>
               <div><span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".05em", textTransform: "uppercase" }}>Preferred contact channel</span>
                 <div className="cdx-seg" role="group" aria-label="Preferred contact channel" style={{ marginTop: 6 }}>{CHANNELS.map(([k, l]) => <button key={k} type="button" aria-pressed={channel === k} onClick={() => setChannel(k)}>{l}</button>)}</div></div>
