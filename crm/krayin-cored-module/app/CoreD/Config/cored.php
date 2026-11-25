@@ -37,7 +37,14 @@ return [
         'min_notice_hours' => 12,
         'max_days_ahead' => 45,
         'slot_minutes' => 30,
-        'services' => ['Cloud & AI infrastructure', 'Web development', 'Automation & AI agents', 'General consultation'],
+        // The booking form uses the labels from the website's Services & Pricing catalogue.
+        'services' => [
+            'AI-Powered CRM',
+            'AI Agents & Automation',
+            'AI Consulting',
+            'AI Cybersecurity Consulting',
+            'Cybersecurity',
+        ],
         'channels' => ['phone', 'email', 'whatsapp'],
     ],
     // Public API is hidden unless explicitly enabled; keeps the module inert until configured.

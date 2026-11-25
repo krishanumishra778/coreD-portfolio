@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class BookingController
 {
@@ -42,7 +43,7 @@ class BookingController
             'email' => 'required|email:rfc|max:254',
             'phone' => ['nullable', 'string', 'max:24', 'regex:/^[0-9+\-\s()]{6,24}$/'],
             'company' => 'nullable|string|max:120',
-            'service' => 'required|in:'.implode(',', config('cored.booking.services')),
+            'service' => ['required', 'string', Rule::in(config('cored.booking.services'))],
             'channel' => 'required|in:'.implode(',', config('cored.booking.channels')),
             'message' => 'nullable|string|max:3000',
             'starts_at' => 'required|date',
