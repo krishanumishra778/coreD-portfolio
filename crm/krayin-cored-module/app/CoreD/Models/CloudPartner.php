@@ -33,6 +33,7 @@ class CloudPartner extends Model
             'name' => $this->name,
             'tagline' => $this->tagline,
             'summary' => $this->summary,
+            'logo_url' => $this->logo_path ? route('cored.partners.logo', ['slug' => $this->slug]) : null,
             'website_url' => $this->website_url,
             'affiliate_url' => $this->affiliate_url,
             'tags' => $this->tags ?? [],

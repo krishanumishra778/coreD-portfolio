@@ -13,5 +13,6 @@ Route::prefix('cored/api')->middleware(['throttle:60,1', CorsAllowlist::class])-
     Route::get('booking/availability', [BookingController::class, 'availability']);
     Route::post('booking', [BookingController::class, 'store']);
     Route::get('partners', [PartnerApiController::class, 'index']);
+    Route::get('partners/{slug}/logo', [PartnerApiController::class, 'logo'])->where('slug', '[a-z0-9-]{1,80}')->name('cored.partners.logo');
     Route::get('partners/{slug}', [PartnerApiController::class, 'show'])->where('slug', '[a-z0-9-]{1,80}');
 });

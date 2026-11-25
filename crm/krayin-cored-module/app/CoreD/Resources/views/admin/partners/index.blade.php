@@ -18,7 +18,12 @@
                 <tbody>
                 @forelse ($partners as $p)
                     <tr class="border-b border-gray-100 dark:border-gray-800">
-                        <td class="px-4 py-2">{{ $p->name }}</td>
+                            <td class="px-4 py-2"><div class="flex items-center gap-2">
+                                @if ($p->logo_path)
+                                    <img class="h-8 w-12 rounded bg-white p-1 object-contain" src="{{ route('admin.cored.partners.logo', $p->id) }}" alt="" width="48" height="32" loading="lazy">
+                                @endif
+                                <span>{{ $p->name }}</span>
+                            </div></td>
                         <td class="px-4 py-2">{{ $p->slug }}</td>
                         <td class="px-4 py-2">{{ $p->status }}</td>
                         <td class="px-4 py-2">{{ $p->is_demo ? 'DEMO' : 'real' }}</td>

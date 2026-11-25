@@ -8,6 +8,7 @@ Route::prefix('cored/partners')->controller(PartnerAdminController::class)->grou
     Route::get('create', 'create')->name('admin.cored.partners.create');
     Route::post('', 'store')->name('admin.cored.partners.store');
     Route::get('{id}/edit', 'edit')->name('admin.cored.partners.edit')->whereNumber('id');
+    Route::get('{id}/logo', 'logo')->name('admin.cored.partners.logo')->whereNumber('id');
     Route::put('{id}', 'update')->name('admin.cored.partners.update')->whereNumber('id');
     Route::post('{id}/publish', 'publish')->name('admin.cored.partners.publish')->whereNumber('id');
 });
