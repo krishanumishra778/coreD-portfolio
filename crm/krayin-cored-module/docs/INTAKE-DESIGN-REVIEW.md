@@ -93,3 +93,44 @@ Every enquiry keeps: source label (Reach Us Out / Quote request / FAQ chatbot, k
 
 ### 10.7 Historical Formspree import
 `php artisan cored:import-formspree <export.csv|json>` is a dry run by default: it prints totals, the original date range, importable counts per source, duplicates, spam, QA/test rows and e-mails that match existing contacts, and writes a report that contains row numbers only. A real import needs both `--confirm-import` and `CORED_IMPORT_APPROVED=yes`, keeps the original dates, creates no notifications, and never touches Formspree. No export has been provided yet; the owner has to export it from the Formspree dashboard.
+
+## 11. Narrow public-intake gate: proposal for review (NOT applied)
+
+Scope requested by the owner: only `POST` and `OPTIONS` to `/cored/api/intake` become reachable without Basic Auth. Booking, partners, the admin panel and every other path stay behind Basic Auth.
+
+### 11.1 Current gate (read-only check on staging)
+`public_html/.htaccess`, lines 11-14: `AuthType Basic`, `AuthName "Restricted Access"`, `AuthUserFile .../public_html/.htpasswd`, `Require valid-user`. No other access rule exists.
+
+### 11.2 Proposed change (one line replaced)
+```
+# before
+Require valid-user
+# after
+<RequireAny>
+    Require valid-user
+    Require expr "%{REQUEST_URI} == '/cored/api/intake' && %{REQUEST_METHOD} in {'POST','OPTIONS'}"
+</RequireAny>
+```
+`==` is an exact match (no prefix, no wildcard, no query-string variants of other paths). Whether the host's web server accepts `Require expr` has to be proven first. Steps: (1) back up `.htaccess`; (2) on staging, apply the rule and run the matrix below; (3) if the server rejects the syntax (HTTP 500), restore the backup at once; the fallback is a second `.htaccess`-free option decided with the owner (hPanel protected-directory exclusions or Cloudflare Access bypass for that one path).
+
+### 11.3 Acceptance matrix (all must hold before it is used for production)
+| Request | Expected |
+|---|---|
+| `POST /cored/api/intake` with a valid body and the real Turnstile token | 200 `{ok:true}` and a CRM lead |
+| `OPTIONS /cored/api/intake` from `https://coredhristi.com` | 204 with `Access-Control-Allow-Origin: https://coredhristi.com` |
+| `OPTIONS` or `POST` from any other origin | 403 `origin_not_allowed` (no CORS headers) |
+| `GET /cored/api/intake` | 401 (Basic Auth) |
+| `POST /cored/api/intake/` or `/cored/api/intake?x=1` | 401 |
+| `/cored/api/booking`, `/cored/api/booking/availability`, `/cored/api/partners`, `/cored/api/partners/<slug>` (any method) | 401 |
+| `/admin/*`, `/`, `/installer`, `/cored/brand/*` | 401 |
+| `POST` with a missing or invalid Turnstile token | 422 `verification_failed`, nothing stored |
+| `POST` with missing consent, phone without country code, honeypot filled | 422, 422, silent 200 with nothing stored |
+| More than 5 `POST` per minute from one IP, or 5 per hour per e-mail | 429 |
+
+### 11.4 Production settings needed first (server `.env` only)
+`CORED_TURNSTILE_SECRET` (real), `CORED_TURNSTILE_HOSTNAMES=coredhristi.com,www.coredhristi.com`, `CORED_ALLOWED_ORIGINS=https://coredhristi.com,https://www.coredhristi.com`, `CORED_TURNSTILE_MODE=required`, SMTP settings and `MAIL_FROM_ADDRESS` for an address the mail host is allowed to send as (SPF/DKIM), `CORED_NOTIFY_TO=info@coredhristi.com`.
+
+### 11.5 Residual risks
+- The route accepts anonymous POSTs by design. Protection is Turnstile (server-side, fail-closed), per-IP and per-e-mail limits, validation with length limits and a key allow-list, and the honeypot. A determined spammer with a solved Turnstile still gets in; the limits cap the volume and every lead is flagged by source.
+- Shared hosting rate limits use the application cache. A Cloudflare WAF rule in front of the domain would add a second layer (optional).
+- Rollback: restore the backed-up `.htaccess` (the route is gated again immediately) and publish the previous site build (enquiries return to Formspree).
