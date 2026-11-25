@@ -57,3 +57,12 @@ test("plain-text price references stay aligned with the actual package catalogue
   }
   assert.deepEqual(searchDocuments(""), {});
 });
+
+test("booking and Cloud Partners routes exist only when their build switches are on", () => {
+  // Plain Node has no import.meta.env, so both switches are off here: no pre-rendered pages, no sitemap entries.
+  for (const path of ["/book-appointment", "/cloud-partners", "/cloud-partners/some-provider"]) {
+    assert.ok(!staticPaths.includes(path), path);
+    assert.equal(resolveMetadata(path).noindex, true, path);
+    assert.equal(resolveMetadata(path).title, "Page not found | CoreD", path);
+  }
+});
