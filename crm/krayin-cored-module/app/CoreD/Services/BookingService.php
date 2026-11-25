@@ -29,12 +29,15 @@ class BookingService
         }
         $minutes = $this->availability->slotMinutes($start->format('Y-m-d\TH:i:s\Z')) ?? (int) config('cored.booking.slot_minutes');
         $end = $start->addMinutes($minutes);
+        // Eloquent writes a Carbon's own wall-clock time, and Krayin reads it back in the app timezone, so store app-timezone time (not UTC).
+        $appTz = config('app.timezone');
+        [$startDb, $endDb] = [$start->setTimezone($appTz), $end->setTimezone($appTz)];
 
         try {
-            return DB::transaction(function () use ($d, $start, $end) {
+            return DB::transaction(function () use ($d, $start, $end, $startDb, $endDb) {
                 $person = $this->intake->findOrCreatePerson($d);
                 $appt = Appointment::create([
-                    'request_id' => $d['request_id'], 'person_id' => $person->id, 'starts_at' => $start, 'ends_at' => $end,
+                    'request_id' => $d['request_id'], 'person_id' => $person->id, 'starts_at' => $startDb, 'ends_at' => $endDb,
                     'timezone' => $d['timezone'], 'service' => $d['service'], 'channel' => $d['channel'],
                     'message' => $d['message'] ?? null, 'status' => 'requested',
                     'active_slot' => $start->format('YmdHi'), 'is_demo' => (bool) ($d['is_demo'] ?? false),
@@ -42,7 +45,7 @@ class BookingService
                 $lead = $this->intake->createLead($person, 'booking', config('cored.sources.booking'), $d);
                 $activity = $this->activities->create([
                     'title' => 'Appointment request: '.$d['name'], 'type' => 'meeting', 'is_done' => 0,
-                    'schedule_from' => $start, 'schedule_to' => $end,
+                    'schedule_from' => $startDb, 'schedule_to' => $endDb,
                     'user_id' => config('cored.owner_user_id') ?: \Webkul\User\Models\User::query()->orderBy('id')->value('id'),
                     'comment' => "Service: {$d['service']}\nPreferred channel: {$d['channel']}\nStatus: requested (to be confirmed by CoreD)",
                     'additional' => json_encode(['cored_appointment_id' => $appt->id]),

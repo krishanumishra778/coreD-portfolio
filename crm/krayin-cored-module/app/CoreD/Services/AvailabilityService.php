@@ -41,7 +41,7 @@ class AvailabilityService
             return [];
         }
         $taken = Appointment::whereNotNull('active_slot')
-            ->whereIn('starts_at', array_map(fn ($s) => CarbonImmutable::parse($s)->format('Y-m-d H:i:s'), array_keys($slots)))
+            ->whereIn('starts_at', array_map(fn ($s) => CarbonImmutable::parse($s)->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s'), array_keys($slots)))
             ->pluck('starts_at')->map(fn ($t) => $t->utc()->format('Y-m-d\TH:i:s\Z'))->all();
 
         return array_values(array_diff(array_keys($slots), $taken));

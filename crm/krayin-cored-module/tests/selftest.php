@@ -140,6 +140,15 @@ foreach(['contact','faq'] as $fx){ $pl=json_decode(file_get_contents(__DIR__."/f
   t("browser $fx payload passes cross-checks",$cl!==[] && \App\CoreD\Services\IntakePayload::crossChecks($cl)===[]);
   t("browser $fx payload keeps every detail after clean()",$cl!==[] && count($cl['details'])===count($pl['details'])); }
 
+// 6e booked slots are hidden correctly when the app timezone is not UTC (Krayin runs in Asia/Kolkata)
+config(['app.timezone'=>'Asia/Kolkata']); date_default_timezone_set('Asia/Kolkata');
+Appointment::query()->delete(); $svc2=app(AvailabilityService::class); $n0=CarbonImmutable::parse('2026-12-01 00:00:00','UTC'); $slots2=$svc2->slotsForDate('2026-12-08',$n0); $first=end($slots2);
+$stored=CarbonImmutable::parse($first)->setTimezone('Asia/Kolkata');
+$ap=Appointment::create(['request_id'=>str_repeat('k',20),'starts_at'=>$stored,'ends_at'=>$stored->addMinutes(30),'timezone'=>'Asia/Kolkata','service'=>'x','channel'=>'email','status'=>'requested','active_slot'=>CarbonImmutable::parse($first)->utc()->format('YmdHi'),'person_id'=>1]);
+t('non-UTC app tz: booked slot is hidden',!in_array($first,$svc2->slotsForDate('2026-12-08',$n0),true) && count($svc2->slotsForDate('2026-12-08',$n0))===count($slots2)-1);
+t('non-UTC app tz: stored time reads back as the same instant',$ap->fresh()->starts_at->utc()->format('Y-m-d\TH:i:s\Z')===$first);
+Appointment::query()->delete(); config(['app.timezone'=>'UTC']); date_default_timezone_set('UTC');
+
 // 7 CoreDhristi branding
 $B=__DIR__.'/../app/CoreD/Resources/brand/';
 $r=call('GET','/cored/brand/cored-crm.css'); t('brand css served 200 text/css',$r->getStatusCode()===200 && str_contains((string)$r->headers->get('Content-Type'),'text/css') && $r->headers->get('X-Content-Type-Options')==='nosniff');

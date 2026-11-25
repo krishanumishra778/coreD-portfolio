@@ -29,7 +29,7 @@ class IntakeService
     {
         $sourceName = config("cored.sources.$kind");
         $emailHash = hash('sha256', mb_strtolower(trim($d['email'])));
-        $at = isset($opts['submitted_at']) ? \Illuminate\Support\Carbon::instance($opts['submitted_at']) : now();
+        $at = isset($opts['submitted_at']) ? \Illuminate\Support\Carbon::instance($opts['submitted_at'])->setTimezone(config('app.timezone')) : now();
 
         if ($prior = IntakeEvent::where('request_id', $d['request_id'])->first()) {
             return ['status' => 'replayed', 'lead_id' => $prior->lead_id];

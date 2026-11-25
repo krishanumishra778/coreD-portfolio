@@ -20,12 +20,15 @@ class IntakeNotifier
             $body = ($status === 'duplicate' ? "Repeat submission from the same e-mail address (added to the existing lead).\n\n" : '')
                 .$summary."\n\nOpen in the CRM: ".$url."\n";
             Mail::raw($body, function ($m) use ($to, $d, $sourceName) {
+                if (! config('mail.from.address')) {
+                    $m->from($to, 'CoreDhristi CRM');   // no MAIL_FROM_ADDRESS configured: fall back to the notification mailbox
+                }
                 $m->to($to)->replyTo($d['email'], $d['name'])->subject('[CoreD CRM] '.$sourceName.': '.mb_substr($d['name'], 0, 60));
             });
 
             return null;
         } catch (\Throwable $e) {
-            Log::warning('cored.intake.notify_failed', ['lead_id' => $leadId, 'error' => class_basename($e)]);
+            Log::warning('cored.intake.notify_failed', ['lead_id' => $leadId, 'error' => class_basename($e), 'detail' => mb_substr($e->getMessage(), 0, 120)]);
 
             return 'send_failed';
         }
