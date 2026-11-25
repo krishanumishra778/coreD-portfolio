@@ -10,9 +10,10 @@ import { budgetCurrencies, generalEmail, phoneCountries, supportEmail } from "..
 import { formspreeEndpoint, submitEnquiry } from "../components/lib/submitEnquiry.js";
 import { useTurnstile, contactProtection, turnstileRequired } from "../components/lib/useTurnstile.js";
 import { trackEnquiry } from "../components/lib/analytics.js";
+import { crmIntakeUrl } from "../components/lib/crmConfig.js";
 
 const formspreeFormId = import.meta.env.VITE_FORMSPREE_FORM_ID;
-const contactConfigured = Boolean(formspreeEndpoint(formspreeFormId));
+const contactConfigured = Boolean(crmIntakeUrl || formspreeEndpoint(formspreeFormId));
 
 
 export default function Contact() {
@@ -71,7 +72,7 @@ function ContactEnquiry({ params }) {
     setSubmitting(true);
     setStatus(null);
     try {
-      await submitEnquiry({ formId: formspreeFormId, fields: body, token: turnstile.token, protection: contactProtection, signal: AbortSignal.timeout(25000) });
+      await submitEnquiry({ formId: formspreeFormId, fields: body, token: turnstile.token, protection: contactProtection, signal: AbortSignal.timeout(25000), crmUrl: crmIntakeUrl });
       setStatus({ type: "success", message: "We received your enquiry. Opening your thank-you page…" });
       try { trackEnquiry(serviceId, planId); } catch { /* Optional tracking must not affect confirmed delivery. */ }
       // A fixed destination keeps submitted details out of the URL and prevents open redirects.
@@ -133,10 +134,10 @@ function ContactEnquiry({ params }) {
               {service.addOns.map((id) => <label key={id}><input key={serviceId + id} type="checkbox" name="AddOnIds" value={id} />{addOns[id]}</label>)}
             </fieldset>}
             <div className="contact-agreements">
-              <div className="contact-agreement"><input id="contact-terms" type="checkbox" name="TermsAccepted" value="yes" required aria-labelledby="contact-terms-text" /><p id="contact-terms-text"><label htmlFor="contact-terms">I accept the</label>{" "}<a href="/termsCondition" target="_blank" rel="noopener">Terms &amp; Conditions<span className="sr-only"> (opens in a new tab)</span></a>.</p></div>
-              <div className="contact-agreement"><input id="contact-privacy" type="checkbox" name="PrivacyAccepted" value="yes" required aria-labelledby="contact-privacy-text" /><p id="contact-privacy-text"><label htmlFor="contact-privacy">I’ve read the</label>{" "}<a href="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></a>.</p></div>
+              <div className="contact-agreement"><input id="contact-terms" type="checkbox" name="TermsAccepted" value="yes" required aria-labelledby="contact-terms-text" /><p id="contact-terms-text"><label htmlFor="contact-terms">I accept the</label>{" "}<Link to="/termsCondition" target="_blank" rel="noopener">Terms &amp; Conditions<span className="sr-only"> (opens in a new tab)</span></Link>.</p></div>
+              <div className="contact-agreement"><input id="contact-privacy" type="checkbox" name="PrivacyAccepted" value="yes" required aria-labelledby="contact-privacy-text" /><p id="contact-privacy-text"><label htmlFor="contact-privacy">I’ve read the</label>{" "}<Link to="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></Link>.</p></div>
             </div>
-            <p className="text-sm leading-6 text-ink/75">Submitting an enquiry does not place an order or authorize a payment. See the <a href="/pricingPolicy" className="cd-text-link" target="_blank" rel="noopener">Pricing Policy<span className="sr-only"> (opens in a new tab)</span></a> before accepting a quote.</p>
+            <p className="text-sm leading-6 text-ink/75">Submitting an enquiry does not place an order or authorize a payment. See the <Link to="/pricingPolicy" className="cd-text-link" target="_blank" rel="noopener">Pricing Policy<span className="sr-only"> (opens in a new tab)</span></Link> before accepting a quote.</p>
             <div className="contact-verification"><div ref={turnstile.container} />{turnstile.message && <p className="muted" role="status">{turnstile.message}</p>}</div>
             {status && <p className="quote-feedback quote-feedback--error" role="alert">{status.message}</p>}
             {!contactConfigured && <p className="muted" role="status">The enquiry form is being connected. Please email CoreD for now.</p>}

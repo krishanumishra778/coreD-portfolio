@@ -1,4 +1,5 @@
 import "./ui/Marquee.css";
+import { publicAsset } from "./lib/publicAsset.js";
 
 const companyLogos = [
   { id: "tohfabazzar", name: "TohfaBazzar", logo: "/Images/tohfabazzar.png" },
@@ -16,7 +17,7 @@ export default function CompanyLogosSection() {
             {companyLogos.map((company) => (
               <div key={company.id} className="client-logo-item">
                 <div className="client-logo-frame">
-                  <img src={company.logo} alt={group === 0 ? company.name : ""} width="200" height="80" decoding="async" draggable={false} />
+                  <img src={publicAsset(company.logo)} alt={group === 0 ? company.name : ""} width="200" height="80" decoding="async" draggable={false} />
                 </div>
                 <span aria-hidden="true">+</span>
               </div>

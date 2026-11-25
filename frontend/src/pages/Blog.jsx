@@ -2,11 +2,12 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { RevealWords } from "../components/ui/WordReveal.jsx";
 import { articles, articleImage } from "../data/articles.js";
+import { publicAsset } from "../components/lib/publicAsset.js";
 
 function JournalArt({ article, priority = false, decorative = false }) {
   return (
     <div className="journal-art" data-scroll-reveal={decorative ? undefined : ""}>
-      <img src={articleImage(article)} alt={decorative ? "" : article.imageAlt} width={1440} height={810}
+      <img src={publicAsset(articleImage(article))} alt={decorative ? "" : article.imageAlt} width={1440} height={810}
         loading={priority ? "eager" : "lazy"} fetchpriority={priority ? "high" : undefined} decoding="async" />
     </div>
   );

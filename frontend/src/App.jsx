@@ -19,6 +19,10 @@ import PrivacyNotice from "./pages/PrivacyNotice.jsx";
 import TermsCondition from "./pages/TermsCondition.jsx";
 import PricingPolicy from "./pages/PricingPolicy.jsx";
 import { SERVICES } from "./components/services/servicesData.js";
+import { bookingEnabled, partnersEnabled } from "./components/lib/crmConfig.js";
+const BookAppointment = lazy(() => import("./pages/BookAppointment.jsx"));
+const CloudPartners = lazy(() => import("./pages/CloudPartners.jsx"));
+const CloudPartnerDetail = lazy(() => import("./pages/CloudPartnerDetail.jsx"));
 
 const ChatbotWidget = lazy(() => import("./components/chatbot/ChatbotWidget.jsx")
   .then((module) => ({ default: module.ChatbotWidget })));
@@ -61,6 +65,7 @@ export default function App() {
         <Breadcrumbs />
         <Routes>
           <Route path="/" element={<Home />} />
+          {import.meta.env.BASE_URL !== "/" && <Route path="/index.html" element={<Navigate replace to={{ pathname: "/", search, hash }} />} />}
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           {SERVICES.map(({ id }) => <Route key={id} path={`/services/${id}`} element={<Services serviceId={id} />} />)}
@@ -73,6 +78,11 @@ export default function App() {
           <Route path="/faq" element={<Faq />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/reach-us" element={<Contact />} />
+          {bookingEnabled && <Route path="/book-appointment" element={<Suspense fallback={null}><BookAppointment /></Suspense>} />}
+          {partnersEnabled && <>
+            <Route path="/cloud-partners" element={<Suspense fallback={null}><CloudPartners /></Suspense>} />
+            <Route path="/cloud-partners/:slug" element={<Suspense fallback={null}><CloudPartnerDetail /></Suspense>} />
+          </>}
           <Route path="/termsCondition" element={<TermsCondition />} />
           <Route path="/pricingPolicy" element={<PricingPolicy />} />
           <Route path="/pricing-policy" element={<Navigate replace to="/pricingPolicy" />} />

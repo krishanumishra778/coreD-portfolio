@@ -18,6 +18,10 @@ ErrorDocument 404 /404.html
   RewriteCond %{QUERY_STRING} (^|&)service=(ai-powered-crm|ai-agents|ai-consulting|ai-cybersecurity|cybersecurity)(&|$)
   RewriteRule ^services/?$ /services/%2 [R=301,L,QSD]
 
+  # Cloud partner pages are filled in from the CRM in the browser; serve the pre-rendered shell for any provider slug.
+  RewriteCond %{DOCUMENT_ROOT}/cloud-partners/index.html -f
+  RewriteRule ^cloud-partners/[^/]+/?$ /cloud-partners/index.html [L]
+
   # Keep real assets and generated HTML files directly accessible.
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]

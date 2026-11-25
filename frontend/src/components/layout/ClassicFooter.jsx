@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { publicAsset } from "../lib/publicAsset.js";
 import { contractingBusiness } from "../../data/legalPolicies.js";
 import {
   GithubLogoIcon,
@@ -48,7 +49,7 @@ export default function ClassicFooter() {
             >
               <span className="flex h-full w-full items-center object-cover justify-center rounded-lg text-amber-500 transition-colors group-hover:bg-amber-500/10">
                 <img
-                  src="/Images/coreD.svg"
+                  src={publicAsset("/Images/coreD.svg")}
                   alt="CoreD"
                   width={28}
                   height={28}

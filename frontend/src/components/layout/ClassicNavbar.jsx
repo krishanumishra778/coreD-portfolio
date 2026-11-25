@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
+import { bookingEnabled, partnersEnabled } from "../lib/crmConfig.js";
+import { publicAsset } from "../lib/publicAsset.js";
+
 const NAVBAR_BG = "#14161aeb";
 
 const navigation = [
@@ -11,6 +14,7 @@ const navigation = [
   { label: "Blog", path: "/blog" },
   { label: "FAQ", path: "/faq" },
 ];
+navigation.splice(2, 0, ...[partnersEnabled && { label: "Partners & Cloud", path: "/cloud-partners" }, bookingEnabled && { label: "Book a session", path: "/book-appointment" }].filter(Boolean));
 
 export default function ClassicNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -109,7 +113,7 @@ export default function ClassicNavbar() {
             className="group flex shrink-0 items-center"
           >
             <img
-              src="/Images/CoreD.png"
+              src={publicAsset("/Images/CoreD.png")}
               alt="CoreD"
               className="
                 h-8 w-auto max-w-[112px] object-contain

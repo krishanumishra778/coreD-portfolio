@@ -18,8 +18,18 @@ const routes = {
   "/pricingPolicy": ["Pricing Policy", "CoreD’s proposed USD plan prices, written quotes, Indian billing and GST, provider costs, payment stages, cancellations and refunds."],
   "/privacyPolicy": ["Privacy Policy", "What CoreD collects through contact, quote and assistant flows, why it is used and which providers handle it."],
 };
+// Booking and Cloud Partners are build-time switches (see components/lib/crmConfig.js). import.meta.env is
+// absent under plain Node tests, so read it defensively; with the switches off these routes do not exist.
+const buildEnv = import.meta.env ?? {};
+const crmBuild = Boolean(buildEnv.VITE_CRM_API_BASE);
+const bookingRoute = crmBuild && buildEnv.VITE_BOOKING_ENABLED === "on";
+const partnersRoute = crmBuild && buildEnv.VITE_PARTNERS_ENABLED === "on";
+if (bookingRoute) routes["/book-appointment"] = ["Book a Session", "Request a 30-minute session with CoreD. Choose a time, tell us what you need and we confirm your request by email."];
+if (partnersRoute) routes["/cloud-partners"] = ["Partners & Cloud", "Cloud and infrastructure providers CoreD has reviewed and approved. Disclosures and terms are shown with each listing."];
 const aliases = { "/reach-us": "/contact", "/seeourwork": "/see-our-work", "/case-studies": "/see-our-work", "/pricing-policy": "/pricingPolicy" };
 
+// Provider pages come from the CRM at run time, so they cannot be pre-rendered or described here; they are not indexed.
+const partnerDetail = (normalized) => partnersRoute && /^\/cloud-partners\/[^/]+$/.test(normalized);
 const normalize = (path) => (path.replace(/\/+$/, "") || "/").toLowerCase();
 const routeKeys = Object.keys(routes);
 export const staticPaths = [
@@ -39,8 +49,9 @@ export function resolveMetadata(pathname, search = "") {
   if (canonicalPath) {
     const [title, description] = routes[canonicalPath];
     return { title: `${title} | CoreD`, label: title, description, path: canonicalPath,
-      ...(["/termsCondition", "/pricingPolicy"].includes(canonicalPath) && { noindex: true }) };
+      ...(["/termsCondition", "/pricingPolicy", "/cloud-partners"].includes(canonicalPath) && { noindex: true }) };
   }
+  if (partnerDetail(normalized)) return { title: "Cloud partner | CoreD", description: routes["/cloud-partners"][1], noindex: true };
   const article = articles.find(({ slug }) => normalized === `/blog/${slug}`);
   if (article) return {
     title: `${article.title} | CoreD Journal`, label: article.title, description: article.description, image: articleImage(article), imageAlt: article.imageAlt, path: `/blog/${article.slug}`,

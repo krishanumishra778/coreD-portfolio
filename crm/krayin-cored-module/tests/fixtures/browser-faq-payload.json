@@ -1,0 +1,18 @@
+{
+ "kind": "faq_chatbot",
+ "request_id": "cfec6ad1-3d05-40fc-807e-eb008b392321",
+ "name": "[SYNTHETIC] Dev Patel",
+ "email": "dev@example.invalid",
+ "phone": "+919855555555",
+ "phone_country": "IN",
+ "dial_code": "+91",
+ "message": "This visitor asked to use CoreD’s FAQ assistant and shared their details for enquiry follow-up.",
+ "consent": {
+  "privacy_notice": true
+ },
+ "details": {
+  "service": "FAQ assistant enquiry"
+ },
+ "website": "",
+ "turnstile_token": "XXXX.DUMMY.TOKEN.XXXX"
+}

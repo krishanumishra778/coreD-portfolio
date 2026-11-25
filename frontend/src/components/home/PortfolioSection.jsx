@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "../ui/Marquee.css";
 import { ArrowRight, ArrowUpRight, Layers, Images } from "lucide-react";
 import { caseStudies } from "../../data/PortfolioData.js";
+import { publicAsset } from "../lib/publicAsset.js";
 
 function SectionHeading({
   eyebrow,
@@ -78,7 +79,7 @@ export default function PortfolioSection() {
                     {/* Image */}
                     <div className="aspect-[4/3] w-full overflow-hidden rounded-[26px] bg-slate-100">
                       <img
-                        src={item.screenshots?.[0]?.src}
+                        src={publicAsset(item.screenshots?.[0]?.src)}
                         alt={item.screenshots?.[0]?.alt || item.client}
                         loading="lazy"
                         decoding="async"

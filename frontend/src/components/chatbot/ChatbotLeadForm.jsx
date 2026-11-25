@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { phoneCountries, generalEmail } from "../../data/contactOptions.js";
 import { formspreeEndpoint } from "../lib/submitEnquiry.js";
 import { submitChatLead } from "../lib/chatLead.js";
+import { crmIntakeUrl } from "../lib/crmConfig.js";
+import { publicAsset } from "../lib/publicAsset.js";
 import { useTurnstile, contactProtection, turnstileRequired } from "../lib/useTurnstile.js";
 import "./ChatbotLeadForm.css";
 
@@ -27,7 +30,7 @@ export default function ChatbotLeadForm({ onComplete, onClose }) {
     requestId.current ||= crypto.randomUUID();
     try {
       await submitChatLead({ fields, requestId: requestId.current, formId,
-        token: verification.token, protection: contactProtection, signal: AbortSignal.timeout(25000) });
+        token: verification.token, protection: contactProtection, signal: AbortSignal.timeout(25000), crmUrl: crmIntakeUrl });
       onComplete();
     } catch (failure) {
       setError(failure.message);
@@ -45,7 +48,7 @@ export default function ChatbotLeadForm({ onComplete, onClose }) {
         <button type="button" className="chat-lead-close" onClick={onClose} aria-label="Close chat">×</button>
       </header>
       <div className="chat-lead-body">
-        <img className="chat-lead-avatar" src="/Images/ChatWindow.png" width="64" height="64" alt="" />
+        <img className="chat-lead-avatar" src={publicAsset("/Images/ChatWindow.png")} width="64" height="64" alt="" />
         <h2 id="chat-lead-title">Let’s get to know you</h2>
         <p>Share your name and contact details to start asking about CoreD’s services. Our team can follow up about your enquiry.</p>
         <form onSubmit={submit} className="chat-lead-form" aria-label="Start a chat">
@@ -66,11 +69,11 @@ export default function ChatbotLeadForm({ onComplete, onClose }) {
               </div>
             </div>
           </fieldset>
-          <p className="chat-lead-notice">Your details are sent to CoreD through Formspree. Read our <a href="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></a>. This does not sign you up for marketing.</p>
+          <p className="chat-lead-notice">{crmIntakeUrl ? "Your details are saved in CoreD’s CRM so the team can follow up. Read our" : "Your details are sent to CoreD through Formspree. Read our"} <Link to="/privacyPolicy" target="_blank" rel="noopener">Privacy Policy<span className="sr-only"> (opens in a new tab)</span></Link>. This does not sign you up for marketing.</p>
           <div className="contact-verification"><div ref={verification.container} />{verification.message && <p role="status">{verification.message}</p>}</div>
           {error && <p className="chat-lead-error" role="alert">{error}</p>}
-          {!formspreeEndpoint(formId) && <p role="status">Chat registration is unavailable. Email <a href={`mailto:${generalEmail}`}>{generalEmail}</a>.</p>}
-          <button className="cd-button cd-button--primary" type="submit" disabled={sending || !formspreeEndpoint(formId) || (turnstileRequired && !verification.token)}>{sending ? "Sending your details…" : "Start chatting"}</button>
+          {!(crmIntakeUrl || formspreeEndpoint(formId)) && <p role="status">Chat registration is unavailable. Email <a href={`mailto:${generalEmail}`}>{generalEmail}</a>.</p>}
+          <button className="cd-button cd-button--primary" type="submit" disabled={sending || !(crmIntakeUrl || formspreeEndpoint(formId)) || (turnstileRequired && !verification.token)}>{sending ? "Sending your details…" : "Start chatting"}</button>
         </form>
       </div>
     </section>
