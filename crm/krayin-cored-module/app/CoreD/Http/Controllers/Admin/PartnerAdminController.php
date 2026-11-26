@@ -122,7 +122,7 @@ class PartnerAdminController
             'details_json' => ['nullable', 'json', 'max:20000'],
             'pros' => 'nullable|string|max:3000',
             'cons' => 'nullable|string|max:3000',
-            'reviews' => 'nullable|string|max:8000',
+            'reviews' => 'nullable',
             'is_demo' => 'nullable|boolean',
         ]);
 
@@ -177,31 +177,55 @@ class PartnerAdminController
         return $out;
     }
 
-    /** One review per line: Name | Role or company | Rating 1-5 (optional) | Review text. At most 10. */
-    protected function reviews(?string $text): array
+    /**
+     * Reviews arrive as separate rows from the editor (reviews[n][author|role|rating|text]). The older one-line-per-review box
+     * ("Name | Role | Rating | Text") is still accepted so existing scripts and tests keep working. Rows that are completely
+     * empty are ignored; at most 10 are kept, in the order submitted.
+     */
+    protected function reviews(mixed $input): array
     {
+        $rows = is_array($input) ? array_values($input) : $this->legacyReviewRows((string) $input);
         $out = [];
-        foreach (preg_split('/\R/u', (string) $text) as $n => $line) {
-            if (trim($line) === '') {
+        foreach ($rows as $n => $row) {
+            $row = is_array($row) ? $row : [];
+            [$author, $role, $rating, $text] = array_map(fn ($k) => trim(preg_replace('/[ \t]+/u', ' ', (string) ($row[$k] ?? ''))), ['author', 'role', 'rating', 'text']);
+            if ($author === '' && $role === '' && $rating === '' && $text === '') {
                 continue;
             }
-            $bad = fn (string $why) => ValidationException::withMessages(['reviews' => 'Reviews, line '.($n + 1).': '.$why.' Use: Name | Role or company | Rating 1-5 (optional) | Review text.']);
-            $parts = array_map('trim', explode('|', $line, 4));
-            if (count($parts) < 4 || $parts[0] === '' || $parts[3] === '') {
-                throw $bad('needs a name and the review text.');
+            $bad = fn (string $why) => ValidationException::withMessages(['reviews' => 'Review '.($n + 1).': '.$why]);
+            if ($author === '' || $text === '') {
+                throw $bad('add a name and the review text.');
             }
-            if ($parts[2] !== '' && ! preg_match('/^[1-5]$/', $parts[2])) {
-                throw $bad('rating must be 1 to 5 or empty.');
+            if ($rating !== '' && ! preg_match('/^[1-5]$/', $rating)) {
+                throw $bad('rating must be 1 to 5, or empty.');
             }
-            if (mb_strlen($parts[0]) > 80 || mb_strlen($parts[1]) > 100 || mb_strlen($parts[3]) > 600) {
-                throw $bad('name max 80, role max 100, review max 600 characters.');
+            if (mb_strlen($author) > 80 || mb_strlen($role) > 100 || mb_strlen($text) > 600) {
+                throw $bad('name max 80, role or company max 100, review max 600 characters.');
             }
-            $out[] = ['author' => $parts[0], 'role' => $parts[1] ?: null, 'rating' => $parts[2] === '' ? null : (int) $parts[2], 'text' => $parts[3]];
+            $out[] = ['author' => $author, 'role' => $role ?: null, 'rating' => $rating === '' ? null : (int) $rating, 'text' => $text];
         }
         if (count($out) > 10) {
             throw ValidationException::withMessages(['reviews' => 'Reviews: add at most 10.']);
         }
 
         return $out;
+    }
+
+    /** Parses the old one-per-line box into rows. Lines without three separators are reported with the format hint. */
+    private function legacyReviewRows(string $text): array
+    {
+        $rows = [];
+        foreach (preg_split('/\R/u', $text) as $n => $line) {
+            if (trim($line) === '') {
+                continue;
+            }
+            $parts = array_map('trim', explode('|', $line, 4));
+            if (count($parts) < 4) {
+                throw ValidationException::withMessages(['reviews' => 'Reviews, line '.($n + 1).': needs a name and the review text. Use: Name | Role or company | Rating 1-5 (optional) | Review text.']);
+            }
+            $rows[] = ['author' => $parts[0], 'role' => $parts[1], 'rating' => $parts[2], 'text' => $parts[3]];
+        }
+
+        return $rows;
     }
 }

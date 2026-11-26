@@ -35,15 +35,15 @@
             @php
                 $d = $partner->details ?? [];
                 $lineText = fn ($key) => old($key, implode("\n", $d[$key] ?? []));
-                $reviewText = old('reviews', collect($d['reviews'] ?? [])->map(fn ($r) => implode(' | ', [$r['author'] ?? '', $r['role'] ?? '', $r['rating'] ?? '', $r['text'] ?? '']))->implode("\n"));
+                $reviewRows = old('reviews', $d['reviews'] ?? []);
+                $reviewRows = is_array($reviewRows) ? array_values($reviewRows) : [];
                 $advanced = collect($d)->except(['pros', 'cons', 'reviews'])->all();
             @endphp
             <label>Pros <small>(one per line, max 12)</small>
                 <textarea class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="pros" rows="5" placeholder="Predictable pricing&#10;Strong GPU availability">{{ $lineText('pros') }}</textarea></label>
             <label>Cons <small>(one per line, max 12)</small>
                 <textarea class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="cons" rows="5" placeholder="Smaller support team&#10;Fewer regions">{{ $lineText('cons') }}</textarea></label>
-            <label>Reviews <small>(one per line, max 10: Name | Role or company | Rating 1-5 (optional) | Review text). Add only real reviews you can attribute.</small>
-                <textarea class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="reviews" rows="6" placeholder="Asha Rao | CTO, Acme | 5 | Moved our inference workloads here and cut costs.">{{ $reviewText }}</textarea></label>
+            @include('cored::admin.partners._reviews', ['reviewRows' => $reviewRows])
             <label>Advanced details JSON <small>(optional: best_for, highlights[3 short bullets], capabilities[{title,body}], steps, metrics[{label,value,verified}], offer{title,body,code,cta,verified}, evidence{title,body,source_url,checked_on,verified}. Offer, evidence and metrics appear on the website only when verified is true.)</small>
                 <textarea class="w-full rounded border px-2 py-1 font-mono text-xs dark:bg-gray-800" name="details_json" rows="8">{{ old('details_json', $advanced ? json_encode($advanced, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '') }}</textarea></label>
             <label class="flex items-center gap-2"><input type="hidden" name="is_demo" value="0"><input type="checkbox" name="is_demo" value="1" @checked($f('is_demo'))> Demo data <small>(preview only: never shown on the public website)</small></label>
@@ -51,4 +51,5 @@
                 <a href="{{ route('admin.cored.partners.index') }}">Cancel</a></div>
         </form>
     </div>
+    @include('cored::admin.partners._reviews-script')
 </x-admin::layouts>
