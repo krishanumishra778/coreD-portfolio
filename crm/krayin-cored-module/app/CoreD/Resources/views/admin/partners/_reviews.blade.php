@@ -1,5 +1,13 @@
+@php
+    // After a failed save the rows come from the submitted form, even when every row was removed (then nothing is posted for
+    // "reviews" and old('reviews') is null: the marker tells that apart from a first visit, so removed reviews do not come back).
+    $reviewRows = old('reviews_submitted')
+        ? (is_array(old('reviews')) ? array_values(old('reviews')) : [])
+        : array_values((array) ($storedReviews ?? []));
+@endphp
 <fieldset class="flex flex-col gap-3 rounded border border-gray-300 p-3 dark:border-gray-800" id="partner-reviews" data-max="10" aria-describedby="partner-reviews-help">
                 <legend class="px-1">Reviews</legend>
+                <input type="hidden" name="reviews_submitted" value="1">
                 <p id="partner-reviews-help" class="text-xs">Up to 10. Add only real reviews you can attribute. If a review is a summary of a G2 or Trustpilot review, say so in the review text. Name and review text are required; rating is optional (1 to 5).</p>
                 <div id="partner-review-rows" class="flex flex-col gap-3">
                     @foreach ($reviewRows as $i => $row)

@@ -123,6 +123,7 @@ class PartnerAdminController
             'pros' => 'nullable|string|max:3000',
             'cons' => 'nullable|string|max:3000',
             'reviews' => 'nullable',
+            'reviews_submitted' => 'nullable',
             'is_demo' => 'nullable|boolean',
         ]);
 
@@ -131,13 +132,13 @@ class PartnerAdminController
             'website_url' => $v['website_url'] ?? null, 'affiliate_url' => $v['affiliate_url'] ?? null,
             'tags' => array_values(array_filter(array_map('trim', explode(',', $v['tags'] ?? '')))),
             'sort_order' => $v['sort_order'] ?? 100,
-            'details' => $this->details($v),
+            'details' => $this->details($v, $existing),
             'is_demo' => (bool) ($v['is_demo'] ?? false),
         ];
     }
 
     /** Advanced JSON (capabilities, steps, metrics) plus the plain-text Pros, Cons and Reviews boxes, which win over any same-named JSON keys. */
-    protected function details(array $v): ?array
+    protected function details(array $v, ?CloudPartner $existing = null): ?array
     {
         $details = ! empty($v['details_json']) ? json_decode($v['details_json'], true) : [];
         if (! is_array($details)) {
@@ -149,7 +150,11 @@ class PartnerAdminController
                 $details[$key] = $items;
             }
         }
-        if ($reviews = $this->reviews($v['reviews'] ?? null)) {
+        // The reviews editor always posts a marker. A request that carries neither the rows nor the marker (an older form, a script)
+        // leaves the stored reviews alone instead of wiping them; with the marker and no rows, every review is removed on purpose.
+        $touched = array_key_exists('reviews', $v) || ! empty($v['reviews_submitted']);
+        $reviews = $touched ? $this->reviews($v['reviews'] ?? null) : (array) ($existing?->details['reviews'] ?? []);
+        if ($reviews) {
             $details['reviews'] = $reviews;
         }
 
