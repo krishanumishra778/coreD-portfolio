@@ -5,7 +5,7 @@ export const turnstileRequired = contactProtection === "turnstile";
 const turnstileKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 const turnstileScript = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
-export function useTurnstile() {
+export function useTurnstile({ fitContainer = false } = {}) {
   const container = useRef(null);
   const widget = useRef(null);
   const [token, setToken] = useState("");
@@ -14,16 +14,29 @@ export function useTurnstile() {
   useEffect(() => {
     if (!turnstileRequired || !turnstileKey) return;
     let disposed = false;
+    let renderedSize;
     const render = () => {
-      if (disposed || !container.current || !window.turnstile || widget.current != null) return;
+      const target = container.current;
+      if (disposed || !target || !window.turnstile) return;
+      // The flexible widget has a 300px minimum width.
+      const width = target.clientWidth;
+      if (fitContainer && width === 0) return;
+      const size = fitContainer && width < 300 ? "compact" : "flexible";
+      if (widget.current != null && renderedSize === size) return;
       try {
-        widget.current = window.turnstile.render(container.current, {
-          sitekey: turnstileKey, theme: "light", size: "flexible",
+        if (widget.current != null) {
+          window.turnstile.remove(widget.current);
+          widget.current = null;
+          setToken("");
+        }
+        widget.current = window.turnstile.render(target, {
+          sitekey: turnstileKey, theme: "light", size,
           callback: (value) => { setToken(value); setMessage(""); },
           "expired-callback": () => { setToken(""); setMessage("Verification expired. Please verify again."); },
           "error-callback": () => { setToken(""); setMessage("Verification failed. Please try again or email CoreD."); },
           "timeout-callback": () => { setToken(""); setMessage("Verification timed out. Please try again."); },
         });
+        renderedSize = size;
         setMessage("");
       } catch { setMessage("Verification could not load. Please refresh or email CoreD."); }
     };
@@ -42,14 +55,17 @@ export function useTurnstile() {
       script.addEventListener("error", error);
       if (addScript) document.head.append(script);
     }
+    const observer = fitContainer && typeof ResizeObserver === "function" ? new ResizeObserver(render) : null;
+    if (observer && container.current) observer.observe(container.current);
     return () => {
       disposed = true;
+      observer?.disconnect();
       script?.removeEventListener("load", render);
       script?.removeEventListener("error", error);
       if (widget.current != null) window.turnstile?.remove(widget.current);
       widget.current = null;
     };
-  }, []);
+  }, [fitContainer]);
 
   function reset() {
     setToken("");

@@ -54,3 +54,92 @@
 .cdx-2col{display:grid;grid-template-columns:1fr 1fr;gap:24px}.cdx-list{margin:8px 0 0;padding-left:18px;line-height:1.7}
 @media(max-width:860px){.cdx-grid2,.cdx-pgrid,.cdx-steps,.cdx-2col,.cdx-row{grid-template-columns:1fr}.cdx-metrics{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.cdx-page *{transition:none!important;animation:none!important}}
+
+.cdx-booking {
+  --booking-gutter: 24px;
+}
+
+.cdx-booking .cdx-wrap {
+  padding-inline: var(--booking-gutter);
+}
+
+.cdx-booking .cdx-band {
+  margin-inline: calc(-1 * var(--booking-gutter));
+}
+
+.cdx-booking .cdx-grid2 > *,
+.cdx-booking .cdx-form fieldset {
+  min-inline-size: 0;
+}
+
+.cdx-booking .cdx-form,
+.cdx-booking .cdx-form fieldset,
+.cdx-booking .cdx-form label {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.cdx-booking .cdx-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cdx-booking .cdx-cal {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.cdx-booking .cdx-seg,
+.cdx-booking .cdx-slots,
+.cdx-booking .cdx-steps {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cdx-booking .cdx-cal-nav {
+  flex-shrink: 0;
+}
+
+.cdx-booking-phone {
+  display: grid;
+  grid-template-columns: minmax(0, 8.125rem) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.cdx-booking .cdx-form :is(input:not([type="checkbox"]), select, textarea) {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.cdx-booking .cdx-booking-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.cdx-booking-consent input {
+  flex: 0 0 18px;
+  inline-size: 18px;
+  block-size: 18px;
+  margin-block-start: 1px;
+  padding: 0;
+}
+
+@media (max-width: 860px) {
+  .cdx-booking .cdx-grid2,
+  .cdx-booking .cdx-row,
+  .cdx-booking .cdx-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .cdx-booking { --booking-gutter: 16px; padding-top: 32px; }
+  .cdx-booking .cdx-grid2 > .cdx-card { padding: 18px 16px; }
+  .cdx-booking-phone { grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr); }
+  .cdx-booking .cdx-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cdx-booking .cdx-seg button { padding-inline: 4px; font-size: 13px; }
+  .cdx-booking .cdx-band { padding-block: 40px; }
+  .cdx-booking .cdx-dark { padding-inline: 20px; overflow-wrap: anywhere; }
+}
