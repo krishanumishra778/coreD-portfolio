@@ -11,4 +11,5 @@ Route::prefix('cored/partners')->controller(PartnerAdminController::class)->grou
     Route::get('{id}/logo', 'logo')->name('admin.cored.partners.logo')->whereNumber('id');
     Route::put('{id}', 'update')->name('admin.cored.partners.update')->whereNumber('id');
     Route::post('{id}/publish', 'publish')->name('admin.cored.partners.publish')->whereNumber('id');
+    Route::delete('{id}', 'destroy')->name('admin.cored.partners.destroy')->whereNumber('id');
 });

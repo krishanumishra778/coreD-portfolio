@@ -49,4 +49,8 @@ return [
     ],
     // Public API is hidden unless explicitly enabled; keeps the module inert until configured.
     'public_api_enabled' => (bool) env('CORED_PUBLIC_API', true),
+    'partners' => [
+        // Exact https origins of PROTECTED preview sites that may also receive DEMO providers. Empty = demo data is never public.
+        'demo_origins' => array_filter(array_map('trim', explode(',', (string) env('CORED_DEMO_ORIGINS', '')))),
+    ],
 ];

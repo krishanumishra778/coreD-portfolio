@@ -13,7 +13,7 @@
               action="{{ $partner->exists ? route('admin.cored.partners.update', $partner->id) : route('admin.cored.partners.store') }}">
             @csrf
             @if ($partner->exists) @method('PUT') @endif
-            @php($f = fn ($k, $d = '') => old($k, $partner->{$k} ?? $d))
+            @php $f = fn ($k, $d = "") => old($k, $partner->{$k} ?? $d); @endphp
             <label>Cloud provider name <input class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="name" value="{{ $f('name') }}" required maxlength="120"></label>
             <label>Page URL slug <input class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="slug" value="{{ $f('slug') }}" maxlength="80" placeholder="Generated from the provider name"></label>
             <fieldset class="flex flex-col gap-2 rounded border border-gray-300 p-3 dark:border-gray-800">
@@ -32,11 +32,22 @@
             <label>Affiliate URL (https; leave empty until confirmed) <input class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="affiliate_url" value="{{ $f('affiliate_url') }}"></label>
             <label>Tags (comma separated) <input class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="tags" value="{{ old('tags', implode(', ', $partner->tags ?? [])) }}"></label>
             <label>Sort order <input class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="sort_order" type="number" value="{{ $f('sort_order', 100) }}"></label>
-            <label>Details JSON (capabilities, pros, cons, steps, metrics[{label,value,verified}])
-                <textarea class="w-full rounded border px-2 py-1 font-mono text-xs dark:bg-gray-800" name="details_json" rows="10">{{ old('details_json', $partner->details ? json_encode($partner->details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '') }}</textarea></label>
-            <label class="flex items-center gap-2"><input type="hidden" name="is_demo" value="0"><input type="checkbox" name="is_demo" value="1" @checked($f('is_demo'))> Demo data</label>
+            @php
+                $d = $partner->details ?? [];
+                $lineText = fn ($key) => old($key, implode("\n", $d[$key] ?? []));
+                $advanced = collect($d)->except(['pros', 'cons', 'reviews'])->all();
+            @endphp
+            <label>Pros <small>(one per line, max 12)</small>
+                <textarea class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="pros" rows="5" placeholder="Predictable pricing&#10;Strong GPU availability">{{ $lineText('pros') }}</textarea></label>
+            <label>Cons <small>(one per line, max 12)</small>
+                <textarea class="w-full rounded border px-2 py-1 dark:bg-gray-800" name="cons" rows="5" placeholder="Smaller support team&#10;Fewer regions">{{ $lineText('cons') }}</textarea></label>
+            @include('cored::admin.partners._reviews', ['storedReviews' => $d['reviews'] ?? []])
+            <label>Advanced details JSON <small>(optional: best_for, highlights[3 short bullets], capabilities[{title,body}], steps, metrics[{label,value,verified}], offer{title,body,code,cta,verified}, evidence{title,body,source_url,checked_on,verified}. Offer, evidence and metrics appear on the website only when verified is true.)</small>
+                <textarea class="w-full rounded border px-2 py-1 font-mono text-xs dark:bg-gray-800" name="details_json" rows="8">{{ old('details_json', $advanced ? json_encode($advanced, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '') }}</textarea></label>
+            <label class="flex items-center gap-2"><input type="hidden" name="is_demo" value="0"><input type="checkbox" name="is_demo" value="1" @checked($f('is_demo'))> Demo data <small>(preview only: never shown on the public website)</small></label>
             <div class="flex gap-3"><button class="primary-button" type="submit">{{ $partner->exists ? 'Save changes' : 'Save draft' }}</button>
                 <a href="{{ route('admin.cored.partners.index') }}">Cancel</a></div>
         </form>
     </div>
+    @include('cored::admin.partners._reviews-script')
 </x-admin::layouts>

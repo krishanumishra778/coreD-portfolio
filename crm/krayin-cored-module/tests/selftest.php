@@ -157,6 +157,65 @@ t('non-UTC app tz: booked slot is hidden',!in_array($first,$svc2->slotsForDate('
 t('non-UTC app tz: stored time reads back as the same instant',$ap->fresh()->starts_at->utc()->format('Y-m-d\TH:i:s\Z')===$first);
 Appointment::query()->delete(); config(['app.timezone'=>'UTC']); date_default_timezone_set('UTC');
 
+// 9 Cloud Partners admin: review rows (add / edit / remove / save / reload), legacy one-line box, rendering of the rows editor
+$pc=new App\CoreD\Http\Controllers\Admin\PartnerAdminController(new App\CoreD\Services\PartnerLogo());
+$pdata=new ReflectionMethod($pc,'data'); $pdata->setAccessible(true);
+$padm=function(array $in,$existing=null) use($pc,$pdata){ $r=Illuminate\Http\Request::create('/x','POST',$in); return $pdata->invoke($pc,$r,$existing); };
+$pthrows=function(array $in,$existing=null) use($padm){ try{$padm($in,$existing);return false;}catch(Illuminate\Validation\ValidationException $e){return true;} };
+Illuminate\Support\Facades\Route::get('/admin-idx',fn()=>'ok')->name('admin.cored.partners.index'); app('router')->getRoutes()->refreshNameLookups();
+$pbase=['name'=>'Row Cloud','slug'=>'row-cloud','website_url'=>'https://example.com','tags'=>'GPU'];
+$rowsIn=[['author'=>'Asha Rao','role'=>'CTO, Acme','rating'=>'5','text'=>'Moved our inference here | and saved money'],['author'=>'Ben','role'=>'','rating'=>'','text'=>'Solid support'],['author'=>'','role'=>'','rating'=>'','text'=>'']];
+$d1=$padm($pbase+['reviews'=>$rowsIn]);
+t('rows: blank row ignored, order kept',count($d1['details']['reviews'])===2 && $d1['details']['reviews'][0]['author']==='Asha Rao' && $d1['details']['reviews'][1]['author']==='Ben');
+t('rows: stored shape is {author,role,rating,text}, empty role/rating are null, pipes in text kept',($d1['details']['reviews'][0]===['author'=>'Asha Rao','role'=>'CTO, Acme','rating'=>5,'text'=>'Moved our inference here | and saved money']) && ($d1['details']['reviews'][1]===['author'=>'Ben','role'=>null,'rating'=>null,'text'=>'Solid support']));
+$legacy=$padm($pbase+['reviews'=>"Asha Rao | CTO, Acme | 5 | Moved our inference here | and saved money\nBen | | | Solid support"]);
+t('legacy one-line box still gives the identical stored data',$legacy['details']['reviews']===$d1['details']['reviews']);
+$prow=CloudPartner::create($d1+['status'=>'published','published_at'=>now(),'is_demo'=>false]);
+// edit one row, remove one, add two -> save -> reload
+$loaded=CloudPartner::find($prow->id)->details['reviews'];
+$editIn=[['author'=>$loaded[0]['author'],'role'=>$loaded[0]['role'],'rating'=>'4','text'=>'Edited text'],['author'=>'Cy','role'=>'Founder','rating'=>'','text'=>'Added one'],['author'=>'Di','role'=>'G2, incentivized','rating'=>'3','text'=>'Added two']];
+$prow->update($padm($pbase+['reviews'=>$editIn],$prow)); $re=CloudPartner::find($prow->id)->details['reviews'];
+t('rows: edit + remove + add saved and reloaded in order',array_column($re,'author')===['Asha Rao','Cy','Di'] && $re[0]['rating']===4 && $re[0]['text']==='Edited text' && $re[1]['rating']===null && $re[2]['rating']===3);
+$api=json_decode(call('GET','/cored/api/partners/row-cloud')->getContent(),true);
+t('public API returns the saved rows unchanged',($api['partner']['details']['reviews']??null)===$re);
+$prow->update($padm($pbase+['reviews_submitted'=>'1'],$prow)); t('removing every row clears the reviews',!isset(CloudPartner::find($prow->id)->details['reviews']));
+$ten=array_map(fn($i)=>['author'=>"A$i",'role'=>'','rating'=>'','text'=>"t$i"],range(1,10));
+t('exactly 10 rows accepted',count($padm($pbase+['reviews'=>$ten],$prow)['details']['reviews'])===10);
+t('11 rows rejected',$pthrows($pbase+['reviews'=>array_merge($ten,[['author'=>'A11','text'=>'t11']])],$prow));
+t('rating 6 rejected',$pthrows($pbase+['reviews'=>[['author'=>'A','role'=>'B','rating'=>'6','text'=>'x']]],$prow));
+t('row without text rejected',$pthrows($pbase+['reviews'=>[['author'=>'A','role'=>'B','rating'=>'4','text'=>'']]],$prow));
+t('row without name rejected',$pthrows($pbase+['reviews'=>[['author'=>'','role'=>'B','rating'=>'4','text'=>'x']]],$prow));
+t('601-char review rejected',$pthrows($pbase+['reviews'=>[['author'=>'A','role'=>'','rating'=>'','text'=>str_repeat('x',601)]]],$prow));
+$msg=(function() use($padm,$pbase,$prow){try{$padm($pbase+['reviews'=>[['author'=>'ok','text'=>'ok'],['author'=>'No text','text'=>'']]],$prow);}catch(Illuminate\Validation\ValidationException $e){return $e->errors()['reviews'][0]??'';}return '';})();
+t('error names the row that failed',str_starts_with($msg,'Review 2:'));
+// the rows editor renders existing reviews (Cloudways-shaped fixture, read-only) and keeps row entries after a validation error
+$view=fn(array $rows)=>view('cored::admin.partners._reviews',['storedReviews'=>$rows])->render();
+$oldReq=function(?array $old){ $req=Illuminate\Http\Request::create('/x','POST'); $ses=app('session.store'); $ses->put('_old_input',$old??[]); $req->setLaravelSession($ses); app()->instance('request',$req); };
+$fixture=[['author'=>'Steve V.','role'=>'Founder, Deltora.help · G2, incentivized','rating'=>null,'text'=>'Review summary (4.5/5): kept'],['author'=>'Declan M.','role'=>'Web designer · G2, incentivized','rating'=>5,'text'=>'Review summary: kept two'],['author'=>'BellaHelena K.','role'=>'Trustpilot, unprompted review','rating'=>5,'text'=>'Review summary: kept three']];
+$html=$view($fixture);
+t('editor: 3 saved reviews preload as 3 rows, in order',substr_count($html,'data-review-row')===3 && strpos($html,'Steve V.')<strpos($html,'Declan M.') && strpos($html,'Declan M.')<strpos($html,'BellaHelena K.'));
+t('editor: attribution, text and rating preload',str_contains($html,'Founder, Deltora.help · G2, incentivized') && str_contains($html,'Review summary (4.5/5): kept') && preg_match('/name="reviews\[1\]\[rating\]".*?<option value="5" selected/s',$html)===1 && preg_match('/name="reviews\[0\]\[rating\]".*?<option value="" selected|name="reviews\[0\]\[rating\]">\s*<option value="">No rating/s',$html)===1);
+t('editor: has Add review control and the 10-review limit',str_contains($html,'id="partner-review-add"') && str_contains($html,'data-max="10"') && str_contains($html,'data-review-remove'));
+t('editor: nothing in a row is injected as HTML',!str_contains($view([['author'=>'<b>x</b>','role'=>'"><script>','rating'=>null,'text'=>'</textarea><i>']]),'<script>'));
+$pdelete=$pc->destroy($prow->id); t('delete blocked while published',CloudPartner::find($prow->id)!==null && $pdelete instanceof Illuminate\Http\RedirectResponse);
+$prow->update(['status'=>'draft']); $pc->destroy($prow->id); t('delete works once unpublished',CloudPartner::find($prow->id)===null);
+$oldReq(['reviews_submitted'=>'1','reviews'=>[['author'=>'Kept A','role'=>'Kept role','rating'=>'3','text'=>'Kept text'],['author'=>'Kept B','role'=>'','rating'=>'','text'=>'']]]); $keepOnError=$view($fixture);
+t('editor: row entries survive a validation error (old input), including a half-filled row',substr_count($keepOnError,'data-review-row')===2 && str_contains($keepOnError,'Kept A') && str_contains($keepOnError,'Kept role') && str_contains($keepOnError,'Kept text') && str_contains($keepOnError,'Kept B') && !str_contains($keepOnError,'Steve V.'));
+$oldReq(['reviews_submitted'=>'1','name'=>'x']); $removedAll=$view($fixture);
+t('editor: every review removed + validation error elsewhere: the removed reviews do NOT come back',substr_count($removedAll,'data-review-row')===0 && !str_contains($removedAll,'Steve V.') && str_contains($removedAll,'name="reviews_submitted"'));
+$oldReq(null); $firstVisit=$view($fixture);
+t('editor: first visit (no old input) shows the stored reviews and posts the marker',substr_count($firstVisit,'data-review-row')===3 && str_contains($firstVisit,'name="reviews_submitted" value="1"'));
+$oldReq(['name'=>'x']); t('editor: old input from an older form without the marker falls back to the stored reviews',substr_count($view($fixture),'data-review-row')===3);
+$oldReq(null);
+// saving: marker with no rows clears; no marker and no rows leaves the stored reviews alone
+$keep=CloudPartner::create($padm($pbase+['slug'=>'row-cloud-keep','name'=>'Keep Cloud','reviews'=>$rowsIn])+['status'=>'draft']);
+$noField=$padm(['name'=>'Keep Cloud','slug'=>'row-cloud-keep','website_url'=>'https://example.com','tags'=>'GPU'],$keep);
+t('save: a request without the reviews field or marker keeps the stored reviews',count($noField['details']['reviews']??[])===2);
+$cleared=$padm(['name'=>'Keep Cloud','slug'=>'row-cloud-keep','website_url'=>'https://example.com','tags'=>'GPU','reviews_submitted'=>'1'],$keep);
+t('save: marker with no rows removes all reviews',!isset($cleared['details']['reviews']));
+$keep->delete();
+t('editor: row entries survive a validation error (old input), including a half-filled row',substr_count($keepOnError,'data-review-row')===2 && str_contains($keepOnError,'Kept A') && str_contains($keepOnError,'Kept role') && str_contains($keepOnError,'Kept text') && str_contains($keepOnError,'Kept B'));
+
 // 7 CoreDhristi branding
 $B=__DIR__.'/../app/CoreD/Resources/brand/';
 $r=call('GET','/cored/brand/cored-crm.css'); t('brand css served 200 text/css',$r->getStatusCode()===200 && str_contains((string)$r->headers->get('Content-Type'),'text/css') && $r->headers->get('X-Content-Type-Options')==='nosniff');

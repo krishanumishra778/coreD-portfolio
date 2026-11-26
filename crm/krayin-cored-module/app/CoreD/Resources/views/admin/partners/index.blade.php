@@ -26,11 +26,14 @@
                             </div></td>
                         <td class="px-4 py-2">{{ $p->slug }}</td>
                         <td class="px-4 py-2">{{ $p->status }}</td>
-                        <td class="px-4 py-2">{{ $p->is_demo ? 'DEMO' : 'real' }}</td>
+                        <td class="px-4 py-2">{{ $p->is_demo ? 'DEMO (preview only, never on the website)' : 'real' }}</td>
                         <td class="flex gap-3 px-4 py-2">
                             <a class="text-brandColor" href="{{ route('admin.cored.partners.edit', $p->id) }}">Edit</a>
                             <form method="POST" action="{{ route('admin.cored.partners.publish', $p->id) }}">@csrf
                                 <button class="text-brandColor" type="submit">{{ $p->status === 'published' ? 'Unpublish' : 'Publish' }}</button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.cored.partners.destroy', $p->id) }}" onsubmit="return confirm(@js('Delete '.$p->name.' permanently? This cannot be undone.'));">@csrf @method('DELETE')
+                                <button class="text-red-600" type="submit" @disabled($p->status === 'published') title="{{ $p->status === 'published' ? 'Unpublish before deleting' : 'Delete permanently' }}">Delete</button>
                             </form>
                         </td>
                     </tr>
