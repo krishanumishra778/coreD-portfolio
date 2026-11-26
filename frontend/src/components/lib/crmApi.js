@@ -31,9 +31,13 @@ export async function fetchSlots({ base, date, fetchRequest = fetch, signal }) {
   return { slots: b.slots, timezone: b.timezone };
 }
 
+// The CRM requires the visitor's acceptance of the Terms and the Privacy Notice (one checkbox covers both). Only a ticked box produces a consent object.
+export const bookingConsent = (accepted) => (accepted === true ? { terms: true, privacy: true } : null);
+
 export async function submitBooking({ base, booking, token, fetchRequest = fetch, signal }) {
   if (!base) throw new Error("The booking form is not connected yet. Please email CoreD.");
   if (!token) throw new Error("Complete security verification before booking.");
+  if (booking?.consent?.terms !== true || booking?.consent?.privacy !== true) throw new Error("Please accept the Terms and Privacy Notice.");
   let r;
   try {
     r = await fetchRequest(base + "booking", { method: "POST", credentials: "same-origin", signal,
