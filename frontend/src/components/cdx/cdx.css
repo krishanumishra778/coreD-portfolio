@@ -298,8 +298,8 @@
   .cdx-partners .cdx-wrap{padding-inline:16px}
   .cdx-partners h1{font-size:2.25rem;line-height:1.22}
   .cp-card{padding:20px}
-  .cp-card__head{flex-wrap:wrap}
-  .cp-cat{max-width:100%;order:3}
+  .cp-card__head{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px 14px}
+  .cp-cat{grid-column:1/-1;justify-self:start;max-width:100%}
   .cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cp-band,.cp-evidence,.cp-final{padding:32px 22px}
   .cp-band .cp-btn,.cp-final__act,.cp-final__act .cp-btn{width:100%}
