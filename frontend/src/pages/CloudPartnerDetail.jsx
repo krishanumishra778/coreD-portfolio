@@ -69,9 +69,11 @@ export default function CloudPartnerDetail() {
             {!out && <Link className="cp-btn cp-btn--block" to="/book-appointment">Discuss this with CoreD</Link>}
             {disclosure}
           </aside>
+          {overview.length > 0 && <section className="cp-hero__overview" aria-labelledby="cp-ov">
+            <h2 id="cp-ov">Overview</h2>
+            <div className="cp-prose">{overview.map((text) => <p key={text}>{text}</p>)}</div>
+          </section>}
         </section>
-
-        {overview.length > 0 && <section className="cp-sec" aria-labelledby="cp-ov"><h2 id="cp-ov">Overview</h2><div className="cp-prose">{overview.map((t) => <p key={t}>{t}</p>)}</div></section>}
 
         {metrics.length > 0 && <dl className="cp-stats">{metrics.map((m) => <div key={m.label}><dt>{m.label}</dt><dd>{m.value}</dd></div>)}</dl>}
 
