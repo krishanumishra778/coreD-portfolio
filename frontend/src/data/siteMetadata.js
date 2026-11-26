@@ -5,6 +5,8 @@ import { websiteFaq } from "./KnowledgeBaseExpanded.js";
 
 export const siteName = "CoreD";
 export const homeDescription = "CoreD, a services division of CoreDhristi LLP, builds AI-powered CRM workflows, AI agents and automation, and provides scoped cybersecurity services.";
+// The approved CoreD mark: the tab icon and the Organization logo in structured data are the same PNG.
+export const organizationLogo = "/Images/ChatWindow.png";
 export const defaultImage = "/Images/hero/cored-robot-background.webp";
 const routes = {
   "/": ["CoreDhristi: AI CRM, AI Agents & Cybersecurity", homeDescription],
@@ -80,7 +82,7 @@ export function structuredData(metadata, origin) {
   if (!origin || !metadata.path || metadata.noindex) return null;
   const url = origin + metadata.path;
   const organization = { "@type": "Organization", "@id": origin + "/#organization", name: siteName,
-    alternateName: "CoreD by CoreDhristi", description: homeDescription, url: origin + "/", logo: origin + "/Images/coreD.svg",
+    alternateName: "CoreD by CoreDhristi", description: homeDescription, url: origin + "/", logo: origin + organizationLogo,
     email: "info@coredhristi.com", sameAs: ["https://www.linkedin.com/company/coredhristi/"],
     parentOrganization: { "@type": "Organization", name: "CoreDhristi LLP", identifier: "ADC-9115" },
     contactPoint: [

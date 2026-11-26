@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 import { breadcrumbs, metadataTags, resolveMetadata, staticPaths, structuredData } from "./siteMetadata.js";
 import { searchDocuments } from "./searchDocuments.js";
@@ -34,6 +35,20 @@ test("indexable pages carry the correct identity, sharing image and unique schem
     assert.equal(graph["@graph"][0].parentOrganization.identifier, "ADC-9115");
     assert.ok(!JSON.stringify(graph).includes("cored.coredhristi.com"));
   }
+});
+
+test("the tab icon and the Organization logo are the approved CoreD PNG", () => {
+  const png = "/Images/ChatWindow.png";
+  assert.ok(existsSync(new URL("../.." + "/public" + png, import.meta.url)), "the PNG ships in public/");
+  for (const file of ["../../index.html", "../../public/thank-you.html"]) {
+    const icons = [...readFileSync(new URL(file, import.meta.url), "utf8").matchAll(/<link\s[^>]*rel="icon"[^>]*>/g)].map((m) => m[0]);
+    assert.equal(icons.length, 1, file + " has exactly one rel=icon");
+    assert.match(icons[0], /type="image\/png"/);
+    assert.match(icons[0], new RegExp('href="' + png + '"'));
+  }
+  const home = structuredData(resolveMetadata("/"), origin);
+  const organization = home["@graph"].find((node) => node["@type"] === "Organization");
+  assert.equal(organization.logo, origin + png);
 });
 
 test("editorial schema does not invent a person, publication date, ratings or a fixed quote price", () => {
