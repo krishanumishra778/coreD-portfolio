@@ -33,6 +33,9 @@ class CorsAllowlist
             return response()->json(['ok' => false, 'error' => 'origin_not_allowed'], 403);
         }
         $response = $next($request);
+        // Always vary on Origin: a response cached for a request without CORS headers (address bar, prefetch, another origin)
+        // must never be replayed to the website's own cross-origin fetch, which then failed once and worked after a refresh.
+        $response->setVary(['Origin'], false);
 
         return $ok ? $this->decorate($response, $origin) : $response;
     }
@@ -43,7 +46,7 @@ class CorsAllowlist
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept');
         $response->headers->set('Access-Control-Max-Age', '600');
-        $response->headers->set('Vary', 'Origin');
+        $response->setVary(['Origin'], false);
 
         return $response;
     }
