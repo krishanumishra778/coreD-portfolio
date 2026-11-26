@@ -6,8 +6,10 @@
 .cdx-page h1{font-size:clamp(2rem,4.5vw,3rem);line-height:1.08;font-weight:800;margin:14px 0 10px;letter-spacing:-.02em}
 .cdx-page h2{font-size:1.6rem;font-weight:800;margin:0 0 8px}
 .cdx-lead{color:var(--mu);max-width:62ch;font-size:1.05rem;line-height:1.55}
-.cdx-badges{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 28px}
-.cdx-badge{border:1px solid var(--bd);background:var(--cd);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:600}
+/* Pills: one centered, wrapping row. Every pill has the same height and centers its text; an icon sits on the text's line (the global svg{display:block} would otherwise stack it above). */
+.cdx-badges{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:18px 0 28px}
+.cdx-badge{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;height:36px;border:1px solid var(--bd);background:var(--cd);border-radius:999px;padding:0 14px;font-size:12px;font-weight:600;line-height:1;text-align:center;white-space:nowrap}
+.cdx-badge svg{display:block;flex:none}
 .cdx-card{background:var(--cd);border:1px solid var(--bd);border-radius:20px;padding:24px;box-shadow:0 8px 28px rgba(20,22,26,.05)}
 .cdx-grid2{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start}
 .cdx-btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;background:var(--am);color:#000;border:0;border-radius:999px;padding:14px 24px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none}
@@ -16,7 +18,11 @@
 .cdx-btn--wide{width:100%}
 .cdx-focus:focus-visible,.cdx-page button:focus-visible,.cdx-page a:focus-visible,.cdx-page input:focus-visible,.cdx-page select:focus-visible,.cdx-page textarea:focus-visible{outline:3px solid #14161A;outline-offset:2px}
 .cdx-cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.cdx-cal-nav{display:flex;gap:6px}.cdx-cal-nav button{width:34px;height:34px;border-radius:50%;border:1px solid var(--bd);background:#fff;cursor:pointer}
+/* Month arrows: identical 34px circles; the chevron is centered by the button itself, and the disabled state only changes opacity so nothing moves. */
+.cdx-cal-nav{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.cdx-cal-nav button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:none;width:34px;height:34px;margin:0;padding:0;border:1px solid var(--bd);border-radius:50%;background:#fff;color:var(--ink);line-height:0;cursor:pointer}
+.cdx-cal-nav button svg{display:block;flex:none;width:16px;height:16px}
+.cdx-cal-nav button:disabled{opacity:.4;cursor:not-allowed}
 .cdx-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
 .cdx-cal b{font-size:10px;color:var(--mu);padding:6px 0}
 .cdx-day{aspect-ratio:1;border:0;border-radius:10px;background:transparent;font-weight:600;cursor:pointer}
