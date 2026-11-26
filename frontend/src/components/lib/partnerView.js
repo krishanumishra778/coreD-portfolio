@@ -52,6 +52,26 @@ export function currentOffer(p, now = new Date()) {
   return end && now > end ? null : o;
 }
 
+const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const PROMO_WORDS = /\b(promo(?:tion|tional)?|coupon|promo code|discount code|black friday|cyber monday)\b/i;
+
+/**
+ * When the CRM holds an offer that is not current (expired, unverified or empty), every line that only makes sense while it is live
+ * (a step like "enter BFCM802 during signup", a highlight, a capability) is dropped too, so no coupon instruction outlives the promo.
+ * With no offer on the record nothing is touched.
+ */
+export function scrubbedPartner(p, now = new Date()) {
+  const offer = p?.details?.offer;
+  if (!offer || currentOffer(p, now)) return p;
+  const code = str(offer.code), title = str(offer.title).replace(/\s*&\s*/g, " and ").replace(/\s+\d{4}$/, "");
+  const norm = (t) => str(t).replace(/\s*&\s*/g, " and ");
+  const stale = (t) => { const x = norm(t); return (code && new RegExp(`\\b${esc(code)}\\b`, "i").test(x)) || (title.length > 4 && x.toLowerCase().includes(title.toLowerCase())) || PROMO_WORDS.test(x); };
+  const d = p.details;
+  const lines = (k) => (Array.isArray(d[k]) ? { [k]: d[k].filter((t) => typeof t !== "string" || !stale(t)) } : {});
+  return { ...p, details: { ...d, ...lines("steps"), ...lines("pros"), ...lines("cons"), ...lines("highlights"),
+    ...(Array.isArray(d.capabilities) ? { capabilities: d.capabilities.filter((c) => !stale(`${c?.title ?? ""} ${c?.body ?? ""}`)) } : {}) } };
+}
+
 /** Where the external button goes: the affiliate link when there is one (kept exactly, tracking id included), else the website. */
 export function outboundLink(p) {
   if (str(p?.affiliate_url)) return { href: p.affiliate_url, affiliate: true };

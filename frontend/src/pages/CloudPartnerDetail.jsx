@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { AlertTriangle, ArrowRight, Check, ChevronRight, Star } from "lucide-react";
 import { crmApiBase } from "../components/lib/crmConfig.js";
 import { fetchPartner } from "../components/lib/crmApi.js";
-import { cleanReviews, currentOffer, hashtag, initials, outboundLink, paragraphs, reviewSource, verifiedMetrics } from "../components/lib/partnerView.js";
+import { cleanReviews, currentOffer, hashtag, initials, outboundLink, paragraphs, reviewSource, scrubbedPartner, verifiedMetrics } from "../components/lib/partnerView.js";
 import "../components/cdx/cdx.css";
 
 const arr = (v) => (Array.isArray(v) ? v : []);
@@ -27,7 +27,7 @@ export default function CloudPartnerDetail() {
       <h1>{state.status === "loading" ? "Loading…" : state.status === "missing" ? "Partner not found" : "Could not load this partner"}</h1>
       <Link className="cp-btn" to="/cloud-partners">Back to all partners</Link></div></div>);
 
-  const p = state.partner, d = p.details ?? {};
+  const p = scrubbedPartner(state.partner), d = p.details ?? {};
   const offer = currentOffer(p), out = outboundLink(p), reviews = cleanReviews(p), metrics = verifiedMetrics(p);
   const evidence = d.evidence?.verified === true && (d.evidence.title || d.evidence.body) ? d.evidence : null;
   const caps = arr(d.capabilities).filter((c) => c?.title), pros = arr(d.pros), cons = arr(d.cons), steps = arr(d.steps);

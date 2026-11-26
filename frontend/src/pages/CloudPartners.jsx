@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, BadgeCheck, Check, Link2, ShieldCheck, Tag, Wrench } from "lucide-react";
 import { crmApiBase } from "../components/lib/crmConfig.js";
 import { fetchPartners } from "../components/lib/crmApi.js";
-import { bestFitLabel, categoryOf, currentOffer, partnerHighlights, verifiedMetrics } from "../components/lib/partnerView.js";
+import { bestFitLabel, categoryOf, currentOffer, partnerHighlights, scrubbedPartner, verifiedMetrics } from "../components/lib/partnerView.js";
 import { generalEmail } from "../data/contactOptions.js";
 import "../components/cdx/cdx.css";
 
@@ -15,7 +15,8 @@ const FAQ = [
 ];
 const BENEFITS = [[ShieldCheck, "Independent notes"], [Link2, "Affiliate links disclosed"], [BadgeCheck, "Only verified offers shown"], [Wrench, "Setup help available"]];
 
-function ProviderCard({ p, wide }) {
+function ProviderCard({ p: raw, wide }) {
+  const p = scrubbedPartner(raw);
   const category = categoryOf(p), fit = bestFitLabel(p), points = partnerHighlights(p), metrics = verifiedMetrics(p, 3), offer = currentOffer(p);
   return (
     <article className={`cp-card${wide ? " cp-card--wide" : ""}`} aria-labelledby={`cp-${p.slug}`}>

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { bestFitLabel, categoryOf, cleanReviews, currentOffer, hashtag, initials, offerExpiry, outboundLink, paragraphs, partnerHighlights, reviewSource, verifiedMetrics } from "./partnerView.js";
+import { scrubbedPartner, bestFitLabel, categoryOf, cleanReviews, currentOffer, hashtag, initials, offerExpiry, outboundLink, paragraphs, partnerHighlights, reviewSource, verifiedMetrics } from "./partnerView.js";
 
 const offer = { title: "BFCM", body: "Sign up by December 4, 2026 and enter BFCM802.", code: "BFCM802", verified: true };
 
@@ -56,5 +56,22 @@ describe("partner view model", () => {
     assert.equal(initials(""), "");
     assert.equal(hashtag("Managed Hosting"), "#ManagedHosting");
     assert.equal(hashtag("AI Agents"), "#AIAgents");
+  });
+  it("drops coupon instructions once the offer is no longer current", () => {
+    const steps = ["Choose a plan.", "If eligible for the Black Friday promotion, use the affiliate link and enter BFCM802 during signup.", "Review pricing."];
+    const base = { details: { offer, steps, pros: ["Fast", "Use code BFCM802 for 80% off"], highlights: ["Autoscaling", "Black Friday & Cyber Monday deal"], capabilities: [{ title: "Hosting", body: "Plans" }, { title: "Promo", body: "Enter BFCM802" }] } };
+    const live = scrubbedPartner(base, new Date(2026, 10, 26));
+    assert.equal(live, base);
+    const gone = scrubbedPartner(base, new Date(2026, 11, 5));
+    assert.deepEqual(gone.details.steps, ["Choose a plan.", "Review pricing."]);
+    assert.deepEqual(gone.details.pros, ["Fast"]);
+    assert.deepEqual(gone.details.highlights, ["Autoscaling"]);
+    assert.deepEqual(gone.details.capabilities, [{ title: "Hosting", body: "Plans" }]);
+    assert.equal(currentOffer(gone, new Date(2026, 11, 5)) , null);
+    const unverified = scrubbedPartner({ details: { offer: { ...offer, verified: false }, steps } }, new Date(2026, 10, 26));
+    assert.deepEqual(unverified.details.steps, ["Choose a plan.", "Review pricing."]);
+    const noOffer = { details: { steps } };
+    assert.equal(scrubbedPartner(noOffer, new Date(2030, 0, 1)), noOffer);
+    assert.equal(scrubbedPartner({}, new Date()).details, undefined);
   });
 });
