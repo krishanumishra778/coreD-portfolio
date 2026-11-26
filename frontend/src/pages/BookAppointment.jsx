@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Clock, ShieldCheck } from "lucide-react";
 import { crmApiBase } from "../components/lib/crmConfig.js";
-import { fetchSlots, submitBooking } from "../components/lib/crmApi.js";
+import { bookingConsent, fetchSlots, submitBooking } from "../components/lib/crmApi.js";
 import { useTurnstile, turnstileRequired } from "../components/lib/useTurnstile.js";
 import { SERVICES } from "../components/services/servicesData.js";
 import { generalEmail, phoneCountries } from "../data/contactOptions.js";
@@ -54,12 +54,13 @@ export default function BookAppointment() {
     const number = v("NationalNumber").replace(/[\s()-]/g, "");
     const phone = country ? `+${country.dial}${number}` : "";
     if (!/^\+\d{7,15}$/.test(phone)) return fail("Choose your country code and enter a valid phone number without the country prefix.");
-    if (!v("Terms")) return fail("Please accept the Terms and Privacy Notice.");
+    const consent = bookingConsent(f.get("Terms") === "yes");   // what the visitor actually ticked, sent so the CRM can record it
+    if (!consent) return fail("Please accept the Terms and Privacy Notice.");
     inFlight.current = true; setSending(true); setStatus(null);
     try {
       const { message } = await submitBooking({ base: crmApiBase, token: turnstile.token, signal: AbortSignal.timeout(25000), booking: {
         request_id: requestId.current, name: v("FullName"), email: v("CompanyEmail"), phone, company: v("CompanyName"),
-        service: v("Service"), channel, message: v("Overview"), starts_at: slot, timezone: TZ, website: "" } });
+        service: v("Service"), channel, message: v("Overview"), starts_at: slot, timezone: TZ, website: "", consent } });
       setStatus({ type: "success", message: message || "We’ll reach out to confirm your appointment." });
     } catch (e) { requestId.current = crypto.randomUUID(); fail(e.message); }
     finally { inFlight.current = false; setSending(false); turnstile.reset(); }
