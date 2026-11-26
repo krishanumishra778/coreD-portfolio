@@ -25,7 +25,7 @@ export default function BookAppointment() {
   const [sending, setSending] = useState(false);
   const inFlight = useRef(false);
   const requestId = useRef(crypto.randomUUID());
-  const turnstile = useTurnstile();
+  const turnstile = useTurnstile({ fitContainer: true });
   const maxDate = useMemo(() => new Date(today.getTime() + 45 * 86400000), [today]);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function BookAppointment() {
   }
 
   return (
-    <div className="cdx-page"><div className="cdx-wrap">
+    <div className="cdx-page cdx-booking"><div className="cdx-wrap">
       <span className="cdx-eyebrow">Direct consultation · 30-minute session</span>
       <h1>Book an Architecture &amp; Strategy Session</h1>
       <p className="cdx-lead">Schedule a 30-minute conversation with CoreDhristi engineers about AI-powered CRM, AI agents and automation, AI consulting or cybersecurity.</p>
@@ -109,7 +109,7 @@ export default function BookAppointment() {
                 <label>Business email *<input name="CompanyEmail" type="email" required maxLength={254} autoComplete="email" /></label>
               </div>
               <div className="cdx-row">
-                <label>Phone / WhatsApp *<span style={{ display: "grid", gridTemplateColumns: "130px 1fr", gap: 8 }}>
+                <label>Phone / WhatsApp *<span className="cdx-booking-phone">
                   <select name="PhoneCountry" defaultValue="IN-91" aria-label="Country code">{phoneCountries.map((c) => <option key={c.id} value={c.id}>{c.code} +{c.dial}</option>)}</select>
                   <input name="NationalNumber" inputMode="tel" required aria-label="Phone number" maxLength={20} /></span></label>
                 <label>Company (optional)<input name="CompanyName" maxLength={120} autoComplete="organization" /></label>
@@ -118,7 +118,7 @@ export default function BookAppointment() {
               <label>What would you like to discuss? *<textarea name="Overview" rows={4} required minLength={5} maxLength={3000} placeholder="Your current stack, bottlenecks, timeline…" /></label>
               <div><span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".05em", textTransform: "uppercase" }}>Preferred contact channel</span>
                 <div className="cdx-seg" role="group" aria-label="Preferred contact channel" style={{ marginTop: 6 }}>{CHANNELS.map(([k, l]) => <button key={k} type="button" aria-pressed={channel === k} onClick={() => setChannel(k)}>{l}</button>)}</div></div>
-              <label style={{ display: "flex", gap: 8, alignItems: "flex-start", textTransform: "none", letterSpacing: 0, fontWeight: 500 }}><input type="checkbox" name="Terms" value="yes" required style={{ width: 18, height: 18 }} /> I accept the <Link to="/termsCondition">Terms</Link> and <Link to="/privacyPolicy">Privacy Notice</Link>.</label>
+              <label className="cdx-booking-consent"><input type="checkbox" name="Terms" value="yes" required /><span>I accept the <Link to="/termsCondition">Terms</Link> and <Link to="/privacyPolicy">Privacy Notice</Link>.</span></label>
               <div><div ref={turnstile.container} />{turnstile.message && <p role="status" className="cdx-note">{turnstile.message}</p>}</div>
               {status?.type === "error" && <p className="cdx-msg cdx-msg--err" role="alert">{status.message}</p>}
               <button className="cdx-btn cdx-btn--wide" type="submit" disabled={sending || !slot || (turnstileRequired && !turnstile.token)}>{sending ? "Sending…" : "Request appointment"}</button>
@@ -128,7 +128,7 @@ export default function BookAppointment() {
         </section>
       </div>
 
-      <div className="cdx-band" style={{ margin: "56px -24px 0" }}><div className="cdx-wrap">
+      <div className="cdx-band"><div className="cdx-wrap">
         <span className="cdx-eyebrow">What happens next</span><h2 style={{ marginTop: 10 }}>What happens after you request a slot?</h2>
         <div className="cdx-steps">
           {[["01", "We confirm your slot", "A CoreD team member contacts you on your chosen channel to confirm the time."], ["02", "Pre-call review", "We read your project overview beforehand so the session starts at the substance."], ["03", "Practical next steps", "You leave with a clear view of scope, options and a sensible way forward."]].map(([n, t, b]) => <div className="cdx-card cdx-step" key={n}><i>{n}</i><h3 style={{ margin: "0 0 6px" }}>{t}</h3><p style={{ margin: 0, color: "#5c5a55" }}>{b}</p></div>)}
