@@ -1,10 +1,11 @@
 @push('scripts')
         <script>
             (function () {
-                var box = document.getElementById('partner-reviews');
-                if (!box) { return; }
-                var rows = document.getElementById('partner-review-rows'), add = document.getElementById('partner-review-add'), count = document.getElementById('partner-review-count');
-                var max = parseInt(box.getAttribute('data-max'), 10) || 10, next = rows.querySelectorAll('[data-review-row]').length;
+                const initialEditor = document.getElementById('partner-reviews');
+                if (!initialEditor) return;
+
+                const max = Number(initialEditor.dataset.max) || 10;
+                let nextIndex = initialEditor.querySelectorAll('[data-review-row]').length;
                 var cls = 'w-full rounded border px-2 py-1 dark:bg-gray-800';
                 function field(label, control) { var l = document.createElement('label'); l.appendChild(document.createTextNode(label + ' ')); l.appendChild(control); return l; }
                 function input(name, max) { var i = document.createElement('input'); i.className = cls; i.name = name; i.maxLength = max; i.autocomplete = 'off'; return i; }
@@ -21,23 +22,44 @@
                     var ta = document.createElement('textarea'); ta.className = cls; ta.name = 'reviews[' + i + '][text]'; ta.rows = 3; ta.maxLength = 600; row.appendChild(field('Review text', ta));
                     return row;
                 }
-                function refresh() {
-                    var list = rows.querySelectorAll('[data-review-row]');
-                    list.forEach(function (r, n) { r.querySelector('[data-review-title]').textContent = 'Review ' + (n + 1); r.querySelector('[data-review-remove]').setAttribute('aria-label', 'Remove review ' + (n + 1)); });
-                    add.disabled = list.length >= max;
-                    count.textContent = list.length + ' of ' + max + ' reviews' + (list.length >= max ? ' (limit reached)' : '');
+                function refresh(editor) {
+                    const rows = editor.querySelectorAll('[data-review-row]');
+                    rows.forEach((row, index) => {
+                        row.querySelector('[data-review-title]').textContent = 'Review ' + (index + 1);
+                        row.querySelector('[data-review-remove]').setAttribute('aria-label', 'Remove review ' + (index + 1));
+                    });
+                    const atLimit = rows.length >= max;
+                    editor.querySelector('#partner-review-add').disabled = atLimit;
+                    editor.querySelector('#partner-review-count').textContent =
+                        rows.length + ' of ' + max + ' reviews' + (atLimit ? ' (limit reached)' : '');
                 }
-                add.addEventListener('click', function () {
-                    if (rows.querySelectorAll('[data-review-row]').length >= max) { return; }
-                    var row = build(next++); rows.appendChild(row); refresh(); row.querySelector('input').focus();
+
+                // Krayin mounts Vue on window load, replacing the editor nodes rendered by Blade.
+                document.addEventListener('click', (event) => {
+                    if (!(event.target instanceof Element)) return;
+                    const control = event.target.closest('#partner-review-add, [data-review-remove]');
+                    const editor = control?.closest('#partner-reviews');
+                    if (!editor) return;
+
+                    const rows = editor.querySelector('#partner-review-rows');
+                    if (control.id === 'partner-review-add') {
+                        if (rows.children.length >= max) return;
+
+                        const row = build(nextIndex++);
+                        rows.appendChild(row);
+                        refresh(editor);
+                        row.querySelector('input').focus();
+                        return;
+                    }
+
+                    const row = control.closest('[data-review-row]');
+                    const neighbor = row.nextElementSibling || row.previousElementSibling;
+                    row.remove();
+                    refresh(editor);
+                    (neighbor?.querySelector('input') ?? editor.querySelector('#partner-review-add')).focus();
                 });
-                rows.addEventListener('click', function (e) {
-                    var b = e.target.closest('[data-review-remove]'); if (!b) { return; }
-                    var row = b.closest('[data-review-row]'), after = row.nextElementSibling || row.previousElementSibling;
-                    row.remove(); refresh();
-                    var target = after ? after.querySelector('input') : add; if (target) { target.focus(); }
-                });
-                refresh();
+
+                refresh(initialEditor);
             })();
         </script>
     @endpush
