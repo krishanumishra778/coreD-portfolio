@@ -7,7 +7,7 @@ export default function QuoteModules({ selected, onChange, disabled }) {
       <p className="mb-3 text-sm leading-6 text-[#555]">Choose the roles you want to discuss. Custom integration work is priced separately after review. Work already included in your package is charged once.</p>
       <div className="space-y-2">
         {crmAddOnGroups.map(({ id, title, items }) => (
-          <details key={id} open={items.some(({ id: moduleId }) => selected.includes(moduleId)) || undefined} className="min-w-0 rounded-xl border border-black/10 bg-[#faf7f1] px-3">
+          <details key={id} open={items.some(({ id: moduleId }) => selected.includes(moduleId)) || undefined} className="min-w-0 rounded-xl border border-black/10 bg-[var(--cd-paper)] px-3">
             <summary className="cursor-pointer py-3 text-sm font-bold">{title}</summary>
             <div className="space-y-2 pb-3">
               {items.map(({ id: moduleId, name, detail }) => (

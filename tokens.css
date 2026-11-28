@@ -5,10 +5,10 @@
   --cd-black: oklch(0% 0 0);
   --cd-ink: oklch(27% .014 66);
   --cd-muted: oklch(46% .014 64);
-  --cd-paper: oklch(97.6% .008 78);
-  --cd-surface: oklch(99% .004 80);
-  --cd-band: oklch(94.5% .013 77);
-  --cd-rule: oklch(86% .015 74);
+  --cd-paper: #f0f0ed;
+  --cd-surface: #fff;
+  --cd-band: #e9e9e6;
+  --cd-rule: #d4d4d1;
   --cd-amber: oklch(83% .16 76);
   --cd-amber-hover: oklch(88% .14 79);
   --cd-accent-ink: oklch(44% .10 59);

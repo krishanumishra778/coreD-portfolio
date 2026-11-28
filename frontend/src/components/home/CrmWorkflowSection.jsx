@@ -92,7 +92,7 @@ export default function CrmWorkflowSection() {
             </div>
           </div>
           <div className="lg:col-span-6 flex justify-center items-center">
-            <div className="crm-lifecycle-funnel w-full max-w-lg relative p-8 rounded-3xl bg-gradient-to-b from-[#F3EDE2]/80 to-[#FAF7F1] border border-[#14161A]/6 shadow-warm-lg">
+            <div className="crm-lifecycle-funnel w-full max-w-lg relative p-8 rounded-3xl bg-gradient-to-b from-[var(--cd-band)]/80 to-[var(--cd-paper)] border border-[#14161A]/6 shadow-warm-lg">
               <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#14161A_1px,transparent_1px)] [background-size:16px_16px] rounded-3xl pointer-events-none" />
               <div className="flex items-center justify-between pb-6 mb-8 border-b border-[#14161A]/6">
                 <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function CrmWorkflowSection() {
                 <div className="w-full relative group">
                   <div className="w-full py-4 px-6 rounded-2xl bg-white/95 backdrop-blur-md border border-[#14161A]/10 shadow-warm-sm flex items-center justify-between transition-all duration-300 hover:scale-[1.01]">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-[#FAF7F1] border border-[#14161A]/8 flex items-center justify-center text-xs font-bold text-[#14161A]">
+                      <div className="w-7 h-7 rounded-lg bg-[var(--cd-paper)] border border-[#14161A]/8 flex items-center justify-center text-xs font-bold text-[#14161A]">
                         1
                       </div>
                       <div>
@@ -121,7 +121,7 @@ export default function CrmWorkflowSection() {
                         </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FAF7F1] text-[#5C616B] border border-[#14161A]/5">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--cd-paper)] text-[#5C616B] border border-[#14161A]/5">
                       Step 01
                     </span>
                   </div>

@@ -25,7 +25,7 @@ function getScreenshots(study) {
 export default function SeeOurWork() {
     if (!Array.isArray(portfolioCaseStudies) || portfolioCaseStudies.length === 0) {
         return (
-            <section className="min-h-screen bg-[#faf7f1] px-4 py-20 text-slate-900 sm:px-6 lg:px-8">
+            <section className="min-h-screen bg-[var(--cd-paper)] px-4 py-20 text-slate-900 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-7xl">
                     <h1 className="text-3xl font-bold sm:text-5xl">
                         <RevealWords>See our work</RevealWords>
@@ -40,7 +40,7 @@ export default function SeeOurWork() {
     }
 
     return (
-        <section className="min-h-screen w-full bg-[#faf7f1] px-4 py-16 text-slate-900 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <section className="min-h-screen w-full bg-[var(--cd-paper)] px-4 py-16 text-slate-900 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
             <div className="mx-auto w-full max-w-7xl">
 
                 <header className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">

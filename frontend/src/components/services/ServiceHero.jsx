@@ -31,7 +31,7 @@ export default function ServiceHero({ service, activeIndex, serviceCount, onPrev
                 <h3 className="mb-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1C1C1C] sm:text-[11px]">Core capabilities</h3>
                 <div className="flex flex-wrap gap-2">
                   {capabilities.map((capability) => (
-                    <span key={capability} className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-black/[0.08] bg-[#FAF7F1] px-3 py-1.5 text-[10px] font-medium leading-tight text-[#14161A] sm:text-[11px]">
+                    <span key={capability} className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-black/[0.08] bg-[var(--cd-paper)] px-3 py-1.5 text-[10px] font-medium leading-tight text-[#14161A] sm:text-[11px]">
                       <Check className="h-3 w-3 shrink-0 text-[#FF9100]" aria-hidden="true" />
                       {capability}
                     </span>

@@ -115,7 +115,7 @@ function getFeatureDescription(feature) {
 function StatTile({ label, value, className = "" }) {
   return (
     <div
-      className={`bg-[#F3EDE2]/60 p-3 rounded-xl border border-amber-900/5 ${className}`}
+      className={`bg-[var(--cd-band)]/60 p-3 rounded-xl border border-amber-900/5 ${className}`}
     >
       <span className="block text-slate-500 text-[11px] uppercase tracking-wider font-bold">
         {label}
@@ -146,7 +146,7 @@ function InfoCard({ variant, content, className = "", showParagraphs = true, }) 
 
   return (
     <div
-      className={`flex flex-col  rounded-2xl bg-[#F3EDE2] p-6 sm:p-8 border border-amber-900/10 shadow-sm transition hover:shadow-md ${className}`}
+      className={`flex flex-col  rounded-2xl bg-[var(--cd-band)] p-6 sm:p-8 border border-amber-900/10 shadow-sm transition hover:shadow-md ${className}`}
     >
       <div>
         <div
@@ -291,7 +291,7 @@ function CapabilityCard({ capability, index }) {
   if (!title) return null;
 
   return (
-    <div className="group relative rounded-xl border border-slate-100 bg-[#faf7f1]/50 p-4 transition duration-200 hover:bg-[#F3EDE2]/60 hover:border-amber-300">
+    <div className="group relative rounded-xl border border-slate-100 bg-[var(--cd-paper)]/50 p-4 transition duration-200 hover:bg-[var(--cd-band)]/60 hover:border-amber-300">
       <div className="flex items-center justify-between mb-2">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-amber-400 group-hover:scale-105 transition-transform">
           <Icon className="h-5 w-5" />
@@ -418,7 +418,7 @@ function ScreenshotLightbox({ shot, onClose, report }) {
 
 function TopNav({ report }) {
   return (
-    <nav className="border-b border-amber-900/10 bg-[#faf7f1]/80 backdrop-blur-md relative px-4 py-4 sm:px-6 lg:px-8">
+    <nav className="border-b border-amber-900/10 bg-[var(--cd-paper)]/80 backdrop-blur-md relative px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl flex items-center justify-between">
         <Link
           to={BACK_LINK}
@@ -709,7 +709,7 @@ function CaseStudyView({ caseStudy }) {
     ) || Boolean(resultsNote);
 
   return (
-    <div className="min-h-screen bg-[#faf7f1] text-slate-800 font-sans antialiased selection:bg-amber-200">
+    <div className="min-h-screen bg-[var(--cd-paper)] text-slate-800 font-sans antialiased selection:bg-amber-200">
       <TopNav report={caseStudy.isSample} />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -779,7 +779,7 @@ function CaseStudyView({ caseStudy }) {
 
 function CaseStudyNotFound() {
   return (
-    <div className="min-h-screen bg-[#faf7f1] text-slate-800 font-sans antialiased flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--cd-paper)] text-slate-800 font-sans antialiased flex items-center justify-center px-4">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-slate-900">
           Case study not found

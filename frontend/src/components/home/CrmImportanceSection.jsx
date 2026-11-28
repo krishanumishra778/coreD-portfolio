@@ -3,7 +3,7 @@ export default function CrmImportanceSection() {
   return (
     <section
       id="crm-importance"
-      className="crm-importance-section relative py-28 px-6 lg:px-12 bg-[#F3EDE2]/60 border-b border-[#14161A]/5"
+      className="crm-importance-section relative py-28 px-6 lg:px-12 bg-[var(--cd-band)]/60 border-b border-[#14161A]/5"
       aria-labelledby="crm-importance-title"
     >
       <div className="max-w-7xl mx-auto">
@@ -25,7 +25,7 @@ export default function CrmImportanceSection() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="crm-importance-card lg:col-span-7 bg-white rounded-3xl p-8 lg:p-10 border border-[#14161A]/8 shadow-warm-md flex flex-col justify-between hover:shadow-warm-lg transition-all duration-300">
-              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[#FAF7F1] to-[#F3EDE2] border border-[#14161A]/6 p-5 mb-8 flex flex-col justify-between relative overflow-hidden">
+              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[var(--cd-paper)] to-[var(--cd-band)] border border-[#14161A]/6 p-5 mb-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="flex items-center justify-between pb-3 border-b border-[#14161A]/8">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#14161A]/20" />
@@ -97,10 +97,10 @@ export default function CrmImportanceSection() {
               </div>
             </div>
             <div className="crm-importance-card lg:col-span-5 bg-white rounded-3xl p-8 lg:p-10 border border-[#14161A]/8 shadow-warm-md flex flex-col justify-between hover:shadow-warm-lg transition-all duration-300">
-              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[#FAF7F1] to-[#FFF3E0]/50 border border-[#14161A]/6 p-4 mb-8 flex flex-col justify-center space-y-2.5 overflow-hidden">
+              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[var(--cd-paper)] to-[#FFF3E0]/50 border border-[#14161A]/6 p-4 mb-8 flex flex-col justify-center space-y-2.5 overflow-hidden">
                 <div className="bg-white p-3 rounded-xl border border-[#14161A]/6 shadow-xs flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-lg bg-[#FAF7F1] text-[#14161A] font-bold text-xs flex items-center justify-center border border-[#14161A]/10">
+                    <span className="w-6 h-6 rounded-lg bg-[var(--cd-paper)] text-[#14161A] font-bold text-xs flex items-center justify-center border border-[#14161A]/10">
                       1
                     </span>
                     <div>
@@ -136,7 +136,7 @@ export default function CrmImportanceSection() {
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-[#14161A]/6 shadow-xs flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-lg bg-[#FAF7F1] text-[#5C616B] font-bold text-xs flex items-center justify-center border border-[#14161A]/10">
+                    <span className="w-6 h-6 rounded-lg bg-[var(--cd-paper)] text-[#5C616B] font-bold text-xs flex items-center justify-center border border-[#14161A]/10">
                       3
                     </span>
                     <div>
@@ -148,7 +148,7 @@ export default function CrmImportanceSection() {
                       </div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-medium text-[#5C616B] bg-[#FAF7F1] px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-medium text-[#5C616B] bg-[var(--cd-paper)] px-2 py-0.5 rounded">
                     Queued
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export default function CrmImportanceSection() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="crm-importance-card lg:col-span-5 bg-white rounded-3xl p-8 lg:p-10 border border-[#14161A]/8 shadow-warm-md flex flex-col justify-between hover:shadow-warm-lg transition-all duration-300">
-              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[#FAF7F1] to-[#F3EDE2] border border-[#14161A]/6 p-5 mb-8 flex flex-col justify-center items-center relative overflow-hidden">
+              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[var(--cd-paper)] to-[var(--cd-band)] border border-[#14161A]/6 p-5 mb-8 flex flex-col justify-center items-center relative overflow-hidden">
                 <div className="w-16 h-16 rounded-2xl bg-white border border-[#FF9100]/30 shadow-warm-md flex items-center justify-center mb-4">
                   <svg
                     className="w-8 h-8 text-[#FF9100]"
@@ -197,7 +197,7 @@ export default function CrmImportanceSection() {
                     <span className="font-medium text-[#14161A]">
                       Operations &amp; Support
                     </span>
-                    <span className="text-[10px] font-medium text-[#5C616B] bg-[#FAF7F1] px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-medium text-[#5C616B] bg-[var(--cd-paper)] px-2 py-0.5 rounded">
                       Read Only
                     </span>
                   </div>
@@ -214,7 +214,7 @@ export default function CrmImportanceSection() {
               </div>
             </div>
             <div className="crm-importance-card lg:col-span-7 bg-white rounded-3xl p-8 lg:p-10 border border-[#14161A]/8 shadow-warm-md flex flex-col justify-between hover:shadow-warm-lg transition-all duration-300">
-              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[#FAF7F1] to-[#F3EDE2] border border-[#14161A]/6 p-5 mb-8 flex flex-col justify-between relative overflow-hidden">
+              <div className="crm-illustration w-full h-56 rounded-2xl bg-gradient-to-br from-[var(--cd-paper)] to-[var(--cd-band)] border border-[#14161A]/6 p-5 mb-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-[#FF9100]" />
@@ -246,7 +246,7 @@ export default function CrmImportanceSection() {
                       AI Assistant active
                     </span>
                   </div>
-                  <p className="text-xs text-[#14161A] mt-2 italic bg-[#FAF7F1] p-2 rounded-lg border border-[#14161A]/5">
+                  <p className="text-xs text-[#14161A] mt-2 italic bg-[var(--cd-paper)] p-2 rounded-lg border border-[#14161A]/5">
                     "Hi Rohan, following up on yesterday’s demo. Shall we
                     review the inventory workflow together this week?"
                   </p>

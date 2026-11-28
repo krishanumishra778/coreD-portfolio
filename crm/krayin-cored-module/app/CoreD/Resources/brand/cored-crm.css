@@ -1,15 +1,15 @@
 /*
  * CoreDhristi theme for the CRM admin (login, password reset, dashboard, sidebar, header, footer, help).
- * Palette = the website's design tokens (frontend/tokens.css). Loaded through the admin.layout.head hooks
+ * Palette = the website's design tokens (tokens.css). Loaded through the admin.layout.head hooks
  * registered by App\CoreD\CoreDServiceProvider; no upstream Krayin file is modified.
  */
 :root {
   --cd-ink: #2B251F;
   --cd-muted: #5E5750;
-  --cd-paper: #FAF7F1;
-  --cd-surface: #FDFBF9;
-  --cd-band: #F2ECE3;
-  --cd-rule: #D7D0C6;
+  --cd-paper: #f0f0ed;
+  --cd-surface: var(--cd-paper);
+  --cd-band: #e9e9e6;
+  --cd-rule: #d4d4d1;
   --cd-amber: #FFB734;
   --cd-amber-hover: #FFCC62;
   --cd-accent-ink: #7A4208;

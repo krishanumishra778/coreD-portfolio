@@ -11,7 +11,7 @@
 
 .home-continuation {
   color: #14161a;
-  background: #faf7f1;
+  background: var(--cd-paper);
   -webkit-font-smoothing: antialiased;
 }
 

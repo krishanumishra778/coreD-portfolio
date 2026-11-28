@@ -2,7 +2,7 @@ export default function FlagshipCrmSection() {
   return (
     <section
       id="flagship-crm"
-      className="flagship-crm-section relative py-28 px-6 lg:px-12 bg-[#FAF7F1] border-b border-[#14161A]/5"
+      className="flagship-crm-section relative py-28 px-6 lg:px-12 bg-[var(--cd-paper)] border-b border-[#14161A]/5"
       aria-labelledby="flagship-crm-title"
     >
       <div className="max-w-7xl mx-auto">
@@ -21,7 +21,7 @@ export default function FlagshipCrmSection() {
             context, real-time agent automation, and clear customer visibility.
           </p>
         </div>
-        <div className="w-full rounded-3xl bg-gradient-to-b from-white to-[#F3EDE2]/60 p-4 lg:p-6 border border-[#14161A]/8 shadow-warm-lg mb-16">
+        <div className="w-full rounded-3xl bg-gradient-to-b from-white to-[var(--cd-band)]/60 p-4 lg:p-6 border border-[#14161A]/8 shadow-warm-lg mb-16">
           <div className="w-full rounded-2xl bg-[#14161A]/[0.02] border-2 border-dashed border-[#14161A]/15 py-24 lg:py-32 flex flex-col items-center justify-center text-center px-6 relative overflow-hidden group">
             <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#14161A_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
             <div className="w-20 h-20 rounded-2xl bg-white border border-[#FF9100]/30 shadow-warm-md flex items-center justify-center mb-6 text-[#FF9100]">

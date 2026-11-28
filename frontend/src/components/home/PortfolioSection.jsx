@@ -45,8 +45,8 @@ export default function PortfolioSection() {
   }
 
   return (
-    <section className="bg-[#F3EDE2] px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-      <div className="bg-[#F3EDE2] mx-auto max-w-7xl">
+    <section className="bg-[var(--cd-band)] px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
+      <div className="bg-[var(--cd-band)] mx-auto max-w-7xl">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
             align="left"
@@ -74,7 +74,7 @@ export default function PortfolioSection() {
                     to={`/case-studies/${item.id}`}
                     key={`${isDuplicate ? "duplicate" : "original"}-${item.id}`}
                     tabIndex={isDuplicate ? -1 : undefined}
-                    className="group w-[min(340px,82vw)] shrink-0 rounded-[32px] bg-[#faf7f1] p-2 shadow-[0_10px_40px_rgba(15,23,42,0.08)] ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.14)]"
+                    className="group w-[min(340px,82vw)] shrink-0 rounded-[32px] bg-[var(--cd-paper)] p-2 shadow-[0_10px_40px_rgba(15,23,42,0.08)] ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.14)]"
                   >
                     {/* Image */}
                     <div className="aspect-[4/3] w-full overflow-hidden rounded-[26px] bg-slate-100">

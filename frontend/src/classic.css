@@ -1,5 +1,5 @@
 /* Shared classic site styling. */
-.analytics-preferences { position: fixed; z-index: 90; inset: auto 1rem 1rem; max-width: 68rem; margin-inline: auto; display: flex; gap: 1.5rem; align-items: center; padding: 1.25rem; border: 1px solid #d9d1c5; border-radius: 1.25rem; background: #faf7f1; color: #25262b; box-shadow: 0 12px 48px #0003; }
+.analytics-preferences { position: fixed; z-index: 90; inset: auto 1rem 1rem; max-width: 68rem; margin-inline: auto; display: flex; gap: 1.5rem; align-items: center; padding: 1.25rem; border: 1px solid #d9d1c5; border-radius: 1.25rem; background: var(--cd-paper); color: #25262b; box-shadow: 0 12px 48px #0003; }
 .analytics-preferences h2 { font-size: 1.05rem; font-weight: 750; }
 .analytics-preferences p { margin-top: .4rem; max-width: 65ch; font-size: .875rem; line-height: 1.6; }
 .analytics-preferences a { text-decoration: underline; text-underline-offset: .2em; }
@@ -7,7 +7,7 @@
 .analytics-preferences-link { width: fit-content; min-height: 44px; margin-top: .5rem; font-size: .875rem; text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
 @media (max-width: 63.999rem) { .analytics-preferences { align-items: start; flex-direction: column; gap: .75rem; } }
 html:has(.cd-site--classic) { scroll-padding-top: 7rem; }
-.cd-site--classic { --cd-ink: #25262b; --cd-muted: #5c616b; background: #faf7f1; color: #25262b; font-family: var(--font-sans); }
+.cd-site--classic { --cd-ink: #25262b; --cd-muted: #5c616b; background: var(--cd-paper); color: #25262b; font-family: var(--font-sans); }
 .cd-site--classic h1, .cd-site--classic h2, .cd-site--classic h3 { font-family: inherit; }
 .cd-site--classic .cd-main { padding-top: clamp(5rem, 8vw, 7rem); }
 .cd-site--classic .classic-home { padding-top: 0; }
@@ -30,7 +30,7 @@ html:has(.cd-site--classic) { scroll-padding-top: 7rem; }
 @media (min-width: 64rem) {
   .cd-site--classic .cd-button--nav-desktop { display: inline-flex; }
 }
-.cd-site--classic .cd-band { background: #f3ede2; }
+.cd-site--classic .cd-band { background: var(--cd-band); }
 
 .cd-site--classic .flagship-section > header { max-width: 48rem; margin-inline: auto; text-align: center; }
 .cd-site--classic .flagship-section > header h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -.045em; line-height: 1.12; margin-top: .75rem; }
@@ -61,7 +61,7 @@ html:has(.cd-site--classic) { scroll-padding-top: 7rem; }
 .cd-site--classic .contact-layout aside a:not(.cd-button) { color: #ffc24e; }
 .cd-site--classic .contact-form { border-radius: 1.5rem; background: white; box-shadow: 0 16px 40px -24px #14161a40; }
 .cd-site--classic .quote-dialog { background: white; border-radius: 1.5rem; }
-.cd-site--classic .quote-choice { padding-inline: .875rem; background: #faf7f1; border-radius: .875rem; margin-top: .75rem; border: 1px solid #eee5d6; }
+.cd-site--classic .quote-choice { padding-inline: .875rem; background: var(--cd-paper); border-radius: .875rem; margin-top: .75rem; border: 1px solid #eee5d6; }
 .cd-site--classic .quote-fields :is(input,select,textarea) { background: white; border-radius: .75rem; }
 .cd-site--classic .quote-dialog button[type="submit"], .cd-site--classic .contact-form button[type="submit"] { width: 100%; border-radius: .75rem; }
 .cd-site--classic .faq-page .page-intro { text-align: center; }

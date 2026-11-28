@@ -14,14 +14,14 @@ body,
 }
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
-  --color-cream: #faf8f3;
+  --color-cream: var(--cd-paper);
   --color-ink: #25262b;
   --color-brand: #f59e0b;
   --color-brand-deep: #a65f00;
-  --color-gold-light : #faf7f1;
+  --color-gold-light: var(--cd-paper);
   
 }
-body { background: var(--color-gold-light); color: var(--color-ink); font-family: var(--font-sans); }
+body { background: var(--cd-paper); color: var(--color-ink); font-family: var(--font-sans); }
 @keyframes slide { to { transform: translateX(-50%); } }
 .marquee { animation: slide 25s linear infinite; }
 @media (prefers-reduced-motion: reduce) { .marquee { animation: none; } }
