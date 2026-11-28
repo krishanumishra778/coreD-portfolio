@@ -1,6 +1,6 @@
 @php
     $brandName = config('cored.brand.name', 'CoreDhristi');
-    $brandDir = dirname(__DIR__, 2).'/brand/';
+    $brandDir = app_path('CoreD/Resources/brand').'/';
     $v = substr(md5((string) @md5_file($brandDir.'cored-crm.css').(string) @md5_file($brandDir.'mark.svg')), 0, 8);
 @endphp
 <link rel="stylesheet" href="{{ url('cored/brand/cored-crm.css') }}?v={{ $v }}">
